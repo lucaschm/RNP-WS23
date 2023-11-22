@@ -33,7 +33,6 @@ public class Chat {
     public static void main(String[] args) throws IOException {
         try (ServerSocket serverSocket = new ServerSocket(8080)){
             System.out.println(serverSocket);
-            int i = 
             while(true){
                 try (Socket clientSocket = serverSocket.accept()) {
                     System.out.println(clientSocket);
@@ -43,3 +42,4 @@ public class Chat {
         System.out.println("Bye Bye");
     }
 }
+
