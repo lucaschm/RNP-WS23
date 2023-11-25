@@ -36,10 +36,11 @@ public class Chat {
             while(true){
                 try (Socket clientSocket = serverSocket.accept()) {
                     System.out.println(clientSocket);
+                    System.out.println(clientSocket.getInputStream());
                 }
             }
         }
-        System.out.println("Bye Bye");
+        //System.out.println("Bye Bye");
     }
 }
 
