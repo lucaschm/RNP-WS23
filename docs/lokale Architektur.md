@@ -1,3 +1,5 @@
+- Es wird Time-Trigered gearbeitet. Außer der ConnectionHandler, der hat einen Thread Pool.
+
 # UI
 - Zeilen printen und einlesen
 # Controller
