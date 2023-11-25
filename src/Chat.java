@@ -25,21 +25,40 @@
         als auch den Server-Socket schließen, um Ressourcen freizugeben.
 **/
 
+import javax.json.JsonObject;
 import java.io.*;
 import java.net.*;
 
 public class Chat {
     int port = 8080;
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args)  {
+        testJson();
+
+
+
+    }
+
+    private void setupServer() throws IOException {
         try (ServerSocket serverSocket = new ServerSocket(8080)){
             System.out.println(serverSocket);
-            int i = 
             while(true){
                 try (Socket clientSocket = serverSocket.accept()) {
                     System.out.println(clientSocket);
                 }
             }
         }
-        System.out.println("Bye Bye");
+    }
+
+    private static void testJson() {
+        ChatMessage message = new ChatMessage("10.10.10.10",
+                8080,
+                "10.10.10.11",
+                8080,
+                20,
+                "hallo hier ist eine Nachricht :)");
+
+        JsonParser parser = new JsonParser();
+        JsonObject json = parser.convertChatMessageToJson(message);
+        System.out.println(json);
     }
 }
