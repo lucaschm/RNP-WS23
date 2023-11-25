@@ -44,6 +44,7 @@ public class Chat {
             while(true){
                 try (Socket clientSocket = serverSocket.accept()) {
                     System.out.println(clientSocket);
+                    System.out.println(clientSocket.getInputStream());
                 }
             }
         }
@@ -60,5 +61,7 @@ public class Chat {
         JsonParser parser = new JsonParser();
         JsonObject json = parser.convertChatMessageToJson(message);
         System.out.println(json);
+
     }
 }
+

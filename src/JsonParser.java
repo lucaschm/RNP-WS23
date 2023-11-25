@@ -34,7 +34,7 @@ public class JsonParser {
         JsonReader jsonReader = Json.createReader(new StringReader(json.toString()));
 
         JsonStructure jsonStructure = jsonReader.read();
-        
+
         return null;
     }
 }
