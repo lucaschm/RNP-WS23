@@ -1,5 +1,4 @@
 import javax.json.*;
-import java.io.StringReader;
 //bekommt Infos rein (z.b. IP-Adresse)
 //Infos werden verpackt in ein Json Objekt
 
@@ -30,11 +29,25 @@ public class JsonParser {
         return builder.build();
     }
 
-    public ChatMessage convertJsonToChatMessage(JsonObject json) {
-        JsonReader jsonReader = Json.createReader(new StringReader(json.toString()));
+    public ChatMessage convertJsonToChatMessage(JsonObject json) throws IllegalArgumentException {
+        if (json.getString(MESSAGE_TYPE).equals(CHAT_MESSAGE))
+        {
+            throw new IllegalArgumentException("the json object, passed as parameter should be for a chat_message");
+        }
 
-        JsonStructure jsonStructure = jsonReader.read();
+        String destinationIp = json.getString(DESTINATION_IP);
+        int destinationPort = json.getInt(DESTINATION_PORT);
+        String sourceIp = json.getString(SOURCE_IP);
+        int sourcePort = json.getInt(SOURCE_PORT);
+        int ttl = json.getInt(TTL);
+        String content = json.getString(CONTENT);
 
-        return null;
+        return new ChatMessage(
+                destinationIp,
+                destinationPort,
+                sourceIp,
+                sourcePort,
+                ttl,
+                content);
     }
 }
