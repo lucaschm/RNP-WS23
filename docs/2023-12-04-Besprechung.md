@@ -1,0 +1,5 @@
+- keine Map für die Routing Tabelle
+- Routintabelle nach ips sortieren
+- "IP" in Variablennamen: ipPort, portIP
+- Implementierung der Routing Tabelle
+	- mit RoutingEntry Objekten in einer Collection
