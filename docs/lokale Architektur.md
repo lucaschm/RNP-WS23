@@ -10,6 +10,7 @@
 # Router
 - hat die Routing-Tabelle
 - entscheidet die Wegewahl
+- Kümemert sich darum, dass die Nachrichten an die richtige stelle gesendet werden
 ## Routing Tabelle (Aufgaben)
 - Message muss gesendet bzw. weitergeleitet werden: `String findNextHop(String destinationIP)`
 	- next Hop mit minimalen Hop Count für die Zieladresse finden

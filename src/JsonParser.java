@@ -1,4 +1,8 @@
 import javax.json.*;
+
+import data_classes.ChatMessage;
+
+import java.io.StringReader;
 //bekommt Infos rein (z.b. IP-Adresse)
 //Infos werden verpackt in ein Json Objekt
 
