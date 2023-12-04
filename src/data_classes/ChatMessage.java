@@ -1,4 +1,7 @@
-import java.net.Inet4Address;
+package data_classes;
+//import java.net.Inet4Address;
+
+import java.security.ProtectionDomain;
 
 public class ChatMessage {
     private String destinationIP;
