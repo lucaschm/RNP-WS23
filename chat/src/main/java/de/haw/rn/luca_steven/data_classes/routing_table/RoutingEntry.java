@@ -1,40 +1,92 @@
-package data_classes.routing_table;
+package de.haw.rn.luca_steven.data_classes.routing_table;
 
+import java.util.Objects;
+
+/**
+ * description of class RoutingEntry 
+ *
+ * @author steven
+ * 
+ */
 public class RoutingEntry {
 
     private String destination;
     private int hops;
     private String nextHop;
+    private String origin;
     
-    public RoutingEntry(String destination, int hops) {
+    public RoutingEntry(String destination, int hops, String nextHop, String origin) {
         this.destination = destination;
         this.hops = hops;
+        this.nextHop = nextHop;
+        this.origin = origin;
     }
 
-    public void setDestination(String destination) {
-        this.destination = destination;
+    /**
+     * especially for debugger
+     */
+    public String toString() {
+        return "d: " + this.destination + " nH: " + this.nextHop;
     }
 
+    /**
+     * @return String return the destination
+     */
     public String getDestination() {
         return destination;
     }
 
-    public void setHops(int hops) {
-        this.hops = hops;
+    /**
+     * @param destination the destination to set
+     */
+    public void setDestination(String destination) {
+        this.destination = destination;
     }
 
+    /**
+     * @return int return the hops
+     */
     public int getHops() {
         return hops;
     }
 
+    /**
+     * @param hops the hops to set
+     */
+    public void setHops(int hops) {
+        this.hops = hops;
+    }
+
+    /**
+     * @return String return the nextHop
+     */
     public String getNextHop() {
         return nextHop;
     }
 
+    /**
+     * @param nextHop the nextHop to set
+     */
     public void setNextHop(String nextHop) {
         this.nextHop = nextHop;
     }
 
+    /**
+     * @return String return the origin
+     */
+    public String getOrigin() {
+        return origin;
+    }
+
+    /**
+     * @param origin If this routing entry is created by this client is has to have the IP:Port of this client
+     * @throws NullPointerException if origin is null
+     * 
+     * 
+     */
+    public void setOrigin(String origin) {
+        this.origin = Objects.requireNonNull(origin, "Origin cannot be null");
+    }
 }
 
 

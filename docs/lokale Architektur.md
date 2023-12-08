@@ -14,7 +14,7 @@
 ## Routing Tabelle (Aufgaben)
 - Message muss gesendet bzw. weitergeleitet werden: `String findNextHop(String destinationIP)`
 	- next Hop mit minimalen Hop Count für die Zieladresse finden
-- eine Routing Tabelle von einem anderen Netzwerkteilnehmer in eigene Routing Tabelle intigrieren: `mergeWith(Collection<RoutingEntry> routingEntries)`
+- eine Routing Tabelle von einem anderen Netzwerkteilnehmer in eigene Routing Tabelle intigrieren: `mergeWith(Collection<RoutingEntry> routingEntries, String origin)`
 - Eigene Routing Tabelle weitergeben. Dabei müssen wir Split Horizon einhalten: `getEntriesWithout(String originIP)`
 # ConnectionHandler
 - Kümmert sich um die Sockets

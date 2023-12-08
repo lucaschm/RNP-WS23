@@ -1,6 +1,15 @@
-package data_classes.routing_table;
+package de.haw.rn.luca_steven.data_classes.routing_table;
+
+import java.util.Set;
 
 public interface IRoutingTable {
 
-    public int nextHopFromDestination(int destinationIP);
+    public String findNextHop(String destination);
+
+    public void mergeWith(Set<RoutingEntry> routingEntries, String origin);
+
+    public Set<RoutingEntry> getEntriesWithout(String originIP);
+
+    public void addEntry(RoutingEntry entry);
+     
 }
