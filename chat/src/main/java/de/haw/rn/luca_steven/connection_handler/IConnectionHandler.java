@@ -1,7 +1,5 @@
-package connection_handler;
-
-import data_classes.ChatMessage;
-
+package de.haw.rn.luca_steven.connection_handler;
+import de.haw.rn.luca_steven.data_classes.ChatMessage;
 import javax.json.JsonObject;
 
 public interface IConnectionHandler {
