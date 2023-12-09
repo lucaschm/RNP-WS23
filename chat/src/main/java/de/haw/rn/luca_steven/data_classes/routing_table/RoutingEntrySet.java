@@ -2,6 +2,7 @@ package de.haw.rn.luca_steven.data_classes.routing_table;
 
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Set;
 
 public class RoutingEntrySet implements IRoutingTable {
@@ -38,21 +39,42 @@ public class RoutingEntrySet implements IRoutingTable {
      * 
      * with that we have added all new entries and deleted all entries that the other client also deleted 
      * 
+     * @param routingEntries all have to have the origin given in origin !!!
      * @param origin The source of the routing entries
      */
     public void mergeWith(Set<RoutingEntry> routingEntries, String origin) {
-        for (RoutingEntry entry : set) {
-            if (entry.getOr)
+        for (RoutingEntry entry : routingEntries) {
+            if (entry.getOrigin() != origin) {
+                throw new IllegalArgumentException("Entry: " + entry + " did not have the given origin: " + origin);
+            }
         }
+        
+        Iterator<RoutingEntry> iterator = set.iterator();
+        while (iterator.hasNext()) {
+            RoutingEntry entry = iterator.next();
+            if (entry.getOrigin() == origin) {
+                iterator.remove();
+            }
+        }
+
+        set.addAll(routingEntries);
+
         return;
     }
 
     public Set<RoutingEntry> getEntriesWithout(String originIP) {
-         return set;
+        Set<RoutingEntry> result = new HashSet<RoutingEntry>();
+        for (RoutingEntry entry : set) {
+            if (entry.getOrigin() != originIP) {
+                result.add(entry);
+            }
+        }
+        return result;
     }
 
     /**
      * only for testing
+     * (maybe for adding entries by this client)
      */
     public void addEntry(RoutingEntry entry) {
         set.add(entry);
