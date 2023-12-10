@@ -8,6 +8,7 @@ import java.net.SocketAddress;
 import java.net.SocketOption;
 import java.nio.ByteBuffer;
 import java.nio.channels.*;
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -21,8 +22,8 @@ public class ConnectionHandler implements IConnectionHandler{
     private Selector selector;
     private ServerSocketChannel serverSocketChannel;
 
-    public ConnectionHandler() {
-        this.idPort = 6789;
+    public ConnectionHandler(int idPort) {
+        this.idPort = idPort;
         this.messageQueue = new LinkedList<>();
         setup();
     }
@@ -35,27 +36,34 @@ public class ConnectionHandler implements IConnectionHandler{
         try {
             //while (isRunning) {
                 selector.select();
+                Logger.log(idPort + ": selector select");
 
                 Set<SelectionKey> selectedKeys = selector.selectedKeys();
                 Iterator<SelectionKey> iter = selectedKeys.iterator();
+                Logger.log(idPort + ": get selectedKeys");
 
                 while (iter.hasNext()) {
                     SelectionKey key = iter.next();
-
-                    if (key.isAcceptable()) {
-                        register(selector, serverSocketChannel);
-                    }
 
                     if (key.isReadable()) {
                         readMessage(key);
                     }
 
+                    if(key.isWritable()) {
+                        writeMessage(key);
+                    }
+
+                    if (key.isAcceptable()) {
+                        register(selector, serverSocketChannel);
+                    }
+
                     iter.remove();
                 }
+                Logger.log(idPort + ": while(iter.hasNext())");
             //}
         } catch (IOException e) {
             Logger.log(e.getMessage());
-            //e.printStackTrace();
+            e.printStackTrace();;
         }
     }
 
@@ -73,7 +81,7 @@ public class ConnectionHandler implements IConnectionHandler{
             client.connect(socketAddr);//TODO: das hier ist noch blocking, soll zu non-blocking geändert werden
 
             client.configureBlocking(false);
-            client.register(selector, SelectionKey.OP_READ);
+            client.register(selector, SelectionKey.OP_READ | SelectionKey.OP_WRITE);
         } catch (Exception e) {
             Logger.log(e.getMessage());
         }
@@ -143,9 +151,22 @@ public class ConnectionHandler implements IConnectionHandler{
         }
 
         String string = StandardCharsets.UTF_8.decode(messageBuffer).toString();
+        Logger.log(idPort + ": String received: " + string);
         messageQueue.addLast(string);
         
     }
+
+    private void writeMessage(SelectionKey key) {
+        SocketChannel client = (SocketChannel) key.channel();
+        String string = "hello world :DDDDD";
+        ByteBuffer buffer = getFromattedByteBuffer(string);
+
+        try {
+            client.write(buffer);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    } 
 
     private void logSocketInfo(SocketChannel socketChannel) throws IOException {
         InetSocketAddress localAddress = (InetSocketAddress) socketChannel.getLocalAddress();
@@ -160,5 +181,19 @@ public class ConnectionHandler implements IConnectionHandler{
         for (SocketOption<?> option : socketChannel.supportedOptions()) {
             System.out.println(option.name() + ": " + socketChannel.getOption(option));
         }
+    }
+
+    private ByteBuffer getFromattedByteBuffer(String string) {
+        int length = string.length();
+        int checksum = 0;
+        ByteBuffer buffer = ByteBuffer.allocate(COMMON_HEADER_LENGTH + length);
+        
+        buffer.putInt(length);
+        buffer.putInt(checksum);
+
+        byte[] stringBytes = string.getBytes(Charset.forName("UTF-8"));
+        buffer.put(stringBytes);
+
+        return buffer;
     }
 }
