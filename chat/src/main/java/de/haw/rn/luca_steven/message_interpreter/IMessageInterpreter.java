@@ -1,6 +1,6 @@
-package message_interpreter;
+package de.haw.rn.luca_steven.message_interpreter;
 
-import data_classes.ChatMessage;
+import de.haw.rn.luca_steven.data_classes.ChatMessage;
 
 public interface IMessageInterpreter {
     

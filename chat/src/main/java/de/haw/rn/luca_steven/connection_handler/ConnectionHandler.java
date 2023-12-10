@@ -4,6 +4,7 @@ import de.haw.rn.luca_steven.Logger;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
+import java.net.SocketAddress;
 import java.net.SocketOption;
 import java.nio.ByteBuffer;
 import java.nio.channels.*;
@@ -64,7 +65,17 @@ public class ConnectionHandler implements IConnectionHandler{
 
     @Override
     public void connect(String ipAddress, int port) {
-        
+        try {
+            SocketChannel client = SocketChannel.open();
+            SocketAddress socketAddr;
+            socketAddr = new InetSocketAddress(ipAddress, port);
+            client.connect(socketAddr);//TODO: das hier ist noch blocking, soll zu non-blocking geändert werden
+
+            client.configureBlocking(false);
+            client.register(selector, SelectionKey.OP_READ);
+        } catch (Exception e) {
+            Logger.log(e.getMessage());
+        }
     }
 
     @Override
