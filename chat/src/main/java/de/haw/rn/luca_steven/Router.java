@@ -15,7 +15,7 @@ public class Router {
     IRoutingTable table;
 
     public Router() {
-        connections = new ConnectionHandler();
+        connections = new ConnectionHandler(6789);
         interpreter = new DummyMessageInterpreter("127.0.0.1");
         table = new RoutingEntrySet();
     }
