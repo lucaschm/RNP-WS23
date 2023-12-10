@@ -2,9 +2,9 @@ package de.haw.rn.luca_steven.data_classes;
 
 public class ChatMessage extends Message {
     private String destinationIP;
-    private int destinationPort;
-    private String sourceIP;
-    private int sourcePort;
+    private int destinationIDPort;
+    private String originIP;
+    private int originIDPort;
     private int ttl; //Time-To-Live
     private String content;
 
@@ -16,9 +16,9 @@ public class ChatMessage extends Message {
                        String content) {
         super(true);
         this.destinationIP = destinationIP;
-        this.destinationPort = destinationPort;
-        this.sourceIP = sourceIP;
-        this.sourcePort = sourcePort;
+        this.destinationIDPort = destinationPort;
+        this.originIP = sourceIP;
+        this.originIDPort = sourcePort;
         this.ttl = ttl;
         this.content = content;
     }
@@ -27,16 +27,16 @@ public class ChatMessage extends Message {
         return destinationIP;
     }
 
-    public int getDestinationPort() {
-        return destinationPort;
+    public int getDestinationIDPort() {
+        return destinationIDPort;
     }
 
-    public String getSourceIP() {
-        return sourceIP;
+    public String getOriginIP() {
+        return originIP;
     }
 
-    public int getSourcePort() {
-        return sourcePort;
+    public int getOriginIDPort() {
+        return originIDPort;
     }
 
     public int getTtl() {
