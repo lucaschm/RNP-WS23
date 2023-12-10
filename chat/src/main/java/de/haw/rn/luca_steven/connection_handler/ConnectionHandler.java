@@ -54,7 +54,8 @@ public class ConnectionHandler implements IConnectionHandler{
                 }
             //}
         } catch (IOException e) {
-            e.printStackTrace();
+            Logger.log(e.getMessage());
+            //e.printStackTrace();
         }
     }
 
@@ -104,8 +105,9 @@ public class ConnectionHandler implements IConnectionHandler{
             serverSocketChannel.register(selector, SelectionKey.OP_CONNECT);
 
             Logger.log("Server gestartet auf Port " + idPort);
-        } catch (IOException e) {
-            Logger.log(e.getMessage());
+        } catch (Exception e) {
+            //Logger.log(e.getMessage());
+            System.out.println(e);
         }
     }
 
