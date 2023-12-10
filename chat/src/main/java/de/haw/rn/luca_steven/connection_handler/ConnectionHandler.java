@@ -36,21 +36,21 @@ public class ConnectionHandler implements IConnectionHandler{
         try {
             //while (isRunning) {
                 selector.select();
-                Logger.log(idPort + ": selector select");
+                //Logger.log(idPort + ": selector select");
 
                 Set<SelectionKey> selectedKeys = selector.selectedKeys();
                 Iterator<SelectionKey> iter = selectedKeys.iterator();
-                Logger.log(idPort + ": get selectedKeys");
+                //Logger.log(idPort + ": get selectedKeys");
 
                 while (iter.hasNext()) {
                     SelectionKey key = iter.next();
 
-                    if (key.isReadable()) {
-                        readMessage(key);
-                    }
-
                     if(key.isWritable()) {
                         writeMessage(key);
+                    }
+
+                    if (key.isReadable()) {
+                        readMessage(key);
                     }
 
                     if (key.isAcceptable()) {
@@ -59,7 +59,7 @@ public class ConnectionHandler implements IConnectionHandler{
 
                     iter.remove();
                 }
-                Logger.log(idPort + ": while(iter.hasNext())");
+                //Logger.log(idPort + ": while(iter.hasNext())");
             //}
         } catch (IOException e) {
             Logger.log(e.getMessage());
@@ -160,13 +160,17 @@ public class ConnectionHandler implements IConnectionHandler{
         SocketChannel client = (SocketChannel) key.channel();
         String string = "hello world :DDDDD";
         ByteBuffer buffer = getFromattedByteBuffer(string);
-
+    
         try {
-            client.write(buffer);
+            while (buffer.hasRemaining()) {
+                client.write(buffer);
+            }
+            Logger.log("written Bytes: " + buffer.position());
+            buffer.clear();
         } catch (IOException e) {
             e.printStackTrace();
         }
-    } 
+    }
 
     private void logSocketInfo(SocketChannel socketChannel) throws IOException {
         InetSocketAddress localAddress = (InetSocketAddress) socketChannel.getLocalAddress();
