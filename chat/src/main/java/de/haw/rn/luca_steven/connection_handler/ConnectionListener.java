@@ -9,6 +9,7 @@ import java.nio.ByteBuffer;
 import java.nio.channels.*;
 import java.nio.charset.StandardCharsets;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.Set;
 
 public class ConnectionListener {
@@ -16,7 +17,7 @@ public class ConnectionListener {
     private static final int COMMON_HEADER_LENGTH = 8;
     private static boolean isRunning = true;
     private static int idPort = 6789;
-
+    private static LinkedList<String> messageQueue = new LinkedList<>();
     
 
     public static void main(String[] args) {
@@ -82,14 +83,13 @@ public class ConnectionListener {
         ByteBuffer messageBuffer = ByteBuffer.allocate(messageLength);
         readBytes = client.read(messageBuffer);
 
-        String string = StandardCharsets.UTF_8.decode(messageBuffer).toString();
-
-        // 
-        
         if (readBytes == -1) {
             client.close();
             return;
         }
+
+        String string = StandardCharsets.UTF_8.decode(messageBuffer).toString();
+        messageQueue.addLast(string);
         
     }
 
@@ -107,4 +107,11 @@ public class ConnectionListener {
             System.out.println(option.name() + ": " + socketChannel.getOption(option));
         }
     }
+
+
+    // GETTER
+    public static LinkedList<String> getMessageQueue() {
+        return messageQueue;
+    }
+
 }

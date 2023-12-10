@@ -7,7 +7,7 @@ public interface IConnectionHandler {
      * Aus der Queue wird die nächste Nachricht entnommen
      * @return
      */
-    public ChatMessage nextMessage();
+    public String nextMessage();
 
     /**
      * Verbindung mit anderem Client aufbauen
@@ -27,6 +27,6 @@ public interface IConnectionHandler {
     /**
      * Nachricht an einen anderen Client senden
      */
-    public void sendMessage(JsonObject jsonObject);
+    public void sendMessage(String message);
 
 }
