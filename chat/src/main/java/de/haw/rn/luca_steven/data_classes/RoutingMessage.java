@@ -1,4 +1,4 @@
-package data_classes;
+package de.haw.rn.luca_steven.data_classes;
 
 //import javax.json.JsonObject;
 
@@ -31,11 +31,6 @@ public class RoutingMessage {
     public int getIDPort() {
         return IDPort;
     }
-
-    public String getContent() {
-        return content;
-    }
-
 
 }
 

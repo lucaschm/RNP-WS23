@@ -1,8 +1,9 @@
+package de.haw.rn.luca_steven;
+
 import javax.json.*;
 
-import data_classes.ChatMessage;
+import de.haw.rn.luca_steven.data_classes.ChatMessage;
 
-import java.io.StringReader;
 //bekommt Infos rein (z.b. IP-Adresse)
 //Infos werden verpackt in ein Json Objekt
 

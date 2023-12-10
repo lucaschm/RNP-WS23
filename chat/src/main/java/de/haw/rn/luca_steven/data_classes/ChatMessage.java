@@ -1,7 +1,5 @@
-package data_classes;
+package de.haw.rn.luca_steven.data_classes;
 //import java.net.Inet4Address;
-
-import java.security.ProtectionDomain;
 
 public class ChatMessage {
     private String destinationIP;

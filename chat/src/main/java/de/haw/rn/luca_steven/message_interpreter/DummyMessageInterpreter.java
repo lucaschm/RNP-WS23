@@ -1,14 +1,16 @@
-package message_interpreter;
+package de.haw.rn.luca_steven.message_interpreter;
 
-import data_classes.ChatMessage;
+import de.haw.rn.luca_steven.data_classes.ChatMessage;
 
 public class DummyMessageInterpreter implements IMessageInterpreter{
 
-    String hostIP
+    String hostIP;
 
     public DummyMessageInterpreter(String hostIP) {
         this.hostIP = hostIP;
     }
+
+    @Override
     public boolean isForMe(ChatMessage message) {
         return hostIP == message.getDestinationIP();
     }
