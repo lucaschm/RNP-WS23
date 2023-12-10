@@ -1,7 +1,5 @@
 package de.haw.rn.luca_steven.connection_handler;
-import de.haw.rn.luca_steven.data_classes.ChatMessage;
-import javax.json.JsonObject;
-import de.haw.rn.luca_steven.Logger;
+import java.util.LinkedList;;
 
 public class ConnectionHandler implements IConnectionHandler{
 
@@ -12,8 +10,8 @@ public class ConnectionHandler implements IConnectionHandler{
     }
 
     @Override
-    public ChatMessage nextMessage() {
-        return null;
+    public String nextMessage() {
+        return ConnectionListener.getMessageQueue().pop();
     }
 
     @Override
@@ -28,11 +26,12 @@ public class ConnectionHandler implements IConnectionHandler{
 
     @Override
     public void listen() {
-        //thread mit ConnectionListener
+        //passiert automatisch
     }
 
     @Override
-    public void sendMessage(JsonObject jsonObject) {
-
+    public void sendMessage(String message) {
+        //TODO: hier könnte man evtl einfach in eine Queue schreiben. Der 
+        // ConnectionListener kann diese Queueu dann abarbeiten 
     }
 }
