@@ -1,7 +1,6 @@
 package de.haw.rn.luca_steven.data_classes;
-//import java.net.Inet4Address;
 
-public class ChatMessage {
+public class ChatMessage extends Message {
     private String destinationIP;
     private int destinationPort;
     private String sourceIP;
@@ -15,6 +14,7 @@ public class ChatMessage {
                        int sourcePort,
                        int ttl,
                        String content) {
+        super(true);
         this.destinationIP = destinationIP;
         this.destinationPort = destinationPort;
         this.sourceIP = sourceIP;
