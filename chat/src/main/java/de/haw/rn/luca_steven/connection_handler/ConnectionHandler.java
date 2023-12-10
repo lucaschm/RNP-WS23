@@ -138,6 +138,7 @@ public class ConnectionHandler implements IConnectionHandler{
             return;
         }
 
+        //TODO: Länge muss als unsigned int interpretiert werden
         int messageLength = headerBuffer.getInt(0);
         int crc32 = headerBuffer.getInt(1);
 
@@ -189,10 +190,10 @@ public class ConnectionHandler implements IConnectionHandler{
 
     private ByteBuffer getFromattedByteBuffer(String string) {
         int length = string.length();
-        int checksum = 0;
+        int checksum = 0; //TODO: checksummenberechnung
         ByteBuffer buffer = ByteBuffer.allocate(COMMON_HEADER_LENGTH + length);
         
-        buffer.putInt(length);
+        buffer.putInt(length); //TODO: Länge muss als unsigned int betrachtet werden
         buffer.putInt(checksum);
 
         byte[] stringBytes = string.getBytes(Charset.forName("UTF-8"));
