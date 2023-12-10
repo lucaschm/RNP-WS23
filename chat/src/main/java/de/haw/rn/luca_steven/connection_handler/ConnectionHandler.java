@@ -102,12 +102,12 @@ public class ConnectionHandler implements IConnectionHandler{
             // listening Socket erstellen
             serverSocketChannel.bind(new InetSocketAddress(idPort));
             serverSocketChannel.configureBlocking(false);
-            serverSocketChannel.register(selector, SelectionKey.OP_CONNECT);
+            serverSocketChannel.register(selector, SelectionKey.OP_ACCEPT);
 
             Logger.log("Server gestartet auf Port " + idPort);
         } catch (Exception e) {
-            //Logger.log(e.getMessage());
-            System.out.println(e);
+            e.printStackTrace();
+            Logger.log(e.getMessage());
         }
     }
 
