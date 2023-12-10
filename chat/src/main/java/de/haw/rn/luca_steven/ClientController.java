@@ -11,7 +11,7 @@ public class ClientController {
         
         int i = 0;
         while(true) {
-            Logger.log(6788 + ": main while iteration " + i++);
+            //Logger.log(6788 + ": main while iteration " + i++);
             connectionHandler.listen();
         }
     }
