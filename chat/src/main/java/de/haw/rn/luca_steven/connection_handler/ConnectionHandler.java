@@ -94,8 +94,8 @@ public class ConnectionHandler implements IConnectionHandler{
 
     @Override
     public void sendMessage(String message) {
-        //TODO: hier könnte man evtl einfach in eine Queue schreiben. Der 
-        // ConnectionListener kann diese Queueu dann abarbeiten 
+        messageQueue.addLast(message);
+        Logger.log("[ConHand] in sendMessage: aktuelle Queue:" + messageQueue.toArray());
     }
 
 
@@ -158,8 +158,11 @@ public class ConnectionHandler implements IConnectionHandler{
     }
 
     private void writeMessage(SelectionKey key) {
+        if (messageQueue.isEmpty()) {
+            return;
+        }
         SocketChannel client = (SocketChannel) key.channel();
-        String string = "hello world :DDDDD";
+        String string = messageQueue.removeFirst();
         ByteBuffer buffer = getFromattedByteBuffer(string);
     
         try {
