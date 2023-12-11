@@ -9,10 +9,16 @@ public class ClientController {
 
         connectionHandler.connect("localhost", 6789);
         
-        int i = 0;
-        while(true) {
+        
+        for(int i = 0;i<100;i++) {
             //Logger.log(6788 + ": main while iteration " + i++);
             connectionHandler.listen();
+            try {
+                Thread.sleep(10_000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            connectionHandler.sendMessage("Test String: " + i);
         }
     }
 }
