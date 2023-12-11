@@ -45,16 +45,20 @@ public class ConnectionHandler implements IConnectionHandler{
                 while (iter.hasNext()) {
                     SelectionKey key = iter.next();
 
-                    if(key.isWritable()) {
+                    if(key.isWritable()) { //4
                         writeMessage(key);
                     }
 
-                    if (key.isReadable()) {
+                    if (key.isReadable()) { //1
                         readMessage(key);
                     }
 
-                    if (key.isAcceptable()) {
+                    if (key.isAcceptable()) { //16
                         register(selector, serverSocketChannel);
+                    }
+
+                    if (key.isConnectable()) {  //lieber else if?
+                        continiueConnect(key);
                     }
 
                     iter.remove();
@@ -69,19 +73,25 @@ public class ConnectionHandler implements IConnectionHandler{
 
     @Override
     public String nextMessage() {
-        return messageQueue.pop();
+        return messageQueue.removeFirst();
     }
 
     @Override
     public void connect(String ipAddress, int port) {
         try {
             SocketChannel client = SocketChannel.open();
+            client.configureBlocking(false);
             SocketAddress socketAddr;
             socketAddr = new InetSocketAddress(ipAddress, port);
-            client.connect(socketAddr);//TODO: das hier ist noch blocking, soll zu non-blocking geändert werden
-
-            client.configureBlocking(false);
-            client.register(selector, SelectionKey.OP_READ | SelectionKey.OP_WRITE);
+            boolean success = client.connect(socketAddr);
+            
+            if (success) {
+                client.register(selector, SelectionKey.OP_READ | SelectionKey.OP_WRITE);
+                Logger.log("connected to: " + client.getRemoteAddress());
+            } else {
+                client.register(selector, SelectionKey.OP_CONNECT);
+                Logger.log("wating to connected to: " + client.getRemoteAddress());
+            }
         } catch (Exception e) {
             Logger.log(e.getMessage());
         }
@@ -95,7 +105,7 @@ public class ConnectionHandler implements IConnectionHandler{
     @Override
     public void sendMessage(String message) {
         messageQueue.addLast(message);
-        Logger.log("[ConHand] in sendMessage: aktuelle Queue:" + messageQueue.toArray());
+        //Logger.log(message + " was added to queue size: " + messageQueue.size());
     }
 
 
@@ -123,7 +133,7 @@ public class ConnectionHandler implements IConnectionHandler{
         SocketChannel client = serverSocketChannel.accept();
         client.configureBlocking(false);
         client.register(selector, SelectionKey.OP_READ);
-        logSocketInfo(client);
+        Logger.log("got connection from: " + client.getRemoteAddress());
     }
 
     private void readMessage(SelectionKey key) throws IOException {
@@ -150,7 +160,7 @@ public class ConnectionHandler implements IConnectionHandler{
             client.close();
             return;
         }
-
+        messageBuffer.position(0);
         String string = StandardCharsets.UTF_8.decode(messageBuffer).toString();
         Logger.log(idPort + ": String received: " + string);
         messageQueue.addLast(string);
@@ -164,14 +174,33 @@ public class ConnectionHandler implements IConnectionHandler{
         SocketChannel client = (SocketChannel) key.channel();
         String string = messageQueue.removeFirst();
         ByteBuffer buffer = getFromattedByteBuffer(string);
-    
+        //Logger.log("limit: " + buffer.limit());
+        buffer.position(0);
+        
+        
         try {
+            int success = 0;
+            
             while (buffer.hasRemaining()) {
-                client.write(buffer);
+                success =  client.write(buffer);
             }
-            Logger.log("written Bytes: " + buffer.position());
+            Logger.log("written=" + success + " " + " Bytes to " + client.getRemoteAddress());
             buffer.clear();
         } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void continiueConnect(SelectionKey key) {
+        SocketChannel client = (SocketChannel) key.channel();
+        try {
+            if (client.isConnectionPending()) {
+                client.finishConnect();
+                Logger.log("finished connecting to: " + client.getRemoteAddress());
+            }
+            client.register(selector, SelectionKey.OP_READ | SelectionKey.OP_WRITE);
+        } catch (IOException e) {
+            Logger.log("Error in continiueConnect:");
             e.printStackTrace();
         }
     }
@@ -180,14 +209,14 @@ public class ConnectionHandler implements IConnectionHandler{
         InetSocketAddress localAddress = (InetSocketAddress) socketChannel.getLocalAddress();
         InetSocketAddress remoteAddress = (InetSocketAddress) socketChannel.getRemoteAddress();
 
-        System.out.println("Connection Info: ");
+        Logger.log("Connection:");
         System.out.println("Local Address: " + localAddress.getAddress().getHostAddress() + ":" + localAddress.getPort());
         System.out.println("Remote Address: " + remoteAddress.getAddress().getHostAddress() + ":" + remoteAddress.getPort());
         System.out.println("Protocol: TCP");
 
-        // Hier können Sie zusätzliche Socket-Optionen loggen
+        //Hier können Sie zusätzliche Socket-Optionen loggen
         for (SocketOption<?> option : socketChannel.supportedOptions()) {
-            System.out.println(option.name() + ": " + socketChannel.getOption(option));
+           System.out.println(option.name() + ": " + socketChannel.getOption(option));
         }
     }
 
