@@ -87,6 +87,28 @@ public class RoutingEntry {
     public void setOrigin(String origin) {
         this.origin = Objects.requireNonNull(origin, "Origin cannot be null");
     }
+    
+
+    @Override
+    public boolean equals(Object obj) {
+        if (!(obj instanceof RoutingEntry))
+        {
+            return false;
+        }
+        RoutingEntry other = (RoutingEntry) obj;
+        
+        boolean equalDestination = this.destination.equals(other.getDestination());
+        boolean equalHops = this.hops == other.getHops();
+        boolean equalNextHop = this.nextHop.equals(other.nextHop);
+        boolean equalOrigin = this.origin.equals(other.getOrigin());
+
+        return equalDestination && equalHops && equalNextHop && equalOrigin;
+    }
+
+    @Override
+    public int hashCode() {
+        return hops;
+    }
 }
 
 
