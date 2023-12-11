@@ -1,35 +1,39 @@
 package de.haw.rn.luca_steven.data_classes;
 
-//import javax.json.JsonObject;
+import javax.json.JsonArray;
+import javax.json.JsonObject;
 
-public class RoutingMessage {
-    private String IP;
+public class RoutingMessage extends Message {
+    private String ip;
     private int sourcePort;
-    private int IDPort;
-    //private JsonObject table;
+    private int idPort;
+    private JsonArray table;
 
-    public RoutingMessage(String IP,
+    public RoutingMessage(String ip,
                        int sourcePort,
-                       int IDPort) {
-        this.IP = IP;
+                       int idPort,
+                       JsonArray table) {
+        super(false);
+        this.ip = ip;
         this.sourcePort = sourcePort;
-        this.IDPort = IDPort;
+        this.idPort = idPort;
+        this.table = table;
     }
 
-    public String getIP() {
-        return IP;
-    }
-
-    public void setIP(String IP) {
-        this.IP = IP;
+    public String getIp() {
+        return ip;
     }
 
     public int getSourcePort() {
         return sourcePort;
     }
 
-    public int getIDPort() {
-        return IDPort;
+    public int getIdPort() {
+        return idPort;
+    }
+
+    public JsonArray getJsonTable() {
+        return table;
     }
 
 }
