@@ -57,6 +57,10 @@ public class ConnectionHandler implements IConnectionHandler{
                         register(selector, serverSocketChannel);
                     }
 
+                    if (key.isConnectable()) {  //lieber else if?
+                        continiueConnect(key);
+                    }
+
                     iter.remove();
                 }
                 //Logger.log(idPort + ": while(iter.hasNext())");
@@ -76,12 +80,18 @@ public class ConnectionHandler implements IConnectionHandler{
     public void connect(String ipAddress, int port) {
         try {
             SocketChannel client = SocketChannel.open();
+            client.configureBlocking(false);
             SocketAddress socketAddr;
             socketAddr = new InetSocketAddress(ipAddress, port);
-            client.connect(socketAddr);//TODO: das hier ist noch blocking, soll zu non-blocking geändert werden
-
-            client.configureBlocking(false);
-            client.register(selector, SelectionKey.OP_READ | SelectionKey.OP_WRITE);
+            boolean success = client.connect(socketAddr);
+            
+            if (success) {
+                client.register(selector, SelectionKey.OP_READ | SelectionKey.OP_WRITE);
+                Logger.log("connected to: " + client.getRemoteAddress());
+            } else {
+                client.register(selector, SelectionKey.OP_CONNECT);
+                Logger.log("wating to connected to: " + client.getRemoteAddress());
+            }
         } catch (Exception e) {
             Logger.log(e.getMessage());
         }
@@ -95,7 +105,7 @@ public class ConnectionHandler implements IConnectionHandler{
     @Override
     public void sendMessage(String message) {
         messageQueue.addLast(message);
-        Logger.log("[ConHand] " + message + " was added to queue." + messageQueue);
+        //Logger.log(message + " was added to queue size: " + messageQueue.size());
     }
 
 
@@ -127,7 +137,6 @@ public class ConnectionHandler implements IConnectionHandler{
     }
 
     private void readMessage(SelectionKey key) throws IOException {
-        Logger.log("read msg");
         SocketChannel client = (SocketChannel) key.channel();
         
         // Header auslesen
@@ -151,7 +160,7 @@ public class ConnectionHandler implements IConnectionHandler{
             client.close();
             return;
         }
-
+        messageBuffer.position(0);
         String string = StandardCharsets.UTF_8.decode(messageBuffer).toString();
         Logger.log(idPort + ": String received: " + string);
         messageQueue.addLast(string);
@@ -165,22 +174,33 @@ public class ConnectionHandler implements IConnectionHandler{
         SocketChannel client = (SocketChannel) key.channel();
         String string = messageQueue.removeFirst();
         ByteBuffer buffer = getFromattedByteBuffer(string);
-        Logger.log("limit: " + buffer.limit());
+        //Logger.log("limit: " + buffer.limit());
         buffer.position(0);
         
         
         try {
-            int i = 0;
-            int success = -88;
+            int success = 0;
             
             while (buffer.hasRemaining()) {
                 success =  client.write(buffer);
-                i++;
-                Logger.log("" + i);
             }
             Logger.log("written=" + success + " " + " Bytes to " + client.getRemoteAddress());
             buffer.clear();
         } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void continiueConnect(SelectionKey key) {
+        SocketChannel client = (SocketChannel) key.channel();
+        try {
+            if (client.isConnectionPending()) {
+                client.finishConnect();
+                Logger.log("finished connecting to: " + client.getRemoteAddress());
+            }
+            client.register(selector, SelectionKey.OP_READ | SelectionKey.OP_WRITE);
+        } catch (IOException e) {
+            Logger.log("Error in continiueConnect:");
             e.printStackTrace();
         }
     }
