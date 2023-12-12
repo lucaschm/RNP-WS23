@@ -103,8 +103,26 @@ public class ConnectionHandler implements IConnectionHandler{
     }
 
     @Override
-    public void disconnect(String ipAddress, int port) {
+    public boolean disconnect(String ipAddress, int port) {
+        Set<SelectionKey> selectedKeys = selector.selectedKeys();
+        Iterator<SelectionKey> iter = selectedKeys.iterator();
+        while (iter.hasNext()) {
+            SelectionKey key = iter.next();
+            try{
+                SocketChannel client = (SocketChannel) key.channel();
+                InetSocketAddress inetSocketAddress = (InetSocketAddress) client.getRemoteAddress();
+                String remoteIP = inetSocketAddress.getAddress().getHostAddress();
+                int remotePort = inetSocketAddress.getPort();
+                if (remoteIP.equals(ipAddress) && remotePort == port) {
+                    client.close();
+                    key.cancel();
+                }
 
+            } catch (IOException e) {
+                return false;
+            }
+        }
+        return true;
     }
 
     @Override
@@ -220,21 +238,6 @@ public class ConnectionHandler implements IConnectionHandler{
         } catch (IOException e) {
             Logger.log("Error in continiueConnect:");
             e.printStackTrace();
-        }
-    }
-
-    private void logSocketInfo(SocketChannel socketChannel) throws IOException {
-        InetSocketAddress localAddress = (InetSocketAddress) socketChannel.getLocalAddress();
-        InetSocketAddress remoteAddress = (InetSocketAddress) socketChannel.getRemoteAddress();
-
-        Logger.log("Connection:");
-        System.out.println("Local Address: " + localAddress.getAddress().getHostAddress() + ":" + localAddress.getPort());
-        System.out.println("Remote Address: " + remoteAddress.getAddress().getHostAddress() + ":" + remoteAddress.getPort());
-        System.out.println("Protocol: TCP");
-
-        //Hier können Sie zusätzliche Socket-Optionen loggen
-        for (SocketOption<?> option : socketChannel.supportedOptions()) {
-           System.out.println(option.name() + ": " + socketChannel.getOption(option));
         }
     }
 
