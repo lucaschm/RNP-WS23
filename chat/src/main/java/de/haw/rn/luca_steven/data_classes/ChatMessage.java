@@ -31,6 +31,10 @@ public class ChatMessage extends Message {
         return destinationIDPort;
     }
 
+    public String getFullDestinationAddress() {
+        return destinationIP + ":" + destinationIDPort;
+    }
+
     public String getOriginIP() {
         return originIP;
     }
