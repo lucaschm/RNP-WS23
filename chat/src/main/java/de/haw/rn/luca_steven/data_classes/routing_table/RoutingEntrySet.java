@@ -1,6 +1,5 @@
 package de.haw.rn.luca_steven.data_classes.routing_table;
 
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
@@ -21,7 +20,7 @@ public class RoutingEntrySet implements IRoutingTable {
         int minHopCout = Integer.MAX_VALUE;
 
         for (RoutingEntry entry : set) {
-            if (entry.getDestination() == destination) {
+            if (entry.getDestination().equals(destination)) {
                 if(entry.getHops() < minHopCout) {
                     minHopCout = entry.getHops();
                     bestNextHop = entry.getNextHop();
@@ -33,7 +32,7 @@ public class RoutingEntrySet implements IRoutingTable {
     
 
     /**
-     * merge routing entries from another client in the net with our entries
+     * merge routing entries from another client in the network with our entries
      * 1. delete all entries we have from this other client
      * 2. add the new entries
      * 
@@ -44,7 +43,7 @@ public class RoutingEntrySet implements IRoutingTable {
      */
     public void mergeWith(Set<RoutingEntry> routingEntries, String origin) {
         for (RoutingEntry entry : routingEntries) {
-            if (entry.getOrigin() != origin) {
+            if (entry.getOrigin().equals(origin)) {
                 throw new IllegalArgumentException("Entry: " + entry + " did not have the given origin: " + origin);
             }
         }
@@ -52,7 +51,7 @@ public class RoutingEntrySet implements IRoutingTable {
         Iterator<RoutingEntry> iterator = set.iterator();
         while (iterator.hasNext()) {
             RoutingEntry entry = iterator.next();
-            if (entry.getOrigin() == origin) {
+            if (entry.getOrigin().equals(origin)) {
                 iterator.remove();
             }
         }
@@ -65,7 +64,7 @@ public class RoutingEntrySet implements IRoutingTable {
     public Set<RoutingEntry> getEntriesWithout(String originIP) {
         Set<RoutingEntry> result = new HashSet<RoutingEntry>();
         for (RoutingEntry entry : set) {
-            if (entry.getOrigin() != originIP) {
+            if (entry.getOrigin().equals(originIP)) {
                 result.add(entry);
             }
         }
