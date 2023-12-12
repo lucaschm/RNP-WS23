@@ -2,6 +2,7 @@ package de.haw.rn.luca_steven.connection_handler;
 
 import de.haw.rn.luca_steven.Logger;
 import de.haw.rn.luca_steven.data_classes.ChatMessage;
+import de.haw.rn.luca_steven.data_classes.MessagePack;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -12,20 +13,24 @@ import java.nio.channels.*;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Set;
+import java.util.Map.Entry;
 
 public class ConnectionHandler implements IConnectionHandler{
 
     private static final int COMMON_HEADER_LENGTH = 8;
     private final int idPort;
-    private final LinkedList<String> messageQueue;
+    private final LinkedList<MessagePack> sendMessageQueue;
+    private final LinkedList<String> receiveMessageQueue;
     private Selector selector;
     private ServerSocketChannel serverSocketChannel;
 
     public ConnectionHandler(int idPort) {
         this.idPort = idPort;
-        this.messageQueue = new LinkedList<>();
+        this.sendMessageQueue = new LinkedList<MessagePack>();
+        this.receiveMessageQueue = new LinkedList<String>();
         setup();
     }
 
@@ -36,7 +41,7 @@ public class ConnectionHandler implements IConnectionHandler{
 
         try {
             //while (isRunning) {
-                selector.select();
+                selector.selectNow();
                 //Logger.log(idPort + ": selector select");
 
                 Set<SelectionKey> selectedKeys = selector.selectedKeys();
@@ -74,11 +79,11 @@ public class ConnectionHandler implements IConnectionHandler{
 
     @Override
     public String nextString() {
-        return messageQueue.removeFirst();
+        return receiveMessageQueue.removeFirst();
     }
 
     public boolean hasNext() {
-        return !messageQueue.isEmpty();
+        return !receiveMessageQueue.isEmpty();
     }
 
     @Override
@@ -127,7 +132,7 @@ public class ConnectionHandler implements IConnectionHandler{
 
     @Override
     public void sendString(String ip, int port, String s) {
-        messageQueue.addLast(s);
+        sendMessageQueue.addLast(new MessagePack(ip, port, s));
         //Logger.log(message + " was added to queue size: " + messageQueue.size());
     }
 
@@ -185,12 +190,12 @@ public class ConnectionHandler implements IConnectionHandler{
         messageBuffer.position(0);
         String string = StandardCharsets.UTF_8.decode(messageBuffer).toString();
         Logger.log(idPort + ": String received: " + string);
-        messageQueue.addLast(string);
+        receiveMessageQueue.addLast(string);
         
     }
 
     private void writeMessage(SelectionKey key) {
-        if (messageQueue.isEmpty()) {
+        if (sendMessageQueue.isEmpty()) {
             return;
         }
 
@@ -201,14 +206,14 @@ public class ConnectionHandler implements IConnectionHandler{
             String remoteIP = inetSocketAddress.getAddress().getHostAddress();
             int remotePort = inetSocketAddress.getPort();
             String remoteIPPort = remoteIP + ":" + remotePort;
-            String destinationIPPort = messageQueue.peek();//TODO
+            String destinationIPPort = sendMessageQueue.peek().getIPPort();
             if (!remoteIPPort.equals(destinationIPPort)) {
                 return;
             }
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        String string = messageQueue.removeFirst();
+        String string = sendMessageQueue.removeFirst().getMessage();
         ByteBuffer buffer = getFromattedByteBuffer(string);
         //Logger.log("limit: " + buffer.limit());
         buffer.position(0);
