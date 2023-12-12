@@ -20,7 +20,7 @@ public class Controller {
 
     public void run() {
         
-        ConnectionHandler connectionHandler = new ConnectionHandler(port);
+        ConnectionHandler connectionHandler = new ConnectionHandler(ip, port);
         String ipPort = ip + ":" + port;
         Router router = new Router(connectionHandler, ipPort);
         UI ui = new UI();

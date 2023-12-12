@@ -61,10 +61,10 @@ public class RoutingEntrySet implements IRoutingTable {
         return;
     }
 
-    public Set<RoutingEntry> getEntriesWithout(String originIP) {
+    public Set<RoutingEntry> getEntriesWithout(String origin) {
         Set<RoutingEntry> result = new HashSet<RoutingEntry>();
         for (RoutingEntry entry : set) {
-            if (entry.getOrigin().equals(originIP)) {
+            if (entry.getOrigin().equals(origin)) {
                 result.add(entry);
             }
         }
@@ -85,5 +85,18 @@ public class RoutingEntrySet implements IRoutingTable {
             result.add(entry.getDestination());
         }
         return result;
+    }
+
+    @Override
+    public Set<RoutingEntry> getNeighbours() {
+        Set<RoutingEntry> resultSet = new HashSet<RoutingEntry>();
+
+        for (RoutingEntry entry : set) {
+            if (entry.getHops() == 1) {
+                resultSet.add(entry);
+            }
+        }
+
+        return resultSet;
     }
 }
