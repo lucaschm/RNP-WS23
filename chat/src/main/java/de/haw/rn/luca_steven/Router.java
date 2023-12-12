@@ -6,6 +6,7 @@ import de.haw.rn.luca_steven.data_classes.ChatMessage;
 import de.haw.rn.luca_steven.data_classes.Message;
 import de.haw.rn.luca_steven.data_classes.RoutingMessage;
 import de.haw.rn.luca_steven.data_classes.routing_table.IRoutingTable;
+import de.haw.rn.luca_steven.data_classes.routing_table.RoutingEntry;
 import de.haw.rn.luca_steven.data_classes.routing_table.RoutingEntrySet;
 
 public class Router {
@@ -14,10 +15,12 @@ public class Router {
     IRoutingTable table;
     JsonParser parser;
 
-    public Router(IConnectionHandler connectionHandler) {
-        connections = connectionHandler;
-        parser = new JsonParser("127.0.0.1");
-        table = new RoutingEntrySet();
+    private final int INIT_HOP_COUNT = 1; 
+
+    public Router(IConnectionHandler connectionHandler, JsonParser parser) {
+        this.connections = connectionHandler;
+        this.parser = parser;
+        this.table = new RoutingEntrySet();
     }
 
     /*
@@ -49,5 +52,20 @@ public class Router {
 
     private void forward(ChatMessage message) {
         connections.sendString(parser.convertChatMessageToJsonString(message));
+    }
+
+    public void connect(String IP, int port) {
+        connections.connect(IP, port);
+        String ipPort = IP + ":" + port;
+        table.addEntry(new RoutingEntry(
+            ipPort, 
+            INIT_HOP_COUNT,
+            ipPort,
+            parser.thisClient
+        ));
+    }
+
+    public void send(String ip, int port, ChatMessage message) {
+        connections.sendString(ip);
     }
 }

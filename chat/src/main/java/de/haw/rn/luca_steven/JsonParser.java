@@ -72,8 +72,8 @@ public class JsonParser {
         return result;
     }
 
-    public boolean isForMe(Message message) {
-        message.getDestination = thisClient;
+    public boolean isForMe(ChatMessage message) {
+        return message.getFullDestinationAddress().equals(thisClient);
     }
 
     private ChatMessage extractChatMessage(JsonObject json) {
