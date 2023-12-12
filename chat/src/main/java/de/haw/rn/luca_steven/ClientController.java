@@ -1,5 +1,12 @@
 package de.haw.rn.luca_steven;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintStream;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
+
 import de.haw.rn.luca_steven.connection_handler.ConnectionHandler;
 
 public class ClientController {
@@ -13,8 +20,8 @@ public class ClientController {
         for(int i = 0;i<100;i++) {
             //Logger.log(6788 + ": main while iteration " + i++);
             
-            connectionHandler.sendMessage("'Test String: " + i +"'");
-            connectionHandler.sendMessage("'another String: " + i +"'");
+
+                
             connectionHandler.listen();
             try {
                 Thread.sleep(10_000);
