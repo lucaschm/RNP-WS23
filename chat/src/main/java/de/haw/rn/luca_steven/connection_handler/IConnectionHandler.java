@@ -33,6 +33,5 @@ public interface IConnectionHandler {
     /**
      * Nachricht an einen anderen Client senden
      */
-    public void sendString(String s);
-
+    public void sendString(String ip, int port, String s);
 }

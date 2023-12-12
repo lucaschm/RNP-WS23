@@ -108,11 +108,10 @@ public class ConnectionHandler implements IConnectionHandler{
     }
 
     @Override
-    public void sendString(String ipPort, String s) {
+    public void sendString(String ip, int port, String s) {
         messageQueue.addLast(s);
         //Logger.log(message + " was added to queue size: " + messageQueue.size());
     }
-
 
     // HELPER
 
@@ -176,9 +175,21 @@ public class ConnectionHandler implements IConnectionHandler{
         if (messageQueue.isEmpty()) {
             return;
         }
+
         SocketChannel client = (SocketChannel) key.channel();
-        String remoteIPPort = client.getLocalAddress().
-        if (client.getLocalAddress().)
+        try {
+            SocketAddress remoteAddress = client.getRemoteAddress();
+            InetSocketAddress inetSocketAddress = (InetSocketAddress) remoteAddress;
+            String remoteIP = inetSocketAddress.getAddress().getHostAddress();
+            int remotePort = inetSocketAddress.getPort();
+            String remoteIPPort = remoteIP + ":" + remotePort;
+            String destinationIPPort = messageQueue.peek();//TODO
+            if (!remoteIPPort.equals(destinationIPPort)) {
+                return;
+            }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
         String string = messageQueue.removeFirst();
         ByteBuffer buffer = getFromattedByteBuffer(string);
         //Logger.log("limit: " + buffer.limit());

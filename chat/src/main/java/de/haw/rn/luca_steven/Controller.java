@@ -4,6 +4,7 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 
 import de.haw.rn.luca_steven.connection_handler.ConnectionHandler;
+import de.haw.rn.luca_steven.data_classes.ChatMessage;
 import de.haw.rn.luca_steven.ui.Command.*;
 import de.haw.rn.luca_steven.ui.UI;
 import de.haw.rn.luca_steven.ui.UserCommand;
@@ -20,8 +21,8 @@ public class Controller {
     public void run() {
         
         ConnectionHandler connectionHandler = new ConnectionHandler(port);
-        JsonParser parser = new JsonParser(ip);
-        Router router = new Router(connectionHandler, parser);
+        String ipPort = ip + ":" + port;
+        Router router = new Router(connectionHandler, ipPort);
         UI ui = new UI();
 
         while(true) {
@@ -29,13 +30,17 @@ public class Controller {
             UserCommand com = ui.getUserCommand();
             switch (com.getCommand()) {
                 case CONNECT:
-                    router.connect(ip, port);
+                    router.connect(com.getIp(), com.getPort());
                     break;
                 case SEND:
-                    router.send(ip, port, message);
+                    ChatMessage msg = new ChatMessage(
+                        com.getIp(), com.getPort(), 
+                        ip, port, 
+                        15, com.getMessageContent());
+                    router.send(ip, port, msg);
                     break;
                 case DISCONNECT:
-                    
+                    router.disconnect(com.getIp(), com.getPort());
                     break;
                 case LIST:
                 
