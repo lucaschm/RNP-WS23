@@ -13,5 +13,7 @@ public interface IRoutingTable {
     public void addEntry(RoutingEntry entry);
 
     public Set<String> getAllUniqueDestinations();
+
+    public Set<RoutingEntry> getNeighbours();
      
 }
