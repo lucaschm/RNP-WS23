@@ -27,6 +27,12 @@ public class Router {
         this.localIPPort = ipPort;
     }
 
+    public ChatMessage process() {
+        ChatMessage result = processMessage();
+        shareRoutingInformation();
+        return result;
+    }
+
     /*
      * If the connection Handler has received a new Message it is either forwarded to the next Server or the Message is returned 
      */
@@ -52,6 +58,14 @@ public class Router {
                 return null;
             }
         }      
+    }
+
+    public void shareRoutingInformation() {
+
+        // für alle Nachbarn (hops = 1)
+            // hole angepasste RoutingTabelle
+            // formatiere aus der Tabelle ein Json
+            // schicke es an den Nachbarn
     }
 
     private void forward(ChatMessage message) {
