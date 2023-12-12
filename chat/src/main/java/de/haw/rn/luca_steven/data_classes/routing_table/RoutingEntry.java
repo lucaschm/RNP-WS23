@@ -36,6 +36,14 @@ public class RoutingEntry {
         return destination;
     }
 
+    public String getDestinationIP() {
+        return destination.split(":")[0];
+    }
+
+    public int getDestinationIDPort() {
+        return Integer.parseInt(destination.split(":")[1]);
+    }
+
     /**
      * @param destination the destination to set
      */
