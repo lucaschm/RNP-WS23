@@ -1,5 +1,7 @@
 package de.haw.rn.luca_steven.ui;
 
+//TODO: Exceptions werfen, wenn auf das Objekt falsch zugegriffen wird.
+// Zum Beispiel: command == Command.LIST und es wird versucht getPort aufzurufen
 public class UserCommand {
 
     private Command command;
@@ -7,7 +9,7 @@ public class UserCommand {
     private int port;
     private String messageContent;
     
-
+    
     public UserCommand(Command command, String ip, int port, String messageString) {
         this.command = command;
         this.ip = ip;
