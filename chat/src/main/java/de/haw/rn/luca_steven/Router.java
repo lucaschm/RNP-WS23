@@ -1,5 +1,7 @@
 package de.haw.rn.luca_steven;
 
+import java.util.Set;
+
 import de.haw.rn.luca_steven.connection_handler.ConnectionHandler;
 import de.haw.rn.luca_steven.connection_handler.IConnectionHandler;
 import de.haw.rn.luca_steven.data_classes.ChatMessage;
@@ -89,6 +91,10 @@ public class Router {
     }
 
     public void disconnect(String Ip, int port) {
-        
+        connections.disconnect(Ip, port);
+    }
+
+    public Set<String> getParticipantsSet() {
+        return table.getAllUniqueDestinations();
     }
 }

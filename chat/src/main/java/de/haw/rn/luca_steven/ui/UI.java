@@ -1,5 +1,7 @@
 package de.haw.rn.luca_steven.ui;
 
+import java.util.Scanner;
+import java.util.Set;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -14,6 +16,10 @@ public class UI {
     public UI () {
         this.userInputQueue = new LinkedBlockingQueue<String>();
         this.userOutputQueue = new LinkedBlockingQueue<String>();
+        Scanner scanner = new Scanner(System.in);
+
+        Thread consoleThread = new Thread(new Console(userInputQueue, userOutputQueue, scanner, System.out));
+        consoleThread.start();
     }
 
 //INPUT EINLESEN
@@ -121,7 +127,7 @@ public class UI {
      
     //TODO printParticipantList
     // teilnehmer Liste ausgeben
-    public void printParticipantList() {
+    public void printParticipantList(Set<String> set) {
         // vom Router Teilnehmertabelle abholen
         // Einträge formatieren und ausgeben
     }

@@ -11,5 +11,7 @@ public interface IRoutingTable {
     public Set<RoutingEntry> getEntriesWithout(String originIP);
 
     public void addEntry(RoutingEntry entry);
+
+    public Set<String> getAllUniqueDestinations();
      
 }

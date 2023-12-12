@@ -78,4 +78,12 @@ public class RoutingEntrySet implements IRoutingTable {
     public void addEntry(RoutingEntry entry) {
         set.add(entry);
     }
+
+    public Set<String> getAllUniqueDestinations() {
+        Set<String> result = new HashSet<String>();
+        for (RoutingEntry entry : set) {
+            result.add(entry.getDestination());
+        }
+        return result;
+    }
 }

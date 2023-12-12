@@ -23,7 +23,7 @@ public interface IConnectionHandler {
     /**
      * Verbindung mit anderem Client abbauen
      */
-    public void disconnect(String ipAddress, int port);
+    public boolean disconnect(String ipAddress, int port);
 
     /**
      * Listen: Für andere Clients zum Verbindungsaufbau bereitstellen
