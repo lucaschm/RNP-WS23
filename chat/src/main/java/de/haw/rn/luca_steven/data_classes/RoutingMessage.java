@@ -42,6 +42,14 @@ public class RoutingMessage extends Message {
         return originIDPort;
     }
 
+    /**
+     * 
+     * @return originIP:originIDPort;
+     */
+    public String getFullOriginAddress() {
+        return this.originIP + ":" + this.originIDPort;
+    }
+
     public JsonArray getJsonTable() {
         return table;
     }
@@ -57,8 +65,8 @@ public class RoutingMessage extends Message {
 
             String destination = destinationIP + ":" + destinationIDPort;
             hops = hops + 1;
-            String nextHop = originIP + ":" + originIDPort;
-            String origin = nextHop;
+            String nextHop = originIP + ":" + originIDPort; //TODO gucken ob hier sourcePort oder IdPOrt stehen soll
+            String origin = originIP + ":" + originIDPort;
 
             set.add(new RoutingEntry(destination, hops, nextHop, origin));
         }

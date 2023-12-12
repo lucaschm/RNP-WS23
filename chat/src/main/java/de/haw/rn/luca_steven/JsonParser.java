@@ -13,6 +13,7 @@ import de.haw.rn.luca_steven.data_classes.RoutingMessage;
 
 public class JsonParser {
 
+    String thisClient;
     //JSON KEYS FOR CHAT MESSAGE
     private static final String MESSAGE_TYPE = "message_type";
     private static final String CHAT_MESSAGE = "chat_message";
@@ -30,8 +31,8 @@ public class JsonParser {
     private static final String ID_PORT = "id_port";
     private static final String TABLE = "table";
 
-    public JsonParser() {
-
+    public JsonParser(String thisClient) {
+        this.thisClient = thisClient; 
     }
 
     public String convertChatMessageToJsonString(ChatMessage message) {
@@ -69,6 +70,10 @@ public class JsonParser {
             throw new IllegalArgumentException("The " + MESSAGE_TYPE + " of the json is neither " + CHAT_MESSAGE + " nor " + ROUTING_MESSAGE + "!");
         }
         return result;
+    }
+
+    public boolean isForMe(Message message) {
+        message.getDestination = thisClient;
     }
 
     private ChatMessage extractChatMessage(JsonObject json) {
