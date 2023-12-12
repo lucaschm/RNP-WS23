@@ -1,5 +1,6 @@
 package de.haw.rn.luca_steven;
 
+import java.util.Map;
 import java.util.Set;
 
 import de.haw.rn.luca_steven.connection_handler.ConnectionHandler;
@@ -13,10 +14,13 @@ import de.haw.rn.luca_steven.data_classes.routing_table.RoutingEntrySet;
 
 public class Router {
 
+    private static final int ROUTING_SHARE_INTERVAL = 100;
+
     IConnectionHandler connections;
     IRoutingTable table;
     JsonParser parser;
     String localIPPort;
+    private long timestamp;
 
     private final int INIT_HOP_COUNT = 1; 
 
@@ -25,6 +29,17 @@ public class Router {
         this.parser = new JsonParser();
         this.table = new RoutingEntrySet();
         this.localIPPort = ipPort;
+        timestamp = System.currentTimeMillis();
+    }
+
+    public ChatMessage process() {
+        ChatMessage result = processMessage();
+
+        if (Math.abs(System.currentTimeMillis() - timestamp) > ROUTING_SHARE_INTERVAL) {
+            shareRoutingInformation();
+            timestamp = System.currentTimeMillis();
+        }        
+        return result;
     }
 
     /*
@@ -52,6 +67,34 @@ public class Router {
                 return null;
             }
         }      
+    }
+
+    public void shareRoutingInformation() {
+
+        Set<RoutingEntry> neighbours = table.getNeighbours();
+
+        // vom ConnectionHandler alle Connections holen (inklusive eigenen Source Port)
+        Map<String,String> connectionMap = connections.getAllConnectionsWithLocalPort();
+        String localIP = connections.getLocalIP();
+        String idPort = "" + connections.getLocalIDPort();
+
+        // für alle Nachbarn
+        for (RoutingEntry entry : neighbours) {
+            String oneNeighbour = entry.getOrigin();
+            String nextHop = entry.getNextHop();
+            
+            // hole angepasste RoutingTabelle
+            Set<RoutingEntry> splitHorizonTable = table.getEntriesWithout(oneNeighbour);
+
+            // formatiere aus der Tabelle ein Json
+            //TODO: hier wurde nur gehofft, dass 'connectionMap.get(nextHop)' den richtigen source_port liefert
+            String tableJsonString = parser.buildRoutingTableJsonString(splitHorizonTable, localIP, connectionMap.get(nextHop), idPort); 
+        
+            // schicke es an den Nachbarn
+            String ip = nextHop.split(":")[0];
+            int port = Integer.parseInt(nextHop.split(":")[1]);
+            connections.sendString(ip, port, tableJsonString);
+        }
     }
 
     private void forward(ChatMessage message) {

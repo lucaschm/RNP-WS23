@@ -12,22 +12,26 @@ import java.nio.ByteBuffer;
 import java.nio.channels.*;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
+import java.util.Map;
 import java.util.Set;
 import java.util.Map.Entry;
 
 public class ConnectionHandler implements IConnectionHandler{
 
     private static final int COMMON_HEADER_LENGTH = 8;
+    private final String ip;
     private final int idPort;
     private final LinkedList<MessagePack> sendMessageQueue;
     private final LinkedList<String> receiveMessageQueue;
     private Selector selector;
     private ServerSocketChannel serverSocketChannel;
 
-    public ConnectionHandler(int idPort) {
+    public ConnectionHandler(String ip, int idPort) {
+        this.ip = ip;
         this.idPort = idPort;
         this.sendMessageQueue = new LinkedList<MessagePack>();
         this.receiveMessageQueue = new LinkedList<String>();
@@ -129,6 +133,36 @@ public class ConnectionHandler implements IConnectionHandler{
         }
         return true;
     }
+    
+    /**
+     * Map<"remoteIP:remotePort", "localPort">
+     */
+    public Map<String, String> getAllConnectionsWithLocalPort() {
+        Map<String, String> result = new HashMap<>();
+
+        Set<SelectionKey> selectedKeys = selector.selectedKeys();
+        Iterator<SelectionKey> iter = selectedKeys.iterator();
+        while (iter.hasNext()) {
+            SelectionKey key = iter.next();
+            try {
+                SocketChannel client = (SocketChannel) key.channel();
+                InetSocketAddress remoteInetSocketAddress = (InetSocketAddress) client.getRemoteAddress();
+                String remoteIP = remoteInetSocketAddress.getAddress().getHostAddress();
+                int remotePort = remoteInetSocketAddress.getPort();
+
+                InetSocketAddress localInetSocketAddress = (InetSocketAddress) client.getLocalAddress();
+                int localPort = localInetSocketAddress.getPort();
+
+                String k = remoteIP + ":" + remotePort;
+
+                result.put(k, "" + localPort);
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return result;
+    }
 
     @Override
     public void sendString(String ip, int port, String s) {
@@ -156,6 +190,7 @@ public class ConnectionHandler implements IConnectionHandler{
         }
     }
 
+    //TODO: wenn sich jemand mit uns verbindet, müssen wir in der RoutingTabelle eintragen, dass wir ihn erreichen können
     private void register(Selector selector, ServerSocketChannel serverSocketChannel) throws IOException {
         SocketChannel client = serverSocketChannel.accept();
         client.configureBlocking(false);
@@ -258,5 +293,17 @@ public class ConnectionHandler implements IConnectionHandler{
         buffer.put(stringBytes);
 
         return buffer;
+    }
+
+
+    @Override
+    public String getLocalIP() {
+        return this.ip;
+    }
+
+
+    @Override
+    public int getLocalIDPort() {
+        return this.idPort;
     }
 }
