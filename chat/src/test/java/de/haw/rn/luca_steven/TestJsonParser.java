@@ -36,7 +36,7 @@ public class TestJsonParser {
 
         routingMessage = (RoutingMessage) message;
 
-        assertEquals("172.11.14", routingMessage.getIp());
+        assertEquals("172.11.14", routingMessage.getOriginIP());
     }
 
     @Test
