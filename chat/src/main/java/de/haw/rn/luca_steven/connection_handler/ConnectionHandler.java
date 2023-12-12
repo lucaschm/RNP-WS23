@@ -108,7 +108,7 @@ public class ConnectionHandler implements IConnectionHandler{
     }
 
     @Override
-    public void sendString(String s) {
+    public void sendString(String ipPort, String s) {
         messageQueue.addLast(s);
         //Logger.log(message + " was added to queue size: " + messageQueue.size());
     }
@@ -177,6 +177,8 @@ public class ConnectionHandler implements IConnectionHandler{
             return;
         }
         SocketChannel client = (SocketChannel) key.channel();
+        String remoteIPPort = client.getLocalAddress().
+        if (client.getLocalAddress().)
         String string = messageQueue.removeFirst();
         ByteBuffer buffer = getFromattedByteBuffer(string);
         //Logger.log("limit: " + buffer.limit());

@@ -1,6 +1,8 @@
 package de.haw.rn.luca_steven.ui;
 
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
+
 import de.haw.rn.luca_steven.data_classes.ChatMessage;
 
 //TODO: ganz viele Fehler abfangen
@@ -9,9 +11,9 @@ public class UI {
     private BlockingQueue<String> userInputQueue;
     private BlockingQueue<String> userOutputQueue;
 
-    public UI (BlockingQueue<String> userInputQueue, BlockingQueue<String> userOutputQueue) {
-        this.userInputQueue = userInputQueue;
-        this.userOutputQueue = userOutputQueue;
+    public UI () {
+        this.userInputQueue = new LinkedBlockingQueue<String>();
+        this.userOutputQueue = new LinkedBlockingQueue<String>();
     }
 
 //INPUT EINLESEN
