@@ -1,40 +1,63 @@
 package de.haw.rn.luca_steven.ui;
 
+import java.io.PrintStream;
 import java.util.Scanner;
 import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.SynchronousQueue;
 
-import de.haw.rn.luca_steven.Logger;
-import de.haw.rn.luca_steven.UIController;
+/**
+ * Diese Klasse nutzt zwei Queues. 
+ * Die Eingabe wird nicht fromatiert. Hier werden nur 
+ * blanke Strings und null herausgefiltert.
+ * 
+ * userInputQueue
+ * ==============
+ * In diese Queue werden alle Eingaben aus der Konsole geschreiben.
+ * Wenn der String der Eingabe blank ist, dann wird dieser nicht in die 
+ * Queue geschrieben. Wenn also nur Enter gedrückt wird, landet nichts in
+ * der Queue.
+ * 
+ * ... (Kommentar nicht fertig)
+ * 
+ * 
+ */
+public class Console implements Runnable {
 
-public class Console {
-
-    private static BlockingQueue<String> userInputQueue = new LinkedBlockingQueue<>();
-    private static BlockingQueue<String> userOutputQueue = new LinkedBlockingQueue<>();
+    private BlockingQueue<String> userInputQueue;
+    private BlockingQueue<String> userOutputQueue;
+    private Scanner scanner;
+    private PrintStream out;
     private static boolean isRunning = true;
 
-    public static void main(String[] args) {
-        new Thread(new UIController(userInputQueue, userOutputQueue)).start();
+    public Console(BlockingQueue<String> userInputQueue, 
+                   BlockingQueue<String> userOutputQueue, 
+                   Scanner scanner, 
+                   PrintStream out) {
+        this.userInputQueue = userInputQueue;
+        this.userOutputQueue = userOutputQueue;
+        this.scanner = scanner;
+        this.out = out;
 
-        Scanner scanner = new Scanner(System.in);
+    }
+
+    public void run() {
+        
+        String input;
         while (isRunning) {
-            Logger.log("press Enter to receive Message");
-            String input = scanner.nextLine();
-            
-            try {
-                synchronized(userInputQueue) {
+            input = scanner.nextLine();
+
+            if (!input.isBlank()) {
+                try {
                     userInputQueue.put(input);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
                 }
+            } else {
+                String outputString = userOutputQueue.poll();
                 
-            } catch (InterruptedException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
-            
-            synchronized(userOutputQueue) {
-                System.out.println(userOutputQueue.poll());
-            }
+                if (outputString != null) {
+                    out.println(outputString);
+                }
+            }   
         }
         scanner.close();
     }
