@@ -1,12 +1,14 @@
 package de.haw.rn.luca_steven;
 
 import java.io.StringReader;
+import java.util.Set;
 
 import javax.json.*;
 
 import de.haw.rn.luca_steven.data_classes.ChatMessage;
 import de.haw.rn.luca_steven.data_classes.Message;
 import de.haw.rn.luca_steven.data_classes.RoutingMessage;
+import de.haw.rn.luca_steven.data_classes.routing_table.RoutingEntry;
 
 //bekommt Infos rein (z.b. IP-Adresse)
 //Infos werden verpackt in ein Json Objekt
@@ -29,6 +31,7 @@ public class JsonParser {
     private static final String SOURCE_PORT = "source_port";
     private static final String ID_PORT = "id_port";
     private static final String TABLE = "table";
+    private static final String HOPS = "hops";
 
     public JsonParser() {
     }
@@ -44,6 +47,34 @@ public class JsonParser {
         builder.add(CONTENT, message.getContent());
 
         JsonObject json = builder.build();
+        return json.toString();
+    }
+
+    public String buildRoutingTableJsonString(Set<RoutingEntry> routingTable, String ip, String sourcePort, String idPort) {
+        JsonObjectBuilder outerBuilder = Json.createObjectBuilder();
+        outerBuilder.add(MESSAGE_TYPE, ROUTING_MESSAGE);
+        outerBuilder.add(IP, ip);
+        outerBuilder.add(SOURCE_PORT, sourcePort);
+        outerBuilder.add(ID_PORT, idPort);
+
+        JsonArrayBuilder tableBuilder = Json.createArrayBuilder();
+        
+        for (RoutingEntry routingEntry : routingTable) {
+            JsonObjectBuilder entryBuilder = Json.createObjectBuilder();
+
+            String destinationIp = routingEntry.getDestinationIP();
+            String id_port = "" + routingEntry.getDestinationIDPort();
+            String hops = "" + routingEntry.getHops();
+
+            entryBuilder.add(IP, destinationIp);
+            entryBuilder.add(ID_PORT, id_port);
+            entryBuilder.add(HOPS, hops);
+
+            tableBuilder.add(entryBuilder);
+        }
+
+        outerBuilder.add(TABLE, tableBuilder);
+        JsonObject json = outerBuilder.build();
         return json.toString();
     }
 

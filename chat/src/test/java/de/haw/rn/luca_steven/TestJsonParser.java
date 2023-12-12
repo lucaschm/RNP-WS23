@@ -47,4 +47,13 @@ public class TestJsonParser {
 
         assertEquals(jsonChatMessage, parsedString);
     }
+
+    // @Test
+    // public void testConvertRoutingMessageToJsonString() {
+    //     JsonParser jsonParser = new JsonParser();
+
+    //     String parsedString = jsonParser.convertRoutingMessageToJsonString(routingMessage);
+
+    //     assertEquals(jsonRoutingMessage, parsedString);
+    // }
 }
