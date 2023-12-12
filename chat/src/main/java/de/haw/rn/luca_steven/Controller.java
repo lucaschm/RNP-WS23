@@ -28,7 +28,8 @@ public class Controller {
         while(true) {
             connectionHandler.listen();
             UserCommand com = ui.getUserCommand();
-            switch (com.getCommand()) {
+            if (com != null) {
+                switch (com.getCommand()) {
                 case CONNECT:
                     router.connect(com.getIp(), com.getPort());
                     break;
@@ -50,6 +51,8 @@ public class Controller {
                 break;
                 default:
                     break;
+            }
+            
             }
 
             // String messageString = connectionHandler.nextMessage();

@@ -34,7 +34,10 @@ public class UI {
         String inputString = userInputQueue.poll();
         UserCommand result = null;
 
-        if (inputString.contains("\"")) {
+        if (inputString == null) {
+            return null;
+        }
+        else if (inputString.contains("\"")) {
             result = getUserSendCommand(inputString);
         } else {
             String[] inputParts = inputString.split(" ");
