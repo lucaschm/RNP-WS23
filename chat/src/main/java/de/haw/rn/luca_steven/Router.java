@@ -14,13 +14,15 @@ public class Router {
     IConnectionHandler connections;
     IRoutingTable table;
     JsonParser parser;
+    String localIPPort;
 
     private final int INIT_HOP_COUNT = 1; 
 
-    public Router(IConnectionHandler connectionHandler, JsonParser parser) {
+    public Router(IConnectionHandler connectionHandler, String ipPort) {
         this.connections = connectionHandler;
-        this.parser = parser;
+        this.parser = new JsonParser();
         this.table = new RoutingEntrySet();
+        this.localIPPort = ipPort;
     }
 
     /*
@@ -41,7 +43,7 @@ public class Router {
             return null;
         } else {
             ChatMessage cm = (ChatMessage) message;
-            if (parser.isForMe(cm)) {
+            if (cm.isForMe(localIPPort)) {
                 return cm;
             } else {
                 forward(cm);
@@ -51,21 +53,28 @@ public class Router {
     }
 
     private void forward(ChatMessage message) {
-        connections.sendString(parser.convertChatMessageToJsonString(message));
+        String nextHop = table.findNextHop(message.getFullDestinationAddress());
+        String[] ipPort = nextHop.split(":", 1);
+        connections.sendString(ipPort[0], Integer.parseInt(ipPort[1]), parser.convertChatMessageToJsonString(message));
     }
 
     public void connect(String IP, int port) {
         connections.connect(IP, port);
-        String ipPort = IP + ":" + port;
+        String remoteIPPort = IP + ":" + port;
         table.addEntry(new RoutingEntry(
-            ipPort, 
+            remoteIPPort, 
             INIT_HOP_COUNT,
-            ipPort,
-            parser.thisClient
+            remoteIPPort,
+            localIPPort
         ));
     }
 
     public void send(String ip, int port, ChatMessage message) {
-        connections.sendString(ip);
+        String s = parser.convertChatMessageToJsonString(message);
+        connections.sendString(ip, port, s);
+    }
+
+    public void disconnect(String Ip, int port) {
+        
     }
 }

@@ -51,5 +51,9 @@ public class ChatMessage extends Message {
         return content;
     }
 
+    public boolean isForMe(String remoteIPPort) {
+        String localIPPort = getFullDestinationAddress();
+        return localIPPort.equals(remoteIPPort);
+    }
 
 }
