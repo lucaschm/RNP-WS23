@@ -43,7 +43,7 @@ public class Controller {
                     router.disconnect(com.getIp(), com.getPort());
                     break;
                 case LIST:
-                
+                    ui.printParticipantList(router.getParticipantsSet());
                 break;
                 case EXIT:
                 
