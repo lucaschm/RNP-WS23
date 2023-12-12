@@ -4,6 +4,9 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.LinkedBlockingQueue;
 
+import de.haw.rn.luca_steven.Logger;
+import de.haw.rn.luca_steven.data_classes.ChatMessage;
+
 public class UI {
 
     private BlockingQueue<String> userInputQueue;
@@ -21,37 +24,37 @@ public class UI {
         // disconnect from ...
         // alle teilnehmer auflisten
         // exit (Programm schließen)
-    public String getUserInput() {
-        synchronized(userInputQueue) {
-            return userInputQueue.poll();
-        }
-        
+    public UserCommand getUserCommand() {
+        return null;
+        //return userInputQueue.poll();
     }
 
 //OUTPUT AUSGEBEN
 
     // Nachricht von anderem Chatteilnehmer
-    public void printChatMessage(String string) {
+    public void printChatMessage(ChatMessage chatMessage) {
+        
+        String sender = chatMessage.getOriginIP() + ":" + chatMessage.getOriginIDPort();
+        String messageContent = chatMessage.getContent();
+        String outputString = sender + " > " + messageContent;
+        
         try {
-            synchronized(userOutputQueue) {
-                userOutputQueue.put(string);
-            }
-            
+            userOutputQueue.put(outputString);
         } catch (InterruptedException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
     }
         
     // teilnehmer Liste ausgeben
     public void printParticipantList() {
-
+        // vom Router Teilnehmertabelle abholen
+        // Einträge formatieren und ausgeben
     }
 
     // Fehler ausgeben
-    public void printError() {
+    // public void printError() {
 
-    }
+    // }
     
     
 }
