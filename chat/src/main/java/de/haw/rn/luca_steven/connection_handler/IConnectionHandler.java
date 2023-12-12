@@ -7,7 +7,13 @@ public interface IConnectionHandler {
      * Aus der Queue wird die nächste Nachricht entnommen
      * @return
      */
-    public String nextMessage();
+    public String nextString();
+
+    /**
+     * true if another message is ready to be received
+     * @return
+     */
+    public boolean hasNext();
 
     /**
      * Verbindung mit anderem Client aufbauen
@@ -27,6 +33,6 @@ public interface IConnectionHandler {
     /**
      * Nachricht an einen anderen Client senden
      */
-    public void sendMessage(String message);
+    public void sendString(String s);
 
 }

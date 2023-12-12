@@ -1,6 +1,7 @@
 package de.haw.rn.luca_steven.connection_handler;
 
 import de.haw.rn.luca_steven.Logger;
+import de.haw.rn.luca_steven.data_classes.ChatMessage;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -72,8 +73,12 @@ public class ConnectionHandler implements IConnectionHandler{
     }
 
     @Override
-    public String nextMessage() {
+    public String nextString() {
         return messageQueue.removeFirst();
+    }
+
+    public boolean hasNext() {
+        return !messageQueue.isEmpty();
     }
 
     @Override
@@ -103,8 +108,8 @@ public class ConnectionHandler implements IConnectionHandler{
     }
 
     @Override
-    public void sendMessage(String message) {
-        messageQueue.addLast(message);
+    public void sendString(String s) {
+        messageQueue.addLast(s);
         //Logger.log(message + " was added to queue size: " + messageQueue.size());
     }
 
