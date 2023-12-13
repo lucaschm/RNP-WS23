@@ -99,4 +99,14 @@ public class RoutingEntrySet implements IRoutingTable {
 
         return resultSet;
     }
-}
+
+    public void deleteAllFor(String ipPort) {
+        Iterator<RoutingEntry> i = set.iterator();
+         while (i.hasNext()) {
+            RoutingEntry entry = i.next();
+            if (entry.getNextHop().equals(ipPort)) {
+                i.remove();
+            }
+        }
+    }
+}      
