@@ -140,7 +140,7 @@ public class UI {
 
     // Fehler ausgeben
     public void printError(String errorMessage) {
-        userOutputQueue.add("Error: [" + errorMessage + "]");
+        System.out.println("Error: [" + errorMessage + "]");
     }
     
     

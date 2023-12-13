@@ -25,6 +25,7 @@ public class Controller {
         String ipPort = ip + ":" + port;
         Router router = new Router(connectionHandler, ipPort);
         UI ui = new UI();
+        Logger.log("Server gestartet als " + ipPort);
 
         while(true) {
             connectionHandler.listen();
