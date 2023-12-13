@@ -28,8 +28,9 @@ public class Controller {
 
         while(true) {
             connectionHandler.listen();
+            ChatMessage receivedMsg = null;
             try {
-                ChatMessage receivedMsg = router.process();
+                receivedMsg = router.process();
             } catch (MessageNotSendException e) {
                 ui.printError(e.getMessage());
             }
