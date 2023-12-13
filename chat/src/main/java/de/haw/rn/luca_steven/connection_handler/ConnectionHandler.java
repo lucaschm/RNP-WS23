@@ -1,5 +1,6 @@
 package de.haw.rn.luca_steven.connection_handler;
 
+import de.haw.rn.luca_steven.CRC32Checksum;
 import de.haw.rn.luca_steven.Logger;
 import de.haw.rn.luca_steven.data_classes.ChatMessage;
 import de.haw.rn.luca_steven.data_classes.MessagePack;
@@ -302,11 +303,11 @@ public class ConnectionHandler implements IConnectionHandler{
 
     private ByteBuffer getFromattedByteBuffer(String string) {
         int length = string.length();
-        int checksum = 0; //TODO: checksummenberechnung
+        long checksum = CRC32Checksum.crc32(string);
         ByteBuffer buffer = ByteBuffer.allocate(COMMON_HEADER_LENGTH + length);
         
-        buffer.putInt(length); //TODO: Länge muss als unsigned int betrachtet werden
-        buffer.putInt(checksum);
+        buffer.putLong(0, checksum);
+        buffer.putInt(0, length);
 
         byte[] stringBytes = string.getBytes(Charset.forName("UTF-8"));
         buffer.put(stringBytes);

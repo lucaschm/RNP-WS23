@@ -23,7 +23,8 @@ public class Main {
 
     private static String getIp(Scanner reader) {
         try {
-            return InetAddress.getLocalHost().getHostAddress();
+            //TODO hardcoded ip adresse
+            return Inet4Address.getByName("141.22.27.103").getHostAddress();
             //return new String(ipArray, StandardCharsets.UTF_8);
         } catch (UnknownHostException e1) {
             try {
