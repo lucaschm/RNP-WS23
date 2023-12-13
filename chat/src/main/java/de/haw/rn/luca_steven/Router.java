@@ -56,7 +56,7 @@ public class Router {
     /*
      * If the connection Handler has received a new Message it is either forwarded to the next Server or the Message is returned 
      */
-    public ChatMessage processMessage() {
+    public ChatMessage processMessage() throws MessageNotSendException {
         Message message;
         if (connections.hasNext()) {
             String s = connections.nextString();
@@ -74,7 +74,7 @@ public class Router {
             if (cm.isForMe(localIPPort)) {
                 return cm;
             } else {
-                forward(cm);
+                send(cm);
                 return null;
             }
         }      
@@ -113,12 +113,6 @@ public class Router {
         }
     }
 
-    private void forward(ChatMessage message) {
-        String nextHop = table.findNextHop(message.getFullDestinationAddress());
-        String[] ipPort = nextHop.split(":", 2);
-        connections.sendString(ipPort[0], Integer.parseInt(ipPort[1]), parser.convertChatMessageToJsonString(message));
-    }
-
     public void connect(String IP, int port) {
         connections.connect(IP, port);
         String remoteIPPort = IP + ":" + port;
@@ -130,7 +124,7 @@ public class Router {
         ));
     }
 
-    public void send(String ip, int port, ChatMessage message) throws MessageNotSendException{
+    public void send(ChatMessage message) throws MessageNotSendException{
         String nextHop = table.findNextHop(message.getFullDestinationAddress());
         if(nextHop == null) {
             throw new MessageNotSendException("Der host " + message.getFullDestinationAddress() + "ist nicht in der Routing Tabelle drin");
@@ -140,8 +134,9 @@ public class Router {
         connections.sendString(ipPort[0], Integer.parseInt(ipPort[1]), s);
     }
 
-    public void disconnect(String Ip, int port) {
-        connections.disconnect(Ip, port);
+    public void disconnect(String IP, int port) {
+        connections.disconnect(IP, port);
+        table.deleteAllFor(IP + ":" + port);
     }
 
     public Set<String> getParticipantsSet() {

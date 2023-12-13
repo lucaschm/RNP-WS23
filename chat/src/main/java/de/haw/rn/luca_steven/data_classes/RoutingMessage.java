@@ -10,6 +10,7 @@ import javax.json.JsonValue;
 import de.haw.rn.luca_steven.data_classes.routing_table.RoutingEntry;
 
 public class RoutingMessage extends Message {
+    private final int INF = 15;
     private static final String IP = "ip";
     private static final String ID_PORT = "id_port";
     private static final String HOPS = "hops";
@@ -64,7 +65,9 @@ public class RoutingMessage extends Message {
             int hops = Integer.parseInt(jsonObject.getString(HOPS));
 
             String destination = destinationIP + ":" + destinationIDPort;
-            hops = hops + 1;
+            if (hops < INF) {
+                hops++;
+            } 
             String nextHop = originIP + ":" + originSourcePort; //TODO gucken ob hier sourcePort oder IdPOrt stehen soll
             String origin = originIP + ":" + originIDPort;
 

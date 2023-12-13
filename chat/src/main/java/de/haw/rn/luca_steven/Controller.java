@@ -46,7 +46,7 @@ public class Controller {
                             com.getIP(), com.getPort(), 
                             ip, port, 
                             15, com.getMessageContent());
-                        router.send(com.getIP(), com.getPort(), msg);
+                        router.send( msg);
                     break;
                     case DISCONNECT:
                         router.disconnect(com.getIP(), com.getPort());

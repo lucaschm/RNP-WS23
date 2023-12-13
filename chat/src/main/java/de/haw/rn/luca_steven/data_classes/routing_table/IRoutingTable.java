@@ -15,5 +15,7 @@ public interface IRoutingTable {
     public Set<String> getAllUniqueDestinations();
 
     public Set<RoutingEntry> getNeighbours();
+
+    public void deleteAllFor(String ipPort);
      
 }
