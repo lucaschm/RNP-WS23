@@ -128,11 +128,14 @@ public class UI {
         }
     }
      
-    //TODO printParticipantList
     // teilnehmer Liste ausgeben
     public void printParticipantList(Set<String> set) {
-        // vom Router Teilnehmertabelle abholen
-        // Einträge formatieren und ausgeben
+
+        String outputString = "";
+        for (String participant : set) {
+            outputString += participant + "\n";
+        }
+        System.out.println(outputString);
     }
 
     // Fehler ausgeben

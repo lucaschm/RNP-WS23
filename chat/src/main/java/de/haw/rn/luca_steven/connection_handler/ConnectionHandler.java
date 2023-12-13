@@ -209,7 +209,6 @@ public class ConnectionHandler implements IConnectionHandler{
         }
     }
 
-    //TODO: wenn sich jemand mit uns verbindet, müssen wir in der RoutingTabelle eintragen, dass wir ihn erreichen können
     private void register(Selector selector, ServerSocketChannel serverSocketChannel) throws IOException {
         SocketChannel client = serverSocketChannel.accept();
         client.configureBlocking(false);
