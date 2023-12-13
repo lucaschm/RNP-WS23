@@ -203,7 +203,7 @@ public class ConnectionHandler implements IConnectionHandler{
             serverSocketChannel.configureBlocking(false);
             serverSocketChannel.register(selector, SelectionKey.OP_ACCEPT);
 
-            Logger.log("Server gestartet auf Port " + idPort);
+            //Logger.log("Server gestartet auf Port " + idPort);
         } catch (Exception e) {
             e.printStackTrace();
             Logger.log(e.getMessage());
