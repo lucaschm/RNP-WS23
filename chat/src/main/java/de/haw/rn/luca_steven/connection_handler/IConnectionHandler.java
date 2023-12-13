@@ -46,4 +46,8 @@ public interface IConnectionHandler {
     public String getLocalIP();
 
     public int getLocalIDPort();
+
+    public boolean hasError();
+
+    public String getError();
 }

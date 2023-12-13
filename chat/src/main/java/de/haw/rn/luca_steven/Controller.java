@@ -27,21 +27,29 @@ public class Controller {
 
         while(true) {
             connectionHandler.listen();
+            try {
+                ChatMessage receivedMsg = router.process();
+            } catch (MessageNotSendException e) {
+                ui.printError(e.);
+            }
+            if (receivedMsg != null) {
+                ui.printChatMessage(receivedMsg);
+            }
             UserCommand com = ui.getUserCommand();
             if (com != null) {
                 switch (com.getCommand()) {
                 case CONNECT:
-                    router.connect(com.getIp(), com.getPort());
+                    router.connect(com.getIP(), com.getPort());
                     break;
                 case SEND:
                     ChatMessage msg = new ChatMessage(
-                        com.getIp(), com.getPort(), 
+                        com.getIP(), com.getPort(), 
                         ip, port, 
                         15, com.getMessageContent());
-                    router.send(ip, port, msg);
+                    router.send(com.getIP(), com.getPort(), msg);
                     break;
                 case DISCONNECT:
-                    router.disconnect(com.getIp(), com.getPort());
+                    router.disconnect(com.getIP(), com.getPort());
                     break;
                 case LIST:
                     ui.printParticipantList(router.getParticipantsSet());
@@ -54,10 +62,6 @@ public class Controller {
             }
             
             }
-
-            // String messageString = connectionHandler.nextMessage();
-            // ChatMessage chatMessage = jsonParser.convertStringToChatMessage(messageString);
-            //TODO: ChatMessage an Router weitergeben
         }
     }
 }

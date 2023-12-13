@@ -22,7 +22,7 @@ public class UserCommand {
         return this.command;
     }
 
-    public String getIp() {
+    public String getIP() {
         return this.ip;
     }
 

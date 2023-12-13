@@ -5,6 +5,7 @@ import java.util.Set;
 
 import de.haw.rn.luca_steven.connection_handler.ConnectionHandler;
 import de.haw.rn.luca_steven.connection_handler.IConnectionHandler;
+import de.haw.rn.luca_steven.connection_handler.exceptions.MessageNotSendException;
 import de.haw.rn.luca_steven.data_classes.ChatMessage;
 import de.haw.rn.luca_steven.data_classes.Message;
 import de.haw.rn.luca_steven.data_classes.RoutingMessage;
@@ -14,7 +15,7 @@ import de.haw.rn.luca_steven.data_classes.routing_table.RoutingEntrySet;
 
 public class Router {
 
-    private static final int ROUTING_SHARE_INTERVAL = 100;
+    private final int ROUTING_SHARE_INTERVAL = 100;
 
     IConnectionHandler connections;
     IRoutingTable table;
@@ -22,18 +23,28 @@ public class Router {
     String localIPPort;
     private long timestamp;
 
-    private final int INIT_HOP_COUNT = 1; 
+    private final int INIT_HOP_COUNT = 0; 
+    private final int NEW_CONNECTION_HOP_COUNT = 1;
 
     public Router(IConnectionHandler connectionHandler, String ipPort) {
         this.connections = connectionHandler;
         this.parser = new JsonParser();
         this.table = new RoutingEntrySet();
         this.localIPPort = ipPort;
+        table.addEntry(new RoutingEntry(
+            localIPPort, 
+            INIT_HOP_COUNT,
+            localIPPort,
+            ""
+        ));
         timestamp = System.currentTimeMillis();
     }
 
-    public ChatMessage process() {
+    public ChatMessage process() throws MessageNotSendException {
         ChatMessage result = processMessage();
+        if (connections.hasError()) {
+            throw new MessageNotSendException(connections.getError());
+        }
 
         if (Math.abs(System.currentTimeMillis() - timestamp) > ROUTING_SHARE_INTERVAL) {
             shareRoutingInformation();
@@ -88,12 +99,17 @@ public class Router {
 
             // formatiere aus der Tabelle ein Json
             //TODO: hier wurde nur gehofft, dass 'connectionMap.get(nextHop)' den richtigen source_port liefert
-            String tableJsonString = parser.buildRoutingTableJsonString(splitHorizonTable, localIP, connectionMap.get(nextHop), idPort); 
+            String sourcePort = connectionMap.get(nextHop);
+
+            if (sourcePort != null) {
+                
+                String tableJsonString = parser.buildRoutingTableJsonString(splitHorizonTable, localIP, connectionMap.get(nextHop), idPort); 
         
-            // schicke es an den Nachbarn
-            String ip = nextHop.split(":")[0];
-            int port = Integer.parseInt(nextHop.split(":")[1]);
-            connections.sendString(ip, port, tableJsonString);
+                // schicke es an den Nachbarn
+                String ip = nextHop.split(":")[0];
+                int port = Integer.parseInt(nextHop.split(":")[1]);
+                connections.sendString(ip, port, tableJsonString);
+            }
         }
     }
 
@@ -108,7 +124,7 @@ public class Router {
         String remoteIPPort = IP + ":" + port;
         table.addEntry(new RoutingEntry(
             remoteIPPort, 
-            INIT_HOP_COUNT,
+            NEW_CONNECTION_HOP_COUNT,
             remoteIPPort,
             localIPPort
         ));
