@@ -31,38 +31,40 @@ public class Controller {
             ChatMessage receivedMsg = null;
             try {
                 receivedMsg = router.process();
-            } catch (MessageNotSendException e) {
-                ui.printError(e.getMessage());
-            }
-            if (receivedMsg != null) {
-                ui.printChatMessage(receivedMsg);
-            }
-            UserCommand com = ui.getUserCommand();
-            if (com != null) {
-                switch (com.getCommand()) {
-                case CONNECT:
-                    router.connect(com.getIP(), com.getPort());
-                    break;
-                case SEND:
-                    ChatMessage msg = new ChatMessage(
-                        com.getIP(), com.getPort(), 
-                        ip, port, 
-                        15, com.getMessageContent());
-                    router.send(com.getIP(), com.getPort(), msg);
-                    break;
-                case DISCONNECT:
-                    router.disconnect(com.getIP(), com.getPort());
-                    break;
-                case LIST:
-                    ui.printParticipantList(router.getParticipantsSet());
-                break;
-                case EXIT:
-                
-                break;
-                default:
-                    break;
-            }
             
+                if (receivedMsg != null) {
+                    ui.printChatMessage(receivedMsg);
+                }
+                UserCommand com = ui.getUserCommand();
+                if (com != null) {
+                    switch (com.getCommand()) {
+                    case CONNECT:
+                        router.connect(com.getIP(), com.getPort());
+                    break;
+                    case SEND:
+                        ChatMessage msg = new ChatMessage(
+                            com.getIP(), com.getPort(), 
+                            ip, port, 
+                            15, com.getMessageContent());
+                        router.send(com.getIP(), com.getPort(), msg);
+                    break;
+                    case DISCONNECT:
+                        router.disconnect(com.getIP(), com.getPort());
+                    break;
+                    case LIST:
+                        ui.printParticipantList(router.getParticipantsSet());
+                    break;
+                    case EXIT:
+                    
+                    break;
+                    default:
+                    break;
+                    }
+                } 
+            
+            } catch (MessageNotSendException e) {
+                    ui.printError(e.getMessage());
+                
             }
         }
     }

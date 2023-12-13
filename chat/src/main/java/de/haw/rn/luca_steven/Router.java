@@ -115,7 +115,7 @@ public class Router {
 
     private void forward(ChatMessage message) {
         String nextHop = table.findNextHop(message.getFullDestinationAddress());
-        String[] ipPort = nextHop.split(":", 1);
+        String[] ipPort = nextHop.split(":", 2);
         connections.sendString(ipPort[0], Integer.parseInt(ipPort[1]), parser.convertChatMessageToJsonString(message));
     }
 
@@ -130,9 +130,14 @@ public class Router {
         ));
     }
 
-    public void send(String ip, int port, ChatMessage message) {
+    public void send(String ip, int port, ChatMessage message) throws MessageNotSendException{
+        String nextHop = table.findNextHop(message.getFullDestinationAddress());
+        if(nextHop == null) {
+            throw new MessageNotSendException("Der host " + message.getFullDestinationAddress() + "ist nicht in der Routing Tabelle drin");
+        }
+        String[] ipPort = nextHop.split(":", 2);
         String s = parser.convertChatMessageToJsonString(message);
-        connections.sendString(ip, port, s);
+        connections.sendString(ipPort[0], Integer.parseInt(ipPort[1]), s);
     }
 
     public void disconnect(String Ip, int port) {

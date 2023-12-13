@@ -36,6 +36,7 @@ public class ConnectionHandler implements IConnectionHandler{
         this.idPort = idPort;
         this.sendMessageQueue = new LinkedList<MessagePack>();
         this.receiveMessageQueue = new LinkedList<String>();
+        errorMessage = "";
         setup();
     }
 
