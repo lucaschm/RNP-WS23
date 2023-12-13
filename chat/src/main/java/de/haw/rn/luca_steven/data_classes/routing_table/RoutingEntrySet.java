@@ -43,7 +43,7 @@ public class RoutingEntrySet implements IRoutingTable {
      */
     public void mergeWith(Set<RoutingEntry> routingEntries, String origin) {
         for (RoutingEntry entry : routingEntries) {
-            if (entry.getOrigin().equals(origin)) {
+            if (!origin.equals(entry.getOrigin())) {
                 throw new IllegalArgumentException("Entry: " + entry + " did not have the given origin: " + origin);
             }
         }
@@ -51,7 +51,7 @@ public class RoutingEntrySet implements IRoutingTable {
         Iterator<RoutingEntry> iterator = set.iterator();
         while (iterator.hasNext()) {
             RoutingEntry entry = iterator.next();
-            if (entry.getOrigin().equals(origin)) {
+            if (origin.equals(entry.getOrigin())) {
                 iterator.remove();
             }
         }
@@ -64,7 +64,7 @@ public class RoutingEntrySet implements IRoutingTable {
     public Set<RoutingEntry> getEntriesWithout(String origin) {
         Set<RoutingEntry> result = new HashSet<RoutingEntry>();
         for (RoutingEntry entry : set) {
-            if (entry.getOrigin().equals(origin)) {
+            if (!origin.equals(entry.getOrigin())) {
                 result.add(entry);
             }
         }
@@ -92,7 +92,7 @@ public class RoutingEntrySet implements IRoutingTable {
         Set<RoutingEntry> resultSet = new HashSet<RoutingEntry>();
 
         for (RoutingEntry entry : set) {
-            if (entry.getHops() == 1) {
+            if (entry.getHops() <= 1) {
                 resultSet.add(entry);
             }
         }

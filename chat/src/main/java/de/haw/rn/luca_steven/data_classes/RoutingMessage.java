@@ -65,7 +65,7 @@ public class RoutingMessage extends Message {
 
             String destination = destinationIP + ":" + destinationIDPort;
             hops = hops + 1;
-            String nextHop = originIP + ":" + originIDPort; //TODO gucken ob hier sourcePort oder IdPOrt stehen soll
+            String nextHop = originIP + ":" + originSourcePort; //TODO gucken ob hier sourcePort oder IdPOrt stehen soll
             String origin = originIP + ":" + originIDPort;
 
             set.add(new RoutingEntry(destination, hops, nextHop, origin));

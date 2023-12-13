@@ -29,6 +29,7 @@ public class ConnectionHandler implements IConnectionHandler{
     private final LinkedList<String> receiveMessageQueue;
     private Selector selector;
     private ServerSocketChannel serverSocketChannel;
+    private String errorMessage;
 
     public ConnectionHandler(String ip, int idPort) {
         this.ip = ip;
@@ -51,7 +52,7 @@ public class ConnectionHandler implements IConnectionHandler{
                 Set<SelectionKey> selectedKeys = selector.selectedKeys();
                 Iterator<SelectionKey> iter = selectedKeys.iterator();
                 //Logger.log(idPort + ": get selectedKeys");
-
+                MessagePack firstPlace = sendMessageQueue.peek(); 
                 while (iter.hasNext()) {
                     SelectionKey key = iter.next();
 
@@ -70,9 +71,12 @@ public class ConnectionHandler implements IConnectionHandler{
                     if (key.isConnectable()) {  //lieber else if?
                         continiueConnect(key);
                     }
-
                     iter.remove();
                 }
+                if (firstPlace != null && firstPlace.equals(sendMessageQueue.peek())) {
+                        String msg = sendMessageQueue.removeFirst().getMessage();
+                        errorMessage = "Error: " + msg + " could not be send.";
+                    }
                 //Logger.log(idPort + ": while(iter.hasNext())");
             //}
         } catch (IOException e) {
@@ -88,6 +92,16 @@ public class ConnectionHandler implements IConnectionHandler{
 
     public boolean hasNext() {
         return !receiveMessageQueue.isEmpty();
+    }
+
+    public boolean hasError() {
+        return errorMessage != "";
+    }
+
+    public String getError() {
+        String result = errorMessage;
+        errorMessage = "";
+        return result;
     }
 
     @Override
@@ -140,22 +154,27 @@ public class ConnectionHandler implements IConnectionHandler{
     public Map<String, String> getAllConnectionsWithLocalPort() {
         Map<String, String> result = new HashMap<>();
 
-        Set<SelectionKey> selectedKeys = selector.selectedKeys();
-        Iterator<SelectionKey> iter = selectedKeys.iterator();
+        Set<SelectionKey> channelKeys = selector.keys();
+
+        Iterator<SelectionKey> iter = channelKeys.iterator();
         while (iter.hasNext()) {
-            SelectionKey key = iter.next();
+            SelectableChannel channel = iter.next().channel();
             try {
-                SocketChannel client = (SocketChannel) key.channel();
-                InetSocketAddress remoteInetSocketAddress = (InetSocketAddress) client.getRemoteAddress();
-                String remoteIP = remoteInetSocketAddress.getAddress().getHostAddress();
-                int remotePort = remoteInetSocketAddress.getPort();
+                SocketChannel client;
+                if(!(channel instanceof ServerSocketChannel)) {
+                    client = (SocketChannel) channel;
+                    InetSocketAddress remoteInetSocketAddress = (InetSocketAddress) client.getRemoteAddress();
+                    String remoteIP = remoteInetSocketAddress.getAddress().getHostAddress();
+                    int remotePort = remoteInetSocketAddress.getPort();
 
-                InetSocketAddress localInetSocketAddress = (InetSocketAddress) client.getLocalAddress();
-                int localPort = localInetSocketAddress.getPort();
+                    InetSocketAddress localInetSocketAddress = (InetSocketAddress) client.getLocalAddress();
+                    int localPort = localInetSocketAddress.getPort();
 
-                String k = remoteIP + ":" + remotePort;
+                    String k = remoteIP + ":" + remotePort;
 
-                result.put(k, "" + localPort);
+                    result.put(k, "" + localPort);
+                }
+                
 
             } catch (IOException e) {
                 e.printStackTrace();
@@ -194,7 +213,7 @@ public class ConnectionHandler implements IConnectionHandler{
     private void register(Selector selector, ServerSocketChannel serverSocketChannel) throws IOException {
         SocketChannel client = serverSocketChannel.accept();
         client.configureBlocking(false);
-        client.register(selector, SelectionKey.OP_READ);
+        client.register(selector, SelectionKey.OP_READ|SelectionKey.OP_WRITE);
         Logger.log("got connection from: " + client.getRemoteAddress());
     }
 
@@ -224,7 +243,7 @@ public class ConnectionHandler implements IConnectionHandler{
         }
         messageBuffer.position(0);
         String string = StandardCharsets.UTF_8.decode(messageBuffer).toString();
-        Logger.log(idPort + ": String received: " + string);
+        //Logger.log(idPort + ": String received: " + string);
         receiveMessageQueue.addLast(string);
         
     }
@@ -260,7 +279,7 @@ public class ConnectionHandler implements IConnectionHandler{
             while (buffer.hasRemaining()) {
                 success =  client.write(buffer);
             }
-            Logger.log("written=" + success + " " + " Bytes to " + client.getRemoteAddress());
+            //Logger.log("written=" + success + " " + " Bytes to " + client.getRemoteAddress());
             buffer.clear();
         } catch (IOException e) {
             e.printStackTrace();
