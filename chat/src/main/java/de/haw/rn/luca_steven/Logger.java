@@ -14,6 +14,10 @@ public class Logger {
         System.out.println(logMessage);
     }
 
+    public static void error(String errorMessage) {
+        System.out.println(errorMessage);
+    }
+
     public static void logFile(String logMessage) {
         try {
             BufferedWriter writer = new BufferedWriter(new FileWriter("/home/networker/log.txt"));
