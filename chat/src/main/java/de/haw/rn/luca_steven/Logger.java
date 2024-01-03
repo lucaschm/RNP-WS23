@@ -15,7 +15,7 @@ public class Logger {
     }
 
     public static void error(String errorMessage) {
-        System.out.println(errorMessage);
+        //System.out.println(errorMessage);
     }
 
     public static void logFile(String logMessage) {

@@ -101,7 +101,7 @@ public class ConnectionHandler implements IConnectionHandler{
     }
 
     public boolean hasError() {
-        return errorMessage.equals("");
+        return !errorMessage.equals("");
     }
 
     public String getError() {
