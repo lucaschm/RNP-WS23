@@ -1,5 +1,6 @@
 package de.haw.rn.luca_steven.connection_handler;
 
+import de.haw.rn.luca_steven.CRC32Checksum;
 import de.haw.rn.luca_steven.Logger;
 import de.haw.rn.luca_steven.data_classes.ChatMessage;
 import de.haw.rn.luca_steven.data_classes.MessagePack;
@@ -112,6 +113,7 @@ public class ConnectionHandler implements IConnectionHandler{
             client.configureBlocking(false);
             SocketAddress socketAddr;
             socketAddr = new InetSocketAddress(ipAddress, port);
+            Logger.logFile("Connect...");
             boolean success = client.connect(socketAddr);
             
             if (success) {
@@ -153,6 +155,7 @@ public class ConnectionHandler implements IConnectionHandler{
      * Map<"remoteIP:remotePort", "localPort">
      */
     public Map<String, String> getAllConnectionsWithLocalPort() {
+        Logger.logFile("getAllConnectionsWithLocalPort()");
         Map<String, String> result = new HashMap<>();
 
         Set<SelectionKey> channelKeys = selector.keys();
@@ -169,6 +172,7 @@ public class ConnectionHandler implements IConnectionHandler{
                     int remotePort = remoteInetSocketAddress.getPort();
 
                     InetSocketAddress localInetSocketAddress = (InetSocketAddress) client.getLocalAddress();
+                    Logger.logFile(">>> " + localInetSocketAddress.toString());
                     int localPort = localInetSocketAddress.getPort();
 
                     String k = remoteIP + ":" + remotePort;
@@ -203,7 +207,7 @@ public class ConnectionHandler implements IConnectionHandler{
             serverSocketChannel.configureBlocking(false);
             serverSocketChannel.register(selector, SelectionKey.OP_ACCEPT);
 
-            Logger.log("Server gestartet auf Port " + idPort);
+            //Logger.log("Server gestartet auf Port " + idPort);
         } catch (Exception e) {
             e.printStackTrace();
             Logger.log(e.getMessage());
@@ -243,7 +247,7 @@ public class ConnectionHandler implements IConnectionHandler{
         }
         messageBuffer.position(0);
         String string = StandardCharsets.UTF_8.decode(messageBuffer).toString();
-        //Logger.log(idPort + ": String received: " + string);
+        Logger.logFile(string);
         receiveMessageQueue.addLast(string);
         
     }
@@ -302,11 +306,11 @@ public class ConnectionHandler implements IConnectionHandler{
 
     private ByteBuffer getFromattedByteBuffer(String string) {
         int length = string.length();
-        int checksum = 0; //TODO: checksummenberechnung
+        long checksum = CRC32Checksum.crc32(string);
         ByteBuffer buffer = ByteBuffer.allocate(COMMON_HEADER_LENGTH + length);
         
-        buffer.putInt(length); //TODO: Länge muss als unsigned int betrachtet werden
-        buffer.putInt(checksum);
+        buffer.putLong(0, checksum);
+        buffer.putInt(0, length);
 
         byte[] stringBytes = string.getBytes(Charset.forName("UTF-8"));
         buffer.put(stringBytes);
