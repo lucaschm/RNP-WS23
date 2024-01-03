@@ -47,9 +47,13 @@ public class ConnectionHandler implements IConnectionHandler{
     public void listen() {
 
         try {
-            //while (isRunning) {
-                selector.selectNow();
-                //Logger.log(idPort + ": selector select");
+                int selectedKeysAmount = selector.selectNow();
+                if (selectedKeysAmount == 0) {
+                    Logger.error("der selector konnte bei selectNow() keine Keys auswählen");
+                }
+                else {
+                    Logger.error("der selector konnte bei selectNow() " + selectedKeysAmount + " Keys auswählen");
+                }
 
                 Set<SelectionKey> selectedKeys = selector.selectedKeys();
                 Iterator<SelectionKey> iter = selectedKeys.iterator();
@@ -97,7 +101,7 @@ public class ConnectionHandler implements IConnectionHandler{
     }
 
     public boolean hasError() {
-        return errorMessage != "";
+        return errorMessage.equals("");
     }
 
     public String getError() {
@@ -162,10 +166,11 @@ public class ConnectionHandler implements IConnectionHandler{
 
         Iterator<SelectionKey> iter = channelKeys.iterator();
         while (iter.hasNext()) {
-            SelectableChannel channel = iter.next().channel();
+            SelectionKey key = iter.next();
+            SelectableChannel channel = key.channel();
             try {
                 SocketChannel client;
-                if(!(channel instanceof ServerSocketChannel)) {
+                if(!(channel instanceof ServerSocketChannel) && key.isReadable() && key.isWritable()) {
                     client = (SocketChannel) channel;
                     InetSocketAddress remoteInetSocketAddress = (InetSocketAddress) client.getRemoteAddress();
                     String remoteIP = remoteInetSocketAddress.getAddress().getHostAddress();
@@ -294,10 +299,11 @@ public class ConnectionHandler implements IConnectionHandler{
         SocketChannel client = (SocketChannel) key.channel();
         try {
             if (client.isConnectionPending()) {
-                client.finishConnect();
-                Logger.log("finished connecting to: " + client.getRemoteAddress());
-            }
-            client.register(selector, SelectionKey.OP_READ | SelectionKey.OP_WRITE);
+                if (client.finishConnect()) {
+                    Logger.log("finished connecting to: " + client.getRemoteAddress());
+                    client.register(selector, SelectionKey.OP_READ | SelectionKey.OP_WRITE);
+                }
+            }            
         } catch (IOException e) {
             Logger.log("Error in continiueConnect:");
             e.printStackTrace();
