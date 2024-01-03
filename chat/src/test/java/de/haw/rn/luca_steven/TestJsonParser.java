@@ -48,6 +48,10 @@ public class TestJsonParser {
         assertEquals(jsonChatMessage, parsedString);
     }
 
+    @Test
+    public void testJsonStringSamples() {
+        
+    }
     // @Test
     // public void testConvertRoutingMessageToJsonString() {
     //     JsonParser jsonParser = new JsonParser();

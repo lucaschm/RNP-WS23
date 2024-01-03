@@ -45,7 +45,7 @@ public class Console implements Runnable {
         while (isRunning) {
             input = scanner.nextLine();
 
-            if (!input.isBlank()) {
+            if (!input.equals("")) {
                 try {
                     userInputQueue.put(input);
                 } catch (InterruptedException e) {

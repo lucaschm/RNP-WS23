@@ -15,7 +15,7 @@ import de.haw.rn.luca_steven.data_classes.routing_table.RoutingEntrySet;
 
 public class Router {
 
-    private final int ROUTING_SHARE_INTERVAL = 100;
+    private final int ROUTING_SHARE_INTERVAL = 10;
 
     IConnectionHandler connections;
     IRoutingTable table;
@@ -45,8 +45,9 @@ public class Router {
         if (connections.hasError()) {
             throw new MessageNotSendException(connections.getError());
         }
-
-        if (Math.abs(System.currentTimeMillis() - timestamp) > ROUTING_SHARE_INTERVAL) {
+        long timedif = System.currentTimeMillis() - timestamp;
+        if (Math.abs(timedif) > ROUTING_SHARE_INTERVAL) {
+            Logger.logRouting("" + timedif);
             shareRoutingInformation();
             timestamp = System.currentTimeMillis();
         }        
