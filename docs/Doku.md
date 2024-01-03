@@ -25,6 +25,16 @@
 - [ ] doppeltes connecten mit selbem user verhindern (allready connected to ...)
 - [ ] Alerts wenn routing tabellen zu groß werden. oder allgemein allerts bei interessanten sachen
 
+# Config
+Es gibt eine Klasse Config.java für konfigurationen
+
+## lokale IP-Adresse
+wenn localIPAdress = null, dann wird versucht die lokale IP-Adresse zu ermitteln
+Es kann vorkommen, dass eine falsche Adresse ermittelt wird. 
+In diesem Fall kann man die Adresse hier manuell setzen.
+```java
+public static String localIPAdress = null;
+```
 
 # das UI unserer Chatanwendung
 
