@@ -10,6 +10,7 @@ import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.net.SocketOption;
 import java.nio.ByteBuffer;
+import java.nio.CharBuffer;
 import java.nio.channels.*;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
@@ -231,6 +232,7 @@ public class ConnectionHandler implements IConnectionHandler{
         
         // Header auslesen
         ByteBuffer headerBuffer = ByteBuffer.allocate(COMMON_HEADER_LENGTH);
+        headerBuffer.position(0);
         int readBytes = client.read(headerBuffer);
         
         if (readBytes == -1) {
@@ -251,7 +253,8 @@ public class ConnectionHandler implements IConnectionHandler{
             return;
         }
         messageBuffer.position(0);
-        String string = StandardCharsets.UTF_8.decode(messageBuffer).toString();
+        CharBuffer cb = StandardCharsets.UTF_8.decode(messageBuffer);
+        String string = cb.toString();
         Logger.logFile(string);
         receiveMessageQueue.addLast(string);
         
@@ -315,8 +318,9 @@ public class ConnectionHandler implements IConnectionHandler{
         long checksum = CRC32Checksum.crc32(string);
         ByteBuffer buffer = ByteBuffer.allocate(COMMON_HEADER_LENGTH + length);
         
-        buffer.putLong(0, checksum);
-        buffer.putInt(0, length);
+        //buffer.putLong(0, checksum);
+        buffer.putInt(length);
+        buffer.putInt(checksum);
 
         byte[] stringBytes = string.getBytes(Charset.forName("UTF-8"));
         buffer.put(stringBytes);
