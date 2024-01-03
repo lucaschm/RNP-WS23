@@ -14,7 +14,10 @@ public class Main {
 
         Scanner reader = new Scanner(System.in);
         
-        String ip = getIp(reader);        
+        String ip = getIp(reader);
+        Logger.log("WICHTIG: es wurde diese IP-Adresse ermittelt: " + ip);
+        Logger.log("In Config.java kann eingestellt werden, wie die IP ermittelt werden soll");
+        
         int port = getPort(reader);
         
         
