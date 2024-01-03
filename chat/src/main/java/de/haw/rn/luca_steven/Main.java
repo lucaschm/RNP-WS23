@@ -24,8 +24,13 @@ public class Main {
 
     private static String getIp(Scanner reader) {
         try {
-            //TODO hardcoded ip adresse
-            return Inet4Address.getByName("141.22.27.103").getHostAddress();
+            if (Config.localIPAdress == null) {
+                return Inet4Address.getLocalHost().getHostAddress();
+            }
+            else {
+                return Config.localIPAdress;
+            }
+            
             //return new String(ipArray, StandardCharsets.UTF_8);
         } catch (UnknownHostException e1) {
             try {
