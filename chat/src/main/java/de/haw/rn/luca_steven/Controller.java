@@ -26,6 +26,7 @@ public class Controller {
         Router router = new Router(connectionHandler, ipPort);
         UI ui = new UI();
         Logger.log("Server gestartet als " + ipPort);
+        Logger.log("WICHTIG: Ist diese IP-Adresse korrekt? Falls nein, kann sie in Config.java manuell gesetzt werden");
 
         while(true) {
             connectionHandler.listen();
@@ -64,7 +65,7 @@ public class Controller {
                 } 
             
             } catch (MessageNotSendException e) {
-                    ui.printError(e.getMessage());
+                    e.printStackTrace();
                 
             }
         }
