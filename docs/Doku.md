@@ -25,6 +25,31 @@
 - [ ] doppeltes connecten mit selbem user verhindern (allready connected to ...)
 - [ ] Alerts wenn routing tabellen zu groß werden. oder allgemein allerts bei interessanten sachen
 
+
+# das UI unserer Chatanwendung
+
+```
+connect <IP> <Port>
+```
+
+```
+send <IP> <Port> ???message???
+```
+
+```
+disconnect <IP> <Port>
+```
+
+```
+list
+```
+
+```
+exit
+```
+
+
+
 # lokale Architektur
 ## UI
 - Zeilen printen und einlesen
