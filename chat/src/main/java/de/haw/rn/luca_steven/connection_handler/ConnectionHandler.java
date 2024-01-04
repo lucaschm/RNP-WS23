@@ -171,21 +171,22 @@ public class ConnectionHandler implements IConnectionHandler{
             SelectableChannel channel = key.channel();
             try {
                 SocketChannel client;
-                if(!(channel instanceof ServerSocketChannel) && key.isReadable() && key.isWritable()) {
+                if(!(channel instanceof ServerSocketChannel)) {
                     client = (SocketChannel) channel;
-                    InetSocketAddress remoteInetSocketAddress = (InetSocketAddress) client.getRemoteAddress();
-                    String remoteIP = remoteInetSocketAddress.getAddress().getHostAddress();
-                    int remotePort = remoteInetSocketAddress.getPort();
+                    if(client.isConnected()){
+                        InetSocketAddress remoteInetSocketAddress = (InetSocketAddress) client.getRemoteAddress();
+                        String remoteIP = remoteInetSocketAddress.getAddress().getHostAddress();
+                        int remotePort = remoteInetSocketAddress.getPort();
 
-                    InetSocketAddress localInetSocketAddress = (InetSocketAddress) client.getLocalAddress();
-                    Logger.logFile(">>> " + localInetSocketAddress.toString());
-                    int localPort = localInetSocketAddress.getPort();
+                        InetSocketAddress localInetSocketAddress = (InetSocketAddress) client.getLocalAddress();
+                        Logger.logFile(">>> " + localInetSocketAddress.toString());
+                        int localPort = localInetSocketAddress.getPort();
 
-                    String k = remoteIP + ":" + remotePort;
+                        String k = remoteIP + ":" + remotePort;
 
-                    result.put(k, "" + localPort);
+                        result.put(k, "" + localPort);
+                    }
                 }
-                
 
             } catch (IOException e) {
                 e.printStackTrace();
