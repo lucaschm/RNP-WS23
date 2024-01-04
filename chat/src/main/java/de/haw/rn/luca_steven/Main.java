@@ -17,6 +17,7 @@ public class Main {
         String ip = getIp(reader);
         Logger.log("WICHTIG: es wurde diese IP-Adresse ermittelt: " + ip);
         Logger.log("In Config.java kann eingestellt werden, wie die IP ermittelt werden soll");
+        Logger.log("Hinweis: es könnte sein, dass die Validierung der Checksumme beim Empfangen nicht funktioniert.");
         
         int port = getPort(reader);
         
