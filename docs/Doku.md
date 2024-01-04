@@ -1,4 +1,6 @@
 # TODOS
+- [ ] Alle TODOs im Quelltext auflösen
+- [ ] Wenn ein Chatteilnehmer abrupt stirbt, muss der gestorbene Chatteilnehmer aus der Routing Tabelle entfernt werden.
 - [ ] Das Programm muss kompatibel mit allen anderen Programmen sein
 - [ ] Das Programm muss im Labor laufen können
 - [ ] Count to Infinity Problem muss vernünftig behoben sein
