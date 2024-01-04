@@ -241,9 +241,13 @@ public class ConnectionHandler implements IConnectionHandler{
             return;
         }
 
-        //TODO: Länge muss als unsigned int interpretiert werden
+        // TODO: Länge sollte als unsigned int interpretiert werden (wegen Absprache)
         int messageLength = headerBuffer.getInt(0);
-        int crc32 = headerBuffer.getInt(1);
+        
+        // int muss überschrieben werden, damit der Long so ausgelesen werden kann,
+        // wie er geschrieben wurde
+        headerBuffer.putInt(0,0);
+        long crc32 = headerBuffer.getLong(0);
 
         // eigentliche Nachricht auslesen
         ByteBuffer messageBuffer = ByteBuffer.allocate(messageLength);
@@ -336,7 +340,7 @@ public class ConnectionHandler implements IConnectionHandler{
 
     // TODO: testen, ob diese Methode funktioniert
     // Die Frage ist vor allem, ob man einen long mit einem int vergleichen kann
-    private boolean isValidChecksum(int checksum, String text) {
+    private boolean isValidChecksum(long checksum, String text) {
         long expectedChecksum = CRC32Checksum.crc32(text);
         return expectedChecksum == checksum;
     }
