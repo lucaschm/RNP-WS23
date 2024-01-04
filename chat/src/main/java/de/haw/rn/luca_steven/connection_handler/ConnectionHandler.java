@@ -7,6 +7,7 @@ import de.haw.rn.luca_steven.data_classes.MessagePack;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
+import java.net.ServerSocket;
 import java.net.SocketAddress;
 import java.net.SocketOption;
 import java.nio.ByteBuffer;
@@ -90,6 +91,9 @@ public class ConnectionHandler implements IConnectionHandler{
             Logger.log(e.getMessage());
             e.printStackTrace();;
         }
+        catch (CancelledKeyException e) {
+            // its okay
+        }
     }
 
     @Override
@@ -147,6 +151,9 @@ public class ConnectionHandler implements IConnectionHandler{
                 if (remoteIP.equals(ipAddress) && remotePort == port) {
                     client.close();
                     key.cancel();
+
+                    String ipPort = remoteIP + ":" + remotePort;
+                    Logger.log("disconnected with " + ipPort);
                 }
 
             } catch (IOException e) {
@@ -228,43 +235,69 @@ public class ConnectionHandler implements IConnectionHandler{
         Logger.log("got connection from: " + client.getRemoteAddress());
     }
 
-    private void readMessage(SelectionKey key) throws IOException {
+    private void readMessage(SelectionKey key) {
         SocketChannel client = (SocketChannel) key.channel();
         
         // Header auslesen
         ByteBuffer headerBuffer = ByteBuffer.allocate(COMMON_HEADER_LENGTH);
         headerBuffer.position(0);
-        int readBytes = client.read(headerBuffer);
-        
-        if (readBytes == -1) {
-           client.close();
+
+        // Es könnte sein, dass die Gegenseite die Verbindung abrupt
+        // abgebrochen hat
+        if (!clientHealthy(client, key)) {
             return;
         }
-
-        // TODO: Länge sollte als unsigned int interpretiert werden (wegen Absprache)
-        int messageLength = headerBuffer.getInt(0);
+        int readBytes;
+        try {
+            readBytes = client.read(headerBuffer);
         
-        // int muss überschrieben werden, damit der Long so ausgelesen werden kann,
-        // wie er geschrieben wurde
-        headerBuffer.putInt(0,0);
-        long crc32 = headerBuffer.getLong(0);
-
-        // eigentliche Nachricht auslesen
-        ByteBuffer messageBuffer = ByteBuffer.allocate(messageLength);
-        readBytes = client.read(messageBuffer);
-
-        if (readBytes == -1) {
+        
+            if (readBytes == -1) {
             client.close();
-            return;
-        }
-        messageBuffer.position(0);
-        CharBuffer cb = StandardCharsets.UTF_8.decode(messageBuffer);
-        String string = cb.toString();
+                return;
+            }
 
-        // Nachricht wird nur wahrgenommen, wenn die Checksumme richtig ist
-        if (isValidChecksum(crc32, string)) {
-            Logger.logFile(string);
-            receiveMessageQueue.addLast(string);
+            // TODO: Länge sollte als unsigned int interpretiert werden (wegen Absprache)
+            int messageLength = headerBuffer.getInt(0);
+
+            // int muss überschrieben werden, damit der Long so ausgelesen werden kann,
+            // wie er geschrieben wurde
+            headerBuffer.putInt(0,0);
+            long crc32 = headerBuffer.getLong(0);
+
+            // eigentliche Nachricht auslesen
+            ByteBuffer messageBuffer = ByteBuffer.allocate(messageLength);
+            readBytes = client.read(messageBuffer);
+
+            
+            if (readBytes == -1) {
+                client.close();
+                return;
+            }
+            messageBuffer.position(0);
+            CharBuffer cb = StandardCharsets.UTF_8.decode(messageBuffer);
+            String string = cb.toString();
+
+            // Nachricht wird nur wahrgenommen, wenn die Checksumme richtig ist
+            if (isValidChecksum(crc32, string)) {
+                Logger.logFile(string);
+                receiveMessageQueue.addLast(string);
+            }
+        } catch (IOException e) {
+            String errorMessage = e.getMessage();
+            if (errorMessage.equals("Connection reset by peer") || errorMessage.equals("Connection reset")) {
+                try {
+                    client.close();
+                } catch (IOException e1) {
+                    e1.printStackTrace();
+                }
+                key.cancel();
+                
+                Logger.log("Lost connection with someone. I'm too lazy to look who it was.");
+            }
+            else {
+                e.printStackTrace();
+            }
         }
         
     }
@@ -295,15 +328,25 @@ public class ConnectionHandler implements IConnectionHandler{
         
         
         try {
-            int success = 0;
             while (buffer.hasRemaining()) {
-                
-                success =  client.write(buffer);
+                client.write(buffer);
             }
-            //Logger.log("written=" + success + " " + " Bytes to " + client.getRemoteAddress());
             buffer.clear();
         } catch (IOException e) {
-            e.printStackTrace();
+            String errorMessage = e.getMessage();
+            if (errorMessage.equals("Connection reset by peer") || errorMessage.equals("Connection reset")) {
+                try {
+                    client.close();
+                } catch (IOException e1) {
+                    e1.printStackTrace();
+                }
+                key.cancel();
+                
+                Logger.log("Lost connection with someone. I'm too lazy to look who it was.");
+            } 
+            else {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -341,6 +384,27 @@ public class ConnectionHandler implements IConnectionHandler{
     private boolean isValidChecksum(long checksum, String text) {
         long expectedChecksum = CRC32Checksum.crc32(text);
         return expectedChecksum == checksum;
+    }
+
+    /**
+     * Überprüft ob die Verbindung zur anderen Seite noch offen ist.
+     * Es könnte sein, dass die andere Seite die Verbindung abrupt abgebrochen hat.
+     * In diesem Fall von dieser Seite die Verbindung geschlossen werden. 
+     * Der key wird dabei auch aus dem Selector entfernt.
+     */
+    private boolean clientHealthy(SocketChannel client, SelectionKey key) {
+        if (!client.isConnected()) {
+            try {
+                client.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            key.cancel();
+            return false;
+        }
+        else {
+            return true;
+        }
     }
 
     @Override

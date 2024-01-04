@@ -64,7 +64,7 @@ public class Controller {
                 } 
             
             } catch (MessageNotSendException e) {
-                    e.printStackTrace();
+                    Logger.log("One message not sent (might be a routing_message)");
                 
             }
         }
