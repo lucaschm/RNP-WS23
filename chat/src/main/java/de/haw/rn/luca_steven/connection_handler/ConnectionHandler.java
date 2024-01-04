@@ -287,8 +287,8 @@ public class ConnectionHandler implements IConnectionHandler{
         
         try {
             int success = 0;
-            
             while (buffer.hasRemaining()) {
+                
                 success =  client.write(buffer);
             }
             //Logger.log("written=" + success + " " + " Bytes to " + client.getRemoteAddress());
@@ -316,14 +316,15 @@ public class ConnectionHandler implements IConnectionHandler{
     private ByteBuffer getFromattedByteBuffer(String string) {
         int length = string.length();
         long checksum = CRC32Checksum.crc32(string);
+        int intChecksum = (int) checksum;
         ByteBuffer buffer = ByteBuffer.allocate(COMMON_HEADER_LENGTH + length);
         
         //buffer.putLong(0, checksum);
-        buffer.putInt(length);
-        buffer.putInt(checksum);
+        buffer.putLong(0, checksum);
+        buffer.putInt(0, length);
 
         byte[] stringBytes = string.getBytes(Charset.forName("UTF-8"));
-        buffer.put(stringBytes);
+        buffer.put(8, stringBytes);
 
         return buffer;
     }
