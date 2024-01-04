@@ -1,8 +1,12 @@
 package de.haw.rn.luca_steven.data_classes.routing_table;
 
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Set;
+
+import de.haw.rn.luca_steven.Config;
 
 public class RoutingEntrySet implements IRoutingTable {
     
@@ -44,19 +48,38 @@ public class RoutingEntrySet implements IRoutingTable {
     public void mergeWith(Set<RoutingEntry> routingEntries, String origin) {
         for (RoutingEntry entry : routingEntries) {
             if (!origin.equals(entry.getOrigin())) {
-                throw new IllegalArgumentException("Entry: " + entry + " did not have the given origin: " + origin);
+                throw new IllegalArgumentException("Entry: " + entry + " did not have the same origin as the message, which has origin: " + origin);
             }
         }
         
-        Iterator<RoutingEntry> iterator = set.iterator();
-        while (iterator.hasNext()) {
-            RoutingEntry entry = iterator.next();
-            if (origin.equals(entry.getOrigin())) {
-                iterator.remove();
-            }
-        }
+       
 
-        set.addAll(routingEntries);
+        if(Config.onlyStoreBestRoutingEntry){
+            //get only the best entry
+             //< dest , routingEntry>
+            Map<String, RoutingEntry> findShortestWayMap = new HashMap<String, RoutingEntry>();
+            for (RoutingEntry entry : set) {
+                findShortestWayMap.put(entry.getDestination(), entry);
+            };
+
+            for (RoutingEntry entry: routingEntries) {
+                RoutingEntry currentlyBestEntry = findShortestWayMap.get(entry.getDestination());
+                if (currentlyBestEntry == null || entry.getHops() < currentlyBestEntry.getHops()) {
+                    findShortestWayMap.put(entry.getDestination(), entry);
+                }
+            }
+            set = new HashSet<RoutingEntry>(findShortestWayMap.values());
+
+        } else {
+            Iterator<RoutingEntry> iterator = set.iterator();
+                while (iterator.hasNext()) {
+                    RoutingEntry entry = iterator.next();
+                    if (origin.equals(entry.getOrigin())) {
+                        iterator.remove();
+                    }
+                }
+            set.addAll(routingEntries);
+        }
 
         return;
     }

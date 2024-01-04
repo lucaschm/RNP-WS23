@@ -26,7 +26,7 @@ public class RoutingEntry {
      * especially for debugger
      */
     public String toString() {
-        return "d: " + this.destination + " nH: " + this.nextHop;
+        return "d: " + this.destination + " h: " + this.hops + " nH: " + this.nextHop;
     }
 
     /**
