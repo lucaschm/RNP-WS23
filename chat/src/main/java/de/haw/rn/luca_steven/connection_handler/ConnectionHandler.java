@@ -147,6 +147,9 @@ public class ConnectionHandler implements IConnectionHandler{
                 if (remoteIP.equals(ipAddress) && remotePort == port) {
                     client.close();
                     key.cancel();
+
+                    String ipPort = remoteIP + ":" + remotePort;
+                    Logger.log("disconnected with " + ipPort);
                 }
 
             } catch (IOException e) {
@@ -243,7 +246,7 @@ public class ConnectionHandler implements IConnectionHandler{
 
         // TODO: Länge sollte als unsigned int interpretiert werden (wegen Absprache)
         int messageLength = headerBuffer.getInt(0);
-        
+
         // int muss überschrieben werden, damit der Long so ausgelesen werden kann,
         // wie er geschrieben wurde
         headerBuffer.putInt(0,0);
