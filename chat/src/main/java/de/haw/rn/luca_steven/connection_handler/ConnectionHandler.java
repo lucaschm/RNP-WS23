@@ -323,17 +323,15 @@ public class ConnectionHandler implements IConnectionHandler{
     }
 
     private ByteBuffer getFromattedByteBuffer(String string) {
-        int length = string.length();
+        byte[] jsonString = string.getBytes(Charset.forName("UTF-8"));
+        int length = jsonString.length;
         long checksum = CRC32Checksum.crc32(string);
-        int intChecksum = (int) checksum;
         ByteBuffer buffer = ByteBuffer.allocate(COMMON_HEADER_LENGTH + length);
         
         //buffer.putLong(0, checksum);
         buffer.putLong(0, checksum);
         buffer.putInt(0, length);
-
-        byte[] stringBytes = string.getBytes(Charset.forName("UTF-8"));
-        buffer.put(8, stringBytes);
+        buffer.put(8, jsonString);
 
         return buffer;
     }

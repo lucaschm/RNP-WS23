@@ -6,6 +6,7 @@ import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.nio.charset.StandardCharsets;
+import java.util.InputMismatchException;
 import java.util.Scanner;
 
 public class Main {
@@ -50,8 +51,23 @@ public class Main {
     }
 
     private static int getPort(Scanner reader) {
-        Logger.log("Bitte gebe den Port ein:");
-        return reader.nextInt();
+        while(true) {
+            Logger.log("Bitte gebe den Port ein:");
+            try {
+                int num = reader.nextInt();
+                if (num > 1024) {
+                    return num;
+                } else {
+                    Logger.log("Bitte größer als 1024");
+                }
+            } catch (InputMismatchException e){
+                reader.next();
+                Logger.log("Das war keine Zahl");
+            } catch (Exception e){
+                reader.next();
+                Logger.log("Ups, da ist etwas schief gelaufen");
+            }
+        }
 
     }
 }
