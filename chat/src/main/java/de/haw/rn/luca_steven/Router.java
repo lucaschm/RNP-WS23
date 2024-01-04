@@ -99,12 +99,11 @@ public class Router {
             Set<RoutingEntry> splitHorizonTable = table.getEntriesWithout(oneNeighbour);
 
             // formatiere aus der Tabelle ein Json
-            //TODO: hier wurde nur gehofft, dass 'connectionMap.get(nextHop)' den richtigen source_port liefert
             String sourcePort = connectionMap.get(nextHop);
 
             if (sourcePort != null) {
                 
-                String tableJsonString = parser.buildRoutingTableJsonString(splitHorizonTable, localIP, connectionMap.get(nextHop), idPort); 
+                String tableJsonString = parser.buildRoutingTableJsonString(splitHorizonTable, localIP, sourcePort, idPort); 
         
                 // schicke es an den Nachbarn
                 String ip = nextHop.split(":")[0];
