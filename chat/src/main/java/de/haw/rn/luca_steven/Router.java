@@ -15,7 +15,7 @@ import de.haw.rn.luca_steven.data_classes.routing_table.RoutingEntrySet;
 
 public class Router {
 
-    private final int ROUTING_SHARE_INTERVAL = 10;
+    private final int ROUTING_SHARE_INTERVAL = 200; //in ms
 
     IConnectionHandler connections;
     IRoutingTable table;

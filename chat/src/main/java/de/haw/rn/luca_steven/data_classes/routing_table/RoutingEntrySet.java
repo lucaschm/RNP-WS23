@@ -51,8 +51,6 @@ public class RoutingEntrySet implements IRoutingTable {
                 throw new IllegalArgumentException("Entry: " + entry + " did not have the same origin as the message, which has origin: " + origin);
             }
         }
-        
-       
 
         if(Config.onlyStoreBestRoutingEntry){
             //get only the best entry
@@ -105,7 +103,9 @@ public class RoutingEntrySet implements IRoutingTable {
     public Set<String> getAllUniqueDestinations() {
         Set<String> result = new HashSet<String>();
         for (RoutingEntry entry : set) {
-            result.add(entry.getDestination());
+            if (entry.getHops() > 0) {
+                result.add(entry.getDestination() + " [" + entry.getHops() + "]");
+            }
         }
         return result;
     }
@@ -115,7 +115,7 @@ public class RoutingEntrySet implements IRoutingTable {
         Set<RoutingEntry> resultSet = new HashSet<RoutingEntry>();
 
         for (RoutingEntry entry : set) {
-            if (entry.getHops() <= 1) {
+            if (entry.getHops() == 1) {
                 resultSet.add(entry);
             }
         }
