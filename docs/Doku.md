@@ -5,7 +5,7 @@
 - [ ] Disconnect muss zuverlässig funktionieren
 - [ ] Ein Verbindungsabbruch muss behandelt werden
 - [ ] Wenn eine Verbindug aufgebaut wurde, muss sofort eine Routing Tabelle gesendet werden
-- [ ] Checksummen beim empfangen überprüfen
+- [x] Checksummen beim empfangen überprüfen
 ## nice to have
 - [ ] einheitliche Fehlerbehandlung (Logger oder Exceptions, oder was?)
 	- [ ] das Programm muss alle Arten von Fehlern fangen und dem User den Grund ausgeben. Darf aber nicht abstürzen. Die Fehlermeldungen mit Stacktrace müssen in eine Logdatei geschrieben werden.

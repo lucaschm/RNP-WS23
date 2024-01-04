@@ -255,8 +255,12 @@ public class ConnectionHandler implements IConnectionHandler{
         messageBuffer.position(0);
         CharBuffer cb = StandardCharsets.UTF_8.decode(messageBuffer);
         String string = cb.toString();
-        Logger.logFile(string);
-        receiveMessageQueue.addLast(string);
+
+        // Nachricht wird nur wahrgenommen, wenn die Checksumme richtig ist
+        if (isValidChecksum(crc32, string)) {
+            Logger.logFile(string);
+            receiveMessageQueue.addLast(string);
+        }
         
     }
 
@@ -329,6 +333,12 @@ public class ConnectionHandler implements IConnectionHandler{
         return buffer;
     }
 
+    // TODO: testen, ob diese Methode funktioniert
+    // Die Frage ist vor allem, ob man einen long mit einem int vergleichen kann
+    private boolean isValidChecksum(int checksum, String text) {
+        long expectedChecksum = CRC32Checksum.crc32(text);
+        return expectedChecksum == checksum;
+    }
 
     @Override
     public String getLocalIP() {
