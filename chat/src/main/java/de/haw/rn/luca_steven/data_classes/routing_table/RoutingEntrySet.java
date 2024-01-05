@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.Set;
 
 import de.haw.rn.luca_steven.Config;
+import de.haw.rn.luca_steven.Logger;
 
 public class RoutingEntrySet implements IRoutingTable {
     
@@ -57,7 +58,10 @@ public class RoutingEntrySet implements IRoutingTable {
              //< dest , routingEntry>
             Map<String, RoutingEntry> findShortestWayMap = new HashMap<String, RoutingEntry>();
             for (RoutingEntry entry : set) {
-                findShortestWayMap.put(entry.getDestination(), entry);
+                RoutingEntry currentlyBestEntry = findShortestWayMap.get(entry.getDestination());
+                if (currentlyBestEntry == null || entry.getHops() < currentlyBestEntry.getHops()) {
+                    findShortestWayMap.put(entry.getDestination(), entry);
+                }
             };
 
             for (RoutingEntry entry: routingEntries) {
@@ -96,8 +100,16 @@ public class RoutingEntrySet implements IRoutingTable {
      * only for testing
      * (maybe for adding entries by this client)
      */
-    public void addEntry(RoutingEntry entry) {
-        set.add(entry);
+    public void addEntry(RoutingEntry newEntry) {
+        Iterator<RoutingEntry> iterator = set.iterator();
+            while (iterator.hasNext()) {
+                RoutingEntry entry = iterator.next();
+                if (newEntry.getDestination().equals(entry.getDestination()) && 
+                    newEntry.getHops() < (entry.getHops())) {
+                    iterator.remove();
+                }
+            }
+        set.add(newEntry);
     }
 
     public Set<String> getAllUniqueDestinations() {
@@ -115,6 +127,9 @@ public class RoutingEntrySet implements IRoutingTable {
         Set<RoutingEntry> resultSet = new HashSet<RoutingEntry>();
 
         for (RoutingEntry entry : set) {
+            // if (entry.getDestinationIDPort() == 1111 && entry.getHops() == 1) {
+            //     Logger.log("hier, 1111 hat hops 1" + entry);
+            // }
             if (entry.getHops() == 1) {
                 resultSet.add(entry);
             }

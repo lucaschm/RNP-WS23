@@ -92,7 +92,7 @@ public class Router {
 
         // für alle Nachbarn
         for (RoutingEntry entry : neighbours) {
-            String oneNeighbour = entry.getOrigin();
+            String oneNeighbour = entry.getDestination();
             String nextHop = entry.getNextHop();
             
             // hole angepasste RoutingTabelle
