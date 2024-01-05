@@ -23,7 +23,10 @@ public class Logger {
 
     public static void logFile(String logMessage) {
         try {
-            BufferedWriter writer = new BufferedWriter(new FileWriter("/home/networker/log.txt"));
+            // Use a relative path that works on both Linux and Windows
+            String relativePath = "logs" + File.separator + "log.txt";
+
+            BufferedWriter writer = new BufferedWriter(new FileWriter(relativePath));
             writer.append(logMessage);
             writer.close();
         } catch (IOException e) {
