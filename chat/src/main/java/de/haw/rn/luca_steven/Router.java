@@ -12,6 +12,7 @@ import de.haw.rn.luca_steven.data_classes.RoutingMessage;
 import de.haw.rn.luca_steven.data_classes.routing_table.IRoutingTable;
 import de.haw.rn.luca_steven.data_classes.routing_table.RoutingEntry;
 import de.haw.rn.luca_steven.data_classes.routing_table.RoutingEntrySet;
+import de.haw.rn.luca_steven.ui.Status;
 
 public class Router {
 
@@ -37,6 +38,7 @@ public class Router {
             localIPPort,
             ""
         ));
+        Status.routingTableChanged(table);
         timestamp = System.currentTimeMillis();
     }
 
@@ -46,8 +48,9 @@ public class Router {
             throw new MessageNotSendException(connections.getError());
         }
         long timedif = System.currentTimeMillis() - timestamp;
+        Status.routerProcess(timedif);
         if (Math.abs(timedif) > ROUTING_SHARE_INTERVAL) {
-            Logger.logRouting("" + timedif);
+            Status.shareRoutingInformation(timestamp);
             shareRoutingInformation();
             timestamp = System.currentTimeMillis();
         }        
@@ -67,14 +70,17 @@ public class Router {
         }
         
         if (!message.isChatMessage()) {
+            Status.routingMessageReceived();
             RoutingMessage rm = (RoutingMessage) message;
             table.mergeWith(rm.getSetOfRoutingEntries(), rm.getFullOriginAddress());
+            Status.routingTableChanged(table);
             return null;
         } else {
             ChatMessage cm = (ChatMessage) message;
             if (cm.isForMe(localIPPort)) {
                 return cm;
             } else {
+                Status.forwardMessage();
                 send(cm);
                 return null;
             }
@@ -122,6 +128,7 @@ public class Router {
             remoteIPPort,
             localIPPort
         ));
+        Status.routingTableChanged(table);
     }
 
     public void send(ChatMessage message) throws MessageNotSendException{
@@ -137,6 +144,7 @@ public class Router {
     public void disconnect(String IP, int port) {
         connections.disconnect(IP, port);
         table.deleteAllFor(IP + ":" + port);
+        Status.routingTableChanged(table);
     }
 
     public Set<String> getParticipantsSet() {

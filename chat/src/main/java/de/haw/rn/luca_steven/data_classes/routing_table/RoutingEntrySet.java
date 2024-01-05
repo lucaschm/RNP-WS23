@@ -8,6 +8,7 @@ import java.util.Set;
 
 import de.haw.rn.luca_steven.Config;
 import de.haw.rn.luca_steven.Logger;
+import de.haw.rn.luca_steven.ui.Status;
 
 public class RoutingEntrySet implements IRoutingTable {
     
@@ -78,6 +79,7 @@ public class RoutingEntrySet implements IRoutingTable {
                     RoutingEntry entry = iterator.next();
                     if (origin.equals(entry.getOrigin())) {
                         iterator.remove();
+                        Status.removeRoutingEntry(entry);
                     }
                 }
             set.addAll(routingEntries);
@@ -96,17 +98,23 @@ public class RoutingEntrySet implements IRoutingTable {
         return result;
     }
 
+    public Set<RoutingEntry> getEntries() {
+        return set;
+    }
+
     /**
      * only for testing
      * (maybe for adding entries by this client)
      */
     public void addEntry(RoutingEntry newEntry) {
         Iterator<RoutingEntry> iterator = set.iterator();
+        Status.addRoutingEntry(newEntry);
             while (iterator.hasNext()) {
                 RoutingEntry entry = iterator.next();
                 if (newEntry.getDestination().equals(entry.getDestination()) && 
                     newEntry.getHops() < (entry.getHops())) {
                     iterator.remove();
+                    Status.removeRoutingEntry(entry);
                 }
             }
         set.add(newEntry);
@@ -144,6 +152,7 @@ public class RoutingEntrySet implements IRoutingTable {
             RoutingEntry entry = i.next();
             if (entry.getNextHop().equals(ipPort)) {
                 i.remove();
+                Status.removeRoutingEntry(entry);
             }
         }
     }

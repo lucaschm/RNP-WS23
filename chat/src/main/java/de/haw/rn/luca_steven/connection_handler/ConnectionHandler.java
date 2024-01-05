@@ -4,6 +4,7 @@ import de.haw.rn.luca_steven.CRC32Checksum;
 import de.haw.rn.luca_steven.Logger;
 import de.haw.rn.luca_steven.data_classes.ChatMessage;
 import de.haw.rn.luca_steven.data_classes.MessagePack;
+import de.haw.rn.luca_steven.ui.Status;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -122,15 +123,15 @@ public class ConnectionHandler implements IConnectionHandler{
             client.configureBlocking(false);
             SocketAddress socketAddr;
             socketAddr = new InetSocketAddress(ipAddress, port);
-            Logger.logFile("Connect...");
+            Status.clientConnect(ipAddress, port);
             boolean success = client.connect(socketAddr);
             
             if (success) {
                 client.register(selector, SelectionKey.OP_READ | SelectionKey.OP_WRITE);
-                Logger.log("connected to: " + client.getRemoteAddress());
+                Status.connectionSuccess(ipAddress, port);
             } else {
                 client.register(selector, SelectionKey.OP_CONNECT);
-                Logger.log("wating to connected to: " + client.getRemoteAddress());
+                Status.waitForConnection(ipAddress, port);
             }
         } catch (Exception e) {
             Logger.log(e.getMessage());
@@ -150,10 +151,8 @@ public class ConnectionHandler implements IConnectionHandler{
                 int remotePort = inetSocketAddress.getPort();
                 if (remoteIP.equals(ipAddress) && remotePort == port) {
                     client.close();
+                    Status.clientClose(remoteIP + ":" + remotePort);
                     key.cancel();
-
-                    String ipPort = remoteIP + ":" + remotePort;
-                    Logger.log("disconnected with " + ipPort);
                 }
 
             } catch (IOException e) {
@@ -167,7 +166,7 @@ public class ConnectionHandler implements IConnectionHandler{
      * Map<"remoteIP:remotePort", "localPort">
      */
     public Map<String, String> getAllConnectionsWithLocalPort() {
-        Logger.logFile("getAllConnectionsWithLocalPort()");
+        Status.callMethod("getAllConnectionsWithLocalPort");
         Map<String, String> result = new HashMap<>();
 
         Set<SelectionKey> channelKeys = selector.keys();
@@ -205,7 +204,7 @@ public class ConnectionHandler implements IConnectionHandler{
     @Override
     public void sendString(String ip, int port, String s) {
         sendMessageQueue.addLast(new MessagePack(ip, port, s));
-        //Logger.log(message + " was added to queue size: " + messageQueue.size());
+        Status.addStringToSendQueue(s, sendMessageQueue.size(), ip, port);
     }
 
     // HELPER
@@ -230,9 +229,9 @@ public class ConnectionHandler implements IConnectionHandler{
 
     private void register(Selector selector, ServerSocketChannel serverSocketChannel) throws IOException {
         SocketChannel client = serverSocketChannel.accept();
+        Status.acceptConnection(client.getRemoteAddress().toString());
         client.configureBlocking(false);
         client.register(selector, SelectionKey.OP_READ|SelectionKey.OP_WRITE);
-        Logger.log("got connection from: " + client.getRemoteAddress());
     }
 
     private void readMessage(SelectionKey key) {
@@ -280,20 +279,21 @@ public class ConnectionHandler implements IConnectionHandler{
 
             // Nachricht wird nur wahrgenommen, wenn die Checksumme richtig ist
             if (isValidChecksum(crc32, string)) {
-                Logger.logFile(string);
+                Status.validChecksum();
                 receiveMessageQueue.addLast(string);
+                Status.addStringToReceiveQueue(string, receiveMessageQueue.size());
             }
         } catch (IOException e) {
             String errorMessage = e.getMessage();
             if (errorMessage.equals("Connection reset by peer") || errorMessage.equals("Connection reset")) {
+                Status.lostConnection();
                 try {
                     client.close();
+                    Status.clientClose(client.getRemoteAddress().toString());
                 } catch (IOException e1) {
                     e1.printStackTrace();
                 }
                 key.cancel();
-                
-                Logger.log("Lost connection with someone. I'm too lazy to look who it was.");
             }
             else {
                 e.printStackTrace();
@@ -323,7 +323,6 @@ public class ConnectionHandler implements IConnectionHandler{
         }
         String string = sendMessageQueue.removeFirst().getMessage();
         ByteBuffer buffer = getFromattedByteBuffer(string);
-        //Logger.log("limit: " + buffer.limit());
         buffer.position(0);
         
         
@@ -335,14 +334,14 @@ public class ConnectionHandler implements IConnectionHandler{
         } catch (IOException e) {
             String errorMessage = e.getMessage();
             if (errorMessage.equals("Connection reset by peer") || errorMessage.equals("Connection reset")) {
+                Status.lostConnection();
                 try {
                     client.close();
+                    Status.clientClose(client.getRemoteAddress().toString());
                 } catch (IOException e1) {
                     e1.printStackTrace();
                 }
                 key.cancel();
-                
-                Logger.log("Lost connection with someone. I'm too lazy to look who it was.");
             } 
             else {
                 e.printStackTrace();
@@ -355,7 +354,7 @@ public class ConnectionHandler implements IConnectionHandler{
         try {
             if (client.isConnectionPending()) {
                 if (client.finishConnect()) {
-                    Logger.log("finished connecting to: " + client.getRemoteAddress());
+                    Status.connectionFinised(client.getRemoteAddress());
                     client.register(selector, SelectionKey.OP_READ | SelectionKey.OP_WRITE);
                 }
             }            
@@ -376,6 +375,8 @@ public class ConnectionHandler implements IConnectionHandler{
         buffer.putInt(0, length);
         buffer.put(8, jsonString);
 
+        
+        Status.bufferCreated(buffer, string, length, checksum);
         return buffer;
     }
 
