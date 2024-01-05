@@ -6,6 +6,7 @@ import de.haw.rn.luca_steven.data_classes.ChatMessage;
 import de.haw.rn.luca_steven.data_classes.MessagePack;
 
 import java.io.IOException;
+import java.net.ConnectException;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.SocketAddress;
@@ -358,11 +359,13 @@ public class ConnectionHandler implements IConnectionHandler{
                     Logger.log("finished connecting to: " + client.getRemoteAddress());
                     client.register(selector, SelectionKey.OP_READ | SelectionKey.OP_WRITE);
                 }
-            }            
+            }  
+        } catch (ConnectException e) {
+            //Status.faildToConnect(client.getRemoteAddress()+ ", " + e.getMessage());        
         } catch (IOException e) {
             Logger.log("Error in continiueConnect:");
             e.printStackTrace();
-        }
+        } 
     }
 
     private ByteBuffer getFromattedByteBuffer(String string) {

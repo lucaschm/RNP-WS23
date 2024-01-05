@@ -101,15 +101,15 @@ public class RoutingEntrySet implements IRoutingTable {
      * (maybe for adding entries by this client)
      */
     public void addEntry(RoutingEntry newEntry) {
-        Iterator<RoutingEntry> iterator = set.iterator();
-            while (iterator.hasNext()) {
-                RoutingEntry entry = iterator.next();
-                if (newEntry.getDestination().equals(entry.getDestination()) && 
-                    newEntry.getHops() < (entry.getHops())) {
-                    iterator.remove();
-                }
-            }
         set.add(newEntry);
+        Map<String, RoutingEntry> findShortestWayMap = new HashMap<String, RoutingEntry>();
+            for (RoutingEntry entry : set) {
+                RoutingEntry currentlyBestEntry = findShortestWayMap.get(entry.getDestination());
+                if (currentlyBestEntry == null || entry.getHops() < currentlyBestEntry.getHops()) {
+                    findShortestWayMap.put(entry.getDestination(), entry);
+                }
+            };
+        set = new HashSet<RoutingEntry>(findShortestWayMap.values());
     }
 
     public Set<String> getAllUniqueDestinations() {
