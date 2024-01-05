@@ -8,6 +8,7 @@ import java.util.Set;
 
 import de.haw.rn.luca_steven.Config;
 import de.haw.rn.luca_steven.Logger;
+import de.haw.rn.luca_steven.ui.Status;
 
 public class RoutingEntrySet implements IRoutingTable {
     
@@ -78,6 +79,7 @@ public class RoutingEntrySet implements IRoutingTable {
                     RoutingEntry entry = iterator.next();
                     if (origin.equals(entry.getOrigin())) {
                         iterator.remove();
+                        Status.removeRoutingEntry(entry);
                     }
                 }
             set.addAll(routingEntries);
@@ -96,17 +98,24 @@ public class RoutingEntrySet implements IRoutingTable {
         return result;
     }
 
+    public Set<RoutingEntry> getEntries() {
+        return set;
+    }
+
     /**
      * only for testing
      * (maybe for adding entries by this client)
      */
     public void addEntry(RoutingEntry newEntry) {
         set.add(newEntry);
+        Status.addRoutingEntry(newEntry);
         Map<String, RoutingEntry> findShortestWayMap = new HashMap<String, RoutingEntry>();
             for (RoutingEntry entry : set) {
                 RoutingEntry currentlyBestEntry = findShortestWayMap.get(entry.getDestination());
                 if (currentlyBestEntry == null || entry.getHops() < currentlyBestEntry.getHops()) {
                     findShortestWayMap.put(entry.getDestination(), entry);
+                } else {
+                    Status.removeRoutingEntry(entry);
                 }
             };
         set = new HashSet<RoutingEntry>(findShortestWayMap.values());
@@ -144,6 +153,7 @@ public class RoutingEntrySet implements IRoutingTable {
             RoutingEntry entry = i.next();
             if (entry.getNextHop().equals(ipPort)) {
                 i.remove();
+                Status.removeRoutingEntry(entry);
             }
         }
     }
