@@ -2,16 +2,25 @@ package de.haw.rn.luca_steven;
 
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.logging.FileHandler;
-import java.util.logging.Level;
-import java.util.logging.LogRecord;
 
 public class Logger {
     static long millis = System.currentTimeMillis();
+
+    // Use a relative path that works on both Linux and Windows
+    private static final String directory = "logs" + File.separator + Main.sessionName;
+    private static final String logFile = "logs" + File.separator + Main.sessionName + File.separator + "log.txt";
+    private static final String routingTabLogFile = "logs" + File.separator + Main.sessionName + File.separator + "routingTableLog.txt";
+    private static final String routingLogFile = "logs" + File.separator + Main.sessionName + File.separator + "routingLog.txt";
+
+    static boolean userUninformedAboutMissingFiles = true;
 
     public static void log(String logMessage) {
         System.out.println(logMessage);
@@ -23,10 +32,7 @@ public class Logger {
 
     public static void logFile(String logMessage) {
         try {
-            // Use a relative path that works on both Linux and Windows
-            String relativePath = "logs" + File.separator + "log.txt";
-
-            BufferedWriter writer = new BufferedWriter(new FileWriter(relativePath));
+            BufferedWriter writer = new BufferedWriter(new FileWriter(logFile));
             writer.append(logMessage);
             writer.close();
         } catch (IOException e) {
@@ -36,10 +42,7 @@ public class Logger {
 
     public static void logRouting(String logMessage) {
         try {
-            // Use a relative path that works on both Linux and Windows
-            String relativePath = "logs" + File.separator + "routingLog.txt";
-
-            BufferedWriter writer = new BufferedWriter(new FileWriter(relativePath));
+            BufferedWriter writer = new BufferedWriter(new FileWriter(routingLogFile));
             writer.append(timestamp() + " >\n" + logMessage);
             writer.close();
         } catch (IOException e) {
@@ -49,10 +52,7 @@ public class Logger {
 
     public static void logRoutingTable(String string) {
         try {
-            // Use a relative path that works on both Linux and Windows
-            String relativePath = "logs" + File.separator + "routingLog.txt";
-
-            BufferedWriter writer = new BufferedWriter(new FileWriter(relativePath));
+            BufferedWriter writer = new BufferedWriter(new FileWriter(routingTabLogFile));
             writer.append(timestamp() + " > " + string);
             writer.close();
         } catch (IOException e) {
@@ -72,5 +72,26 @@ public class Logger {
 
         // return the timestamp string
         return timestampString;
+    }
+
+    public static void createLogfiles() {
+        try {
+            // Create a Path object from the file path
+            Path path1 = Paths.get(logFile);
+            Path path2 = Paths.get(routingLogFile);
+            Path path3 = Paths.get(routingTabLogFile);
+
+            // Create directories if they don't exist
+            Files.createDirectories(Paths.get(directory));
+
+            // Create the file using Files.createFile()
+            Files.createFile(path1);
+            Files.createFile(path2);
+            Files.createFile(path3);
+
+            System.out.println("Log files created.");
+        } catch (IOException e) {
+            System.out.println("Log files not created.");
+        }
     }
 }
