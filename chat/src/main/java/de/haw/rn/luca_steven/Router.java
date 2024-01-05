@@ -114,8 +114,13 @@ public class Router {
     }
 
     public void connect(String IP, int port) {
-        connections.connect(IP, port);
         String remoteIPPort = IP + ":" + port;
+        if (remoteIPPort.equals(localIPPort)){
+            Status.selfConnection();
+            return;
+        }
+        connections.connect(IP, port);
+        
         table.addEntry(new RoutingEntry(
             remoteIPPort, 
             NEW_CONNECTION_HOP_COUNT,
