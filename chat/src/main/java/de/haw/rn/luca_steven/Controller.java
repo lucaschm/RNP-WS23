@@ -9,6 +9,7 @@ import de.haw.rn.luca_steven.data_classes.ChatMessage;
 import de.haw.rn.luca_steven.ui.Command.*;
 import de.haw.rn.luca_steven.ui.UI;
 import de.haw.rn.luca_steven.ui.UserCommand;
+import de.haw.rn.luca_steven.ui.Status;
 
 public class Controller {
     String ip;
@@ -25,7 +26,7 @@ public class Controller {
         String ipPort = ip + ":" + port;
         Router router = new Router(connectionHandler, ipPort);
         UI ui = new UI();
-        Logger.log("Server gestartet als " + ipPort);
+        Status.serverStarted(ip, port);
         
         while(true) {
             connectionHandler.listen();
@@ -64,8 +65,7 @@ public class Controller {
                 } 
             
             } catch (MessageNotSendException e) {
-                    Logger.log("One message not sent (might be a routing_message)");
-                
+                Status.messageNotSent();
             }
         }
     }

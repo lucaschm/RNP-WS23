@@ -9,9 +9,11 @@ import java.nio.charset.StandardCharsets;
 import java.util.InputMismatchException;
 import java.util.Scanner;
 
+import de.haw.rn.luca_steven.ui.Status;
+
 public class Main {
     public static void main(String[] args) {
-        Logger.logFile("### START MAIN ###");
+        Status.callMethod("main");
 
         Scanner reader = new Scanner(System.in);
         

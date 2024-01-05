@@ -1,8 +1,11 @@
 package de.haw.rn.luca_steven;
 
 import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.logging.FileHandler;
 import java.util.logging.Level;
 import java.util.logging.LogRecord;
@@ -30,17 +33,41 @@ public class Logger {
 
     public static void logRouting(String logMessage) {
         try {
-            long newMillis = System.currentTimeMillis();
-            long diff = newMillis - millis;
-            millis = newMillis;
+            // Use a relative path that works on both Linux and Windows
+            String relativePath = "logs" + File.separator + "routingLog.txt";
 
-            BufferedWriter writer = new BufferedWriter(new FileWriter("/home/networker/routingLog.txt"));
-            writer.append("current" + newMillis);
-            writer.append("diff" + diff);
-            writer.append(logMessage);
+            BufferedWriter writer = new BufferedWriter(new FileWriter(relativePath));
+            writer.append(timestamp() + " >\n" + logMessage);
             writer.close();
         } catch (IOException e) {
             return;
         }
+    }
+
+    public static void logRoutingTable(String string) {
+        try {
+            // Use a relative path that works on both Linux and Windows
+            String relativePath = "logs" + File.separator + "routingLog.txt";
+
+            BufferedWriter writer = new BufferedWriter(new FileWriter(relativePath));
+            writer.append(timestamp() + " > " + string);
+            writer.close();
+        } catch (IOException e) {
+            return;
+        }
+    }
+
+    private static String timestamp() {
+        // Get the current timestamp
+        LocalDateTime timestamp = LocalDateTime.now();
+
+        // Define the desired date-time format
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS");
+
+        // Format the timestamp using the formatter
+        String timestampString = timestamp.format(formatter);
+
+        // return the timestamp string
+        return timestampString;
     }
 }

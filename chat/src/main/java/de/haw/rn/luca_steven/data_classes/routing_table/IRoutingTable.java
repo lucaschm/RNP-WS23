@@ -10,6 +10,8 @@ public interface IRoutingTable {
 
     public Set<RoutingEntry> getEntriesWithout(String originIP);
 
+    public Set<RoutingEntry> getEntries();
+
     public void addEntry(RoutingEntry entry);
 
     public Set<String> getAllUniqueDestinations();
