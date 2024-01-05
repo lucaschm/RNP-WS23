@@ -360,7 +360,7 @@ public class ConnectionHandler implements IConnectionHandler{
                 }
             }  
         } catch (ConnectException e) {
-            Status.faildToConnect(client.getRemoteAddress()+ ", " + e.getMessage());        
+                Status.failedToConnect(e.getMessage());  
         } catch (IOException e) {
             Logger.log("Error in continiueConnect:");
             e.printStackTrace();

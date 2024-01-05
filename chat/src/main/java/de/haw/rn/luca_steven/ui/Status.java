@@ -86,6 +86,10 @@ public class Status {
         Logger.log("Don't you have friends? Connect with them instead of yourself!");
     }
 
+    public static void unexpectedError(String message) {
+        Logger.log(message);
+    }
+
 ////// ROUTING /////////
 
     public static void routerProcess(long timedif) {
@@ -133,5 +137,7 @@ public class Status {
         }
         Logger.logRoutingTable(hint + tableString);
     }
+
+    
 
 }
