@@ -3,7 +3,6 @@ package de.haw.rn.luca_steven;
 import java.util.Map;
 import java.util.Set;
 
-import de.haw.rn.luca_steven.connection_handler.ConnectionHandler;
 import de.haw.rn.luca_steven.connection_handler.IConnectionHandler;
 import de.haw.rn.luca_steven.connection_handler.exceptions.MessageNotSendException;
 import de.haw.rn.luca_steven.data_classes.ChatMessage;

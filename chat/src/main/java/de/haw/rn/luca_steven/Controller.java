@@ -1,12 +1,9 @@
 package de.haw.rn.luca_steven;
 
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 
 import de.haw.rn.luca_steven.connection_handler.ConnectionHandler;
 import de.haw.rn.luca_steven.connection_handler.exceptions.MessageNotSendException;
 import de.haw.rn.luca_steven.data_classes.ChatMessage;
-import de.haw.rn.luca_steven.ui.Command.*;
 import de.haw.rn.luca_steven.ui.UI;
 import de.haw.rn.luca_steven.ui.UserCommand;
 import de.haw.rn.luca_steven.ui.Status;
