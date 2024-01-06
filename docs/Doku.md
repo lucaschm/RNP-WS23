@@ -24,9 +24,13 @@
 - [ ] einheitliche Fehlerbehandlung (Logger oder Exceptions, oder was?)
 	- [ ] das Programm muss alle Arten von Fehlern fangen und dem User den Grund ausgeben. Darf aber nicht abstürzen. Die Fehlermeldungen mit Stacktrace müssen in eine Logdatei geschrieben werden.
 - [ ] gute Logfiles schreiben
-	- es gibt 2 Loglevel:
-		1. Fehler
-		2. Info
+	- [x] allgemeine Infos
+	- [ ] Fehler
+	- [x] Entwicklung der Routing Tabelle
+	- [x] Wie Routing Tabellen an die Nachbarn geteilt werden
+	- [ ] Buffer Log
+	- [ ] Log von Nachrichten
+	- [x] User Log
 - [ ] eine Möglichkeit zu überprüfen, wie gut es dem Programm geht
 	- zum Beispiel messen wie lange es dauert, die Routing Tabelle rauszuschicken
 - [ ] Die Namen der Json Keys in einer Seperaten Klasse oder Enum haben
@@ -36,6 +40,7 @@
 	```
 - [ ] eine Validierungsmethode für Userinputs (mit regex :P)
 - [ ] Alerts wenn routing tabellen zu groß werden. oder allgemein allerts bei interessanten sachen
+- [ ] feedback wenn eine Nachricht gesendet wurde
 
 # Config
 Es gibt eine Klasse Config.java für konfigurationen
