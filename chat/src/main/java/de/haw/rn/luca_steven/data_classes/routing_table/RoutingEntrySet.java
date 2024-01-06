@@ -7,7 +7,6 @@ import java.util.Map;
 import java.util.Set;
 
 import de.haw.rn.luca_steven.Config;
-import de.haw.rn.luca_steven.Logger;
 import de.haw.rn.luca_steven.ui.Status;
 
 public class RoutingEntrySet implements IRoutingTable {

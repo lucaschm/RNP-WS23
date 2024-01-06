@@ -2,16 +2,13 @@ package de.haw.rn.luca_steven.connection_handler;
 
 import de.haw.rn.luca_steven.CRC32Checksum;
 import de.haw.rn.luca_steven.Logger;
-import de.haw.rn.luca_steven.data_classes.ChatMessage;
 import de.haw.rn.luca_steven.data_classes.MessagePack;
 import de.haw.rn.luca_steven.ui.Status;
 
 import java.io.IOException;
 import java.net.ConnectException;
 import java.net.InetSocketAddress;
-import java.net.ServerSocket;
 import java.net.SocketAddress;
-import java.net.SocketOption;
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
 import java.nio.channels.*;
@@ -19,11 +16,9 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Set;
-import java.util.Map.Entry;
 
 public class ConnectionHandler implements IConnectionHandler{
 

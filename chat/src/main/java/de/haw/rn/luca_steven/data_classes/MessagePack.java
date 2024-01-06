@@ -1,5 +1,4 @@
 package de.haw.rn.luca_steven.data_classes;
-import java.util.Objects;
 
 public class MessagePack {
     String ip;

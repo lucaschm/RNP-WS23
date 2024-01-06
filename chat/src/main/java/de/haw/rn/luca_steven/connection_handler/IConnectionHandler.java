@@ -1,9 +1,7 @@
 package de.haw.rn.luca_steven.connection_handler;
-import de.haw.rn.luca_steven.data_classes.ChatMessage;
 
 import java.util.Map;
 
-import javax.json.JsonObject;
 
 public interface IConnectionHandler {
     /**

@@ -1,17 +1,13 @@
 package de.haw.rn.luca_steven;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
 import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.InputMismatchException;
 import java.util.Scanner;
 
-import de.haw.rn.luca_steven.ui.Status;
 
 public class Main {
 
