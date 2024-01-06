@@ -15,7 +15,7 @@ import de.haw.rn.luca_steven.ui.Status;
 
 public class Router {
 
-    private final int ROUTING_SHARE_INTERVAL = 200; //in ms
+    private final int ROUTING_SHARE_INTERVAL = Config.routingShareInterval; //in ms
 
     IConnectionHandler connections;
     IRoutingTable table;

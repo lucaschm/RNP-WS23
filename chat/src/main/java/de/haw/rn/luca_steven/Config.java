@@ -11,4 +11,7 @@ public class Config {
     
     //if true, all known ways to any client will be rememberd (even if not the shortest)
     public static boolean onlyStoreBestRoutingEntry = true;
+
+    //time beetween sharing routing tabel in ms
+    public static int routingShareInterval = 200;
 }
