@@ -4,5 +4,5 @@ out
 target
 launch.json
 *.code-workspace
-Config.java
+
 logs/*
