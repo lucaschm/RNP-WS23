@@ -16,13 +16,13 @@ public class Main {
     public static void main(String[] args) {
 
         setSessionName();
-        Logger.createLogfiles();
+        Logger.createLogDirectory();
 
         Scanner reader = new Scanner(System.in);
         
         System.out.print("You can add a Lognote: ");
         String lognote = reader.nextLine();
-        Logger.logFile("Lognote: " + lognote);
+        Logger.logBasics("Lognote: " + lognote);
         
         String ip = getIp(reader);
 

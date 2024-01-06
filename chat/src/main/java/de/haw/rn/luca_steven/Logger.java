@@ -15,10 +15,13 @@ public class Logger {
 
     // Use a relative path that works on both Linux and Windows
     private static final String directory = "logs" + File.separator + Main.sessionName;
-    private static final String logFile = "logs" + File.separator + Main.sessionName + File.separator + "log.md";
-    private static final String routingTabLogFile = "logs" + File.separator + Main.sessionName + File.separator + "routingTableLog.md";
-    private static final String routingLogFile = "logs" + File.separator + Main.sessionName + File.separator + "routingLog.md";
-    private static final String dvLogFile = "logs" + File.separator + Main.sessionName + File.separator + "distanceVectoringLog.md";
+    private static final String basics = "logs" + File.separator + Main.sessionName + File.separator + "basics.md";
+    private static final String routingTabLogFile = "logs" + File.separator + Main.sessionName + File.separator + "routingTable.md";
+    private static final String routingLogFile = "logs" + File.separator + Main.sessionName + File.separator + "routing.md";
+    private static final String outRoutInfo = "logs" + File.separator + Main.sessionName + File.separator + "outgoingRoutingInformation.md";
+    private static final String inRoutInfo = "logs" + File.separator + Main.sessionName + File.separator + "incomingRoutingInformation.md";
+    private static final String outBuffer = "logs" + File.separator + Main.sessionName + File.separator + "outgoingBuffer.md";
+    private static final String inBuffer = "logs" + File.separator + Main.sessionName + File.separator + "incomingBuffer.md";
 
     static boolean userUninformedAboutMissingFiles = true;
 
@@ -30,46 +33,35 @@ public class Logger {
         //System.out.println(errorMessage);
     }
 
-    public static void logFile(String logMessage) {
+    public static void logFile(String filepath, String logMessage, boolean withTimestamp) {
         try {
-            BufferedWriter writer = new BufferedWriter(new FileWriter(logFile, true));
-            writer.append(timestamp() + " > " + logMessage + "\n");
+            BufferedWriter writer = new BufferedWriter(new FileWriter(filepath, true));
+            if (withTimestamp) {
+                writer.append(timestamp() + " > " + logMessage + "\n");
+            } 
+            else {
+                writer.append(logMessage + "\n");
+            }
             writer.close();
         } catch (IOException e) {
             return;
         }
+    }
+
+    public static void logBasics(String logMessage) {
+        logFile(basics, logMessage, true);
     }
 
     public static void logRouting(String logMessage, boolean withTimestamp) {
-        try {
-            BufferedWriter writer = new BufferedWriter(new FileWriter(routingLogFile, true));
-            if (withTimestamp) {
-                writer.append(timestamp() + " > " + logMessage + "\n");
-            } 
-            else {
-                writer.append(logMessage + "\n");
-            }
-            
-            writer.close();
-        } catch (IOException e) {
-            return;
-        }
+        logFile(routingLogFile, logMessage, withTimestamp);
     }
 
-    public static void logDistanceVectoring(String logMessage, boolean withTimestamp) {
-        try {
-            BufferedWriter writer = new BufferedWriter(new FileWriter(dvLogFile, true));
-            if (withTimestamp) {
-                writer.append(timestamp() + " > " + logMessage + "\n");
-            } 
-            else {
-                writer.append(logMessage + "\n");
-            }
-            
-            writer.close();
-        } catch (IOException e) {
-            return;
-        }
+    public static void logRoutingInfoOut(String logMessage, boolean withTimestamp) {
+        logFile(outRoutInfo, logMessage, withTimestamp);
+    }
+
+    public static void logRoutingInfoIn(String logMessage, boolean withTimestamp) {
+        logFile(inRoutInfo, logMessage, withTimestamp);
     }
 
     public static void logRoutingTable(String string) {
@@ -80,6 +72,14 @@ public class Logger {
         } catch (IOException e) {
             return;
         }
+    }
+
+    public static void logBufferOut(String string) {
+        logFile(outBuffer, string, true);
+    }
+    
+    public static void logBufferIn(String string) {
+        logFile(inBuffer, string, true);
     }
 
     private static String timestamp() {
@@ -96,24 +96,13 @@ public class Logger {
         return timestampString;
     }
 
-    public static void createLogfiles() {
+    public static void createLogDirectory() {
         try {
-            // Create a Path object from the file path
-            Path path1 = Paths.get(logFile);
-            Path path2 = Paths.get(routingLogFile);
-            Path path3 = Paths.get(routingTabLogFile);
-
             // Create directories if they don't exist
             Files.createDirectories(Paths.get(directory));
-
-            // Create the file using Files.createFile()
-            Files.createFile(path1);
-            Files.createFile(path2);
-            Files.createFile(path3);
-
-            System.out.println("Log files created.");
+            System.out.println("Log directory created.");
         } catch (IOException e) {
-            System.out.println("Log files not created.");
+            System.out.println("Log directory not created.");
         }
     }
 }
