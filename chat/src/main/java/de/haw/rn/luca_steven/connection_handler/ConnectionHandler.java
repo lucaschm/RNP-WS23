@@ -127,6 +127,11 @@ public class ConnectionHandler implements IConnectionHandler{
 
     @Override
     public boolean disconnect(String ipAddress, int port) {
+        try {
+            selector.selectNow();
+        } catch (IOException e) {
+            Status.unexpectedError("Exception while disconneting: "+ e.getMessage());
+        }
         Set<SelectionKey> selectedKeys = selector.selectedKeys();
         Iterator<SelectionKey> iter = selectedKeys.iterator();
         while (iter.hasNext()) {
