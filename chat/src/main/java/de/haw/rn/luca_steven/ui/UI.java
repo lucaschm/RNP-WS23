@@ -137,7 +137,7 @@ public class UI {
             outputString += participant.getDestination() + " [" + participant.getHops() + "]\n";
         }
         System.out.println(outputString);
-        Status.participantListprinted(outputString);
+        Status.participantListPrinted(outputString);
     }
 
     // Fehler ausgeben
