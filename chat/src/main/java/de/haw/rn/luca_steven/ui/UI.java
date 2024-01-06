@@ -136,6 +136,7 @@ public class UI {
             outputString += participant + "\n";
         }
         System.out.println(outputString);
+        Status.participantListprinted(outputString);
     }
 
     // Fehler ausgeben

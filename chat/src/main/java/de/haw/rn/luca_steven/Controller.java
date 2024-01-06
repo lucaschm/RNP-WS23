@@ -9,12 +9,17 @@ import de.haw.rn.luca_steven.ui.UserCommand;
 import de.haw.rn.luca_steven.ui.Status;
 
 public class Controller {
-    String ip;
-    int port;
+    private static final int ITERATION_LIMIT = 1_000_00;
+    private String ip;
+    private int port;
+    private int superloopIterations;
+    private long startTime;
+    private long finishTime;
 
     public Controller(String ip, int port) {
         this.ip = ip;
         this.port = port;
+        superloopIterations = 0;
     }
 
     public void run() {
@@ -25,22 +30,27 @@ public class Controller {
         UI ui = new UI();
         Status.serverStarted(ip, port);
         
+        startTime = System.currentTimeMillis();
         while(true) {
+            monitorLoopSpeed();
             connectionHandler.listen();
             ChatMessage receivedMsg = null;
             try {
                 receivedMsg = router.process();
             
                 if (receivedMsg != null) {
+                    Status.chatMessageReceived(receivedMsg);
                     ui.printChatMessage(receivedMsg);
                 }
                 UserCommand com = ui.getUserCommand();
                 if (com != null) {
                     switch (com.getCommand()) {
                     case CONNECT:
+                        Status.commandConnect(com);
                         router.connect(com.getIP(), com.getPort());
                     break;
                     case SEND:
+                        Status.commandSend(com);
                         ChatMessage msg = new ChatMessage(
                             com.getIP(), com.getPort(), 
                             ip, port, 
@@ -48,12 +58,15 @@ public class Controller {
                         router.send( msg);
                     break;
                     case DISCONNECT:
+                        Status.commandDisconnect(com);
                         router.disconnect(com.getIP(), com.getPort());
                     break;
                     case LIST:
+                        Status.commandList();
                         ui.printParticipantList(router.getParticipantsSet());
                     break;
                     case EXIT:
+                        Status.commandExit();
                     
                     break;
                     default:
@@ -64,6 +77,18 @@ public class Controller {
             } catch (MessageNotSendException e) {
                 Status.messageNotSent();
             }
+        }
+    }
+
+    private void monitorLoopSpeed() {
+        superloopIterations++;
+
+        if (superloopIterations >= ITERATION_LIMIT) {
+            finishTime = System.currentTimeMillis();
+            long timediff = finishTime - startTime;
+            Status.controllerSpeed(timediff, superloopIterations);
+            startTime = System.currentTimeMillis();
+            superloopIterations = 0;
         }
     }
 }

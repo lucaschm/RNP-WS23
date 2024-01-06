@@ -69,8 +69,8 @@ public class Router {
         }
         
         if (!message.isChatMessage()) {
-            Status.routingMessageReceived();
             RoutingMessage rm = (RoutingMessage) message;
+            Status.routingMessageReceived(rm);
             table.mergeWith(rm.getSetOfRoutingEntries(), rm.getFullOriginAddress());
             Status.routingTableChanged(table);
             return null;
@@ -95,6 +95,11 @@ public class Router {
         String localIP = connections.getLocalIP();
         String idPort = "" + connections.getLocalIDPort();
 
+
+        if (neighbours.size() == 0) {
+            Status.nothingToShare();
+        }
+
         // für alle Nachbarn
         for (RoutingEntry entry : neighbours) {
             String oneNeighbour = entry.getDestination();
@@ -114,6 +119,7 @@ public class Router {
                 String ip = nextHop.split(":")[0];
                 int port = Integer.parseInt(nextHop.split(":")[1]);
                 connections.sendString(ip, port, tableJsonString);
+                Status.routingInformationSent(splitHorizonTable, ip, port);
             }
         }
     }

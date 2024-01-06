@@ -46,44 +46,35 @@ public class ConnectionHandler implements IConnectionHandler{
     public void listen() {
 
         try {
-                int selectedKeysAmount = selector.selectNow();
-                if (selectedKeysAmount == 0) {
-                    Logger.error("der selector konnte bei selectNow() keine Keys auswählen");
+            selector.selectNow();
+            Set<SelectionKey> selectedKeys = selector.selectedKeys();
+            Iterator<SelectionKey> iter = selectedKeys.iterator();
+            //Logger.log(idPort + ": get selectedKeys");
+            MessagePack firstPlace = sendMessageQueue.peek(); 
+            while (iter.hasNext()) {
+                SelectionKey key = iter.next();
+
+                if(key.isWritable()) { //4
+                    writeMessage(key);
                 }
-                else {
-                    Logger.error("der selector konnte bei selectNow() " + selectedKeysAmount + " Keys auswählen");
+
+                if (key.isReadable()) { //1
+                    readMessage(key);
                 }
 
-                Set<SelectionKey> selectedKeys = selector.selectedKeys();
-                Iterator<SelectionKey> iter = selectedKeys.iterator();
-                //Logger.log(idPort + ": get selectedKeys");
-                MessagePack firstPlace = sendMessageQueue.peek(); 
-                while (iter.hasNext()) {
-                    SelectionKey key = iter.next();
-
-                    if(key.isWritable()) { //4
-                        writeMessage(key);
-                    }
-
-                    if (key.isReadable()) { //1
-                        readMessage(key);
-                    }
-
-                    if (key.isAcceptable()) { //16
-                        register(selector, serverSocketChannel);
-                    }
-
-                    if (key.isConnectable()) {  //lieber else if?
-                        continiueConnect(key);
-                    }
-                    iter.remove();
+                if (key.isAcceptable()) { //16
+                    register(selector, serverSocketChannel);
                 }
-                if (firstPlace != null && firstPlace.equals(sendMessageQueue.peek())) {
-                        String msg = sendMessageQueue.removeFirst().getMessage();
-                        errorMessage = "Error: " + msg + " could not be send.";
-                    }
-                //Logger.log(idPort + ": while(iter.hasNext())");
-            //}
+
+                if (key.isConnectable()) {  //lieber else if?
+                    continiueConnect(key);
+                }
+                iter.remove();
+            }
+            if (firstPlace != null && firstPlace.equals(sendMessageQueue.peek())) {
+                    String msg = sendMessageQueue.removeFirst().getMessage();
+                    errorMessage = "Error: " + msg + " could not be send.";
+            }
         } catch (IOException e) {
             Logger.log(e.getMessage());
             e.printStackTrace();;
@@ -162,7 +153,6 @@ public class ConnectionHandler implements IConnectionHandler{
      * Map<"remoteIP:remotePort", "localPort">
      */
     public Map<String, String> getAllConnectionsWithLocalPort() {
-        Status.callMethod("getAllConnectionsWithLocalPort");
         Map<String, String> result = new HashMap<>();
 
         Set<SelectionKey> channelKeys = selector.keys();
@@ -181,7 +171,6 @@ public class ConnectionHandler implements IConnectionHandler{
                         int remotePort = remoteInetSocketAddress.getPort();
 
                         InetSocketAddress localInetSocketAddress = (InetSocketAddress) client.getLocalAddress();
-                        Logger.logFile(">>> " + localInetSocketAddress.toString());
                         int localPort = localInetSocketAddress.getPort();
 
                         String k = remoteIP + ":" + remotePort;

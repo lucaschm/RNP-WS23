@@ -5,18 +5,26 @@ import java.nio.ByteBuffer;
 import java.util.Set;
 
 import de.haw.rn.luca_steven.Logger;
+import de.haw.rn.luca_steven.data_classes.ChatMessage;
+import de.haw.rn.luca_steven.data_classes.RoutingMessage;
 import de.haw.rn.luca_steven.data_classes.routing_table.IRoutingTable;
 import de.haw.rn.luca_steven.data_classes.routing_table.RoutingEntry;
 
 public class Status {
 
+    public static void controllerSpeed(long timediff, int iterations) {
+        Logger.logFile("The Controller needed " + timediff + " milliseconds for " + iterations + " superloop iterations.");
+    }
+
     public static void serverStarted(String ip, int port) {
         String ipPort = ip + ":" + port;
         Logger.log("Server started as " + ipPort);
+        Logger.logFile("Server started as " + ipPort);
     }
 
     public static void messageNotSent() {
         Logger.log("One message not sent (might be a routing_message)");
+        Logger.logFile("One message not sent (might be a routing_message)");
     }
 
     public static void clientConnect(String ipAddress, int port) {
@@ -25,18 +33,22 @@ public class Status {
 
     public static void failedToConnect(String string) {
         Logger.log("Failed to connect: " + string);
+        Logger.logFile("Failed to connect: " + string);
     }
 
     public static void connectionSuccess(String ipAddress, int port) {
         Logger.log("Connected to: " + ipAddress + ":" + port);
+        Logger.logFile("Connected to: " + ipAddress + ":" + port);
     }
 
     public static void waitForConnection(String ipAddress, int port) {
         Logger.log("Wait for connection with: " + ipAddress + ":" + port);
+        Logger.logFile("Wait for connection with: " + ipAddress + ":" + port);
     }
 
     public static void clientClose(String remoteAdress) {
         Logger.log("Disconnected with " + remoteAdress);
+        Logger.logFile("Disconnected with " + remoteAdress);
     }
 
     public static void callMethod(String string) {
@@ -44,30 +56,30 @@ public class Status {
     }
 
     public static void addStringToSendQueue(String s, int queueSize, String ip, int port) {
-        Logger.logFile("String was added to sendMessageQueue. Size of queue is now "+ queueSize + ". Message:");
-        Logger.logFile(s);
+        //Logger.logFile("String was added to sendMessageQueue. Size of queue is now "+ queueSize + ". Message:\n```json\n" + s + "\n```");
     }
 
     public static void addStringToReceiveQueue(String s, int queueSize) {
-        Logger.logFile("String was added to receiveMessageQueue. Size of queue is now "+ queueSize + ". Message:");
-        Logger.logFile(s);
+        //Logger.logFile("String was added to receiveMessageQueue. Size of queue is now "+ queueSize + ". Message:\n```json\n" + s + "\n```");
     }
 
     public static void acceptConnection(String remoteAddress) {
         Logger.log("Got connection from: " + remoteAddress);
+        Logger.logFile("Got connection from: " + remoteAddress);
     }
 
     public static void validChecksum() {
-        Logger.logFile("Message has valid checksum.");
+        //Logger.logFile("Message has valid checksum.");
     }
 
     public static void lostConnection() {
         Logger.log("Lost connection with someone.");
+        Logger.logFile("Lost connection with someone.");
     }
 
     public static void bufferCreated(ByteBuffer buffer, String string, int length, long checksum) {
-        Logger.logFile("Buffer created: ");
-        bufferInfo(buffer, string, length, checksum);
+        //Logger.logFile("Buffer created: ");
+        //bufferInfo(buffer, string, length, checksum);
     }
 
     private static void bufferInfo(ByteBuffer buffer, String string, int length, long checksum) {
@@ -80,10 +92,12 @@ public class Status {
 
     public static void connectionFinised(SocketAddress remoteAddress) {
         Logger.log("Finished connecting to: " + remoteAddress);
+        Logger.logFile("Finished connecting to: " + remoteAddress);
     }
 
     public static void selfConnection() {
         Logger.log("Don't you have friends? Connect with them instead of yourself!");
+        Logger.logFile("Stupid user just tried to connect with himself. But no worries I prevented him from doing this.");
     }
 
     public static void unexpectedError(String message) {
@@ -93,19 +107,28 @@ public class Status {
 ////// ROUTING /////////
 
     public static void routerProcess(long timedif) {
-        Logger.logRouting("Calculate timedif, to see if share is necessary. timedif: " + timedif);
+        //Logger.logDistanceVectoring("timedif calculated: " + timedif, true);
     }
 
     public static void shareRoutingInformation(long timestamp) {
-        Logger.logRouting("Router will share Routing Information now. Timestamp: " + timestamp);
+        Logger.logDistanceVectoring("Router will share Routing Information now. Timestamp: " + timestamp, true);
     }
 
-    public static void routingMessageReceived() {
-        Logger.logRouting("Routing message received.");
+    public static void nothingToShare() {
+        Logger.logDistanceVectoring("There is nothing to share (no neighbours).", true);
+    }
+
+    public static void routingInformationSent(Set<RoutingEntry> splitHorizonTable, String ip, int port) {
+        Logger.logDistanceVectoring("\n" + tableToString(splitHorizonTable) + 
+        "> This table was sent to " + ip + ":" + port + "\n", false);
+    }
+
+    public static void routingMessageReceived(RoutingMessage rm) {
+        Logger.logRouting("Routing message received from " + rm.getFullOriginAddress(), true);
     }
 
     public static void forwardMessage() {
-        Logger.logRouting("Received chat message for someone else. This message will be forwarded.");
+        Logger.logRouting("Received chat message for someone else. This message will be forwarded.", true);
     }
 
     public static void addRoutingEntry(RoutingEntry newEntry) {
@@ -113,7 +136,7 @@ public class Status {
         int hops = newEntry.getHops();
         String nextHop = newEntry.getNextHop();
         String origin = newEntry.getOrigin();
-        Logger.logRouting("Add new routing entry (dst,hops,next,orig): (" + destination + ", " + hops + ", " + nextHop + ", " + origin + ")");
+        Logger.logRouting("Add new routing entry (dst,hops,next,orig): (" + destination + ", " + hops + ", " + nextHop + ", " + origin + ")", true);
     }
 
     public static void removeRoutingEntry(RoutingEntry entry) {
@@ -121,23 +144,51 @@ public class Status {
         int hops = entry.getHops();
         String nextHop = entry.getNextHop();
         String origin = entry.getOrigin();
-        Logger.logRouting("Remove routing entry (dst,hops,next,orig): (" + destination + ", " + hops + ", " + nextHop + ", " + origin + ")");
+        Logger.logRouting("Remove routing entry (dst,hops,next,orig): (" + destination + ", " + hops + ", " + nextHop + ", " + origin + ")", true);
     }
 
     public static void routingTableChanged(IRoutingTable table) {
-        String hint = "Routing-Table has changed:\n";
+        Logger.logRoutingTable(tableToString(table.getEntries()));
+    }
+
+    private static String tableToString(Set<RoutingEntry> table) {
         String tableString = "|     destination     | hops |       nextHop       |       origin        |\n|---------------------|------|---------------------|---------------------|\n";
-        Set<RoutingEntry> allEntries = table.getEntries();
-        for (RoutingEntry entry : allEntries) {
+        for (RoutingEntry entry : table) {
             String destination = entry.getDestination();
             int hops = entry.getHops();
             String nextHop = entry.getNextHop();
             String origin = entry.getOrigin();
             tableString += "| " + destination + " | " + hops + "    | " + nextHop + " | " + origin + " |\n";
         }
-        Logger.logRoutingTable(hint + tableString);
+        return tableString;
     }
 
-    
+/////////// USER COMMANDS //////////
+    public static void commandConnect(UserCommand com) {
+        Logger.logFile("User wants to `connect` with " + com.getIP() + ":" + com.getPort());
+    }
 
+    public static void commandSend(UserCommand com) {
+        Logger.logFile("User wants to `send` a message to " + com.getIP() + ":" + com.getPort() + ": " + com.getMessageContent());
+    }
+
+    public static void commandDisconnect(UserCommand com) {
+        Logger.logFile("User wants to `disconnect` with " + com.getIP() + ":" + com.getPort());
+    }
+
+    public static void commandList() {
+        Logger.logFile("User wants to `list` participants");
+    }
+
+    public static void commandExit() {
+        Logger.logFile("User wants to `exit`");
+    }
+
+    public static void chatMessageReceived(ChatMessage receivedMsg) {
+        Logger.logFile("Chat message received from " + receivedMsg.getOriginIP() + ":" + receivedMsg.getDestinationIDPort() + ": " + receivedMsg.getContent());
+    }
+
+    public static void participantListprinted(String outputString) {
+        Logger.logFile("\n" + outputString);
+    }
 }

@@ -15,9 +15,10 @@ public class Logger {
 
     // Use a relative path that works on both Linux and Windows
     private static final String directory = "logs" + File.separator + Main.sessionName;
-    private static final String logFile = "logs" + File.separator + Main.sessionName + File.separator + "log.txt";
-    private static final String routingTabLogFile = "logs" + File.separator + Main.sessionName + File.separator + "routingTableLog.txt";
-    private static final String routingLogFile = "logs" + File.separator + Main.sessionName + File.separator + "routingLog.txt";
+    private static final String logFile = "logs" + File.separator + Main.sessionName + File.separator + "log.md";
+    private static final String routingTabLogFile = "logs" + File.separator + Main.sessionName + File.separator + "routingTableLog.md";
+    private static final String routingLogFile = "logs" + File.separator + Main.sessionName + File.separator + "routingLog.md";
+    private static final String dvLogFile = "logs" + File.separator + Main.sessionName + File.separator + "distanceVectoringLog.md";
 
     static boolean userUninformedAboutMissingFiles = true;
 
@@ -31,18 +32,40 @@ public class Logger {
 
     public static void logFile(String logMessage) {
         try {
-            BufferedWriter writer = new BufferedWriter(new FileWriter(logFile));
-            writer.append(logMessage);
+            BufferedWriter writer = new BufferedWriter(new FileWriter(logFile, true));
+            writer.append(timestamp() + " > " + logMessage + "\n");
             writer.close();
         } catch (IOException e) {
             return;
         }
     }
 
-    public static void logRouting(String logMessage) {
+    public static void logRouting(String logMessage, boolean withTimestamp) {
         try {
-            BufferedWriter writer = new BufferedWriter(new FileWriter(routingLogFile));
-            writer.append(timestamp() + " >\n" + logMessage);
+            BufferedWriter writer = new BufferedWriter(new FileWriter(routingLogFile, true));
+            if (withTimestamp) {
+                writer.append(timestamp() + " > " + logMessage + "\n");
+            } 
+            else {
+                writer.append(logMessage + "\n");
+            }
+            
+            writer.close();
+        } catch (IOException e) {
+            return;
+        }
+    }
+
+    public static void logDistanceVectoring(String logMessage, boolean withTimestamp) {
+        try {
+            BufferedWriter writer = new BufferedWriter(new FileWriter(dvLogFile, true));
+            if (withTimestamp) {
+                writer.append(timestamp() + " > " + logMessage + "\n");
+            } 
+            else {
+                writer.append(logMessage + "\n");
+            }
+            
             writer.close();
         } catch (IOException e) {
             return;
@@ -51,8 +74,8 @@ public class Logger {
 
     public static void logRoutingTable(String string) {
         try {
-            BufferedWriter writer = new BufferedWriter(new FileWriter(routingTabLogFile));
-            writer.append(timestamp() + " > " + string);
+            BufferedWriter writer = new BufferedWriter(new FileWriter(routingTabLogFile, true));
+            writer.append(string + "> " + timestamp() + "\n\n");
             writer.close();
         } catch (IOException e) {
             return;

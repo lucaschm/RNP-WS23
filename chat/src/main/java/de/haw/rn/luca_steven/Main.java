@@ -20,11 +20,13 @@ public class Main {
 
         Scanner reader = new Scanner(System.in);
         
+        System.out.print("You can add a Lognote: ");
+        String lognote = reader.nextLine();
+        Logger.logFile("Lognote: " + lognote);
+        
         String ip = getIp(reader);
 
-        System.out.println("WICHTIG: es wurde diese IP-Adresse ermittelt: " + ip);
-        System.out.println("In Config.java kann eingestellt werden, wie die IP ermittelt werden soll");
-        System.out.println("Hinweis: es könnte sein, dass die Validierung der Checksumme beim Empfangen nicht funktioniert.");
+        System.out.println("Please check the detected IP-Address: " + ip);
         
         int port = getPort(reader);
         
@@ -57,7 +59,7 @@ public class Main {
             //return new String(ipArray, StandardCharsets.UTF_8);
         } catch (UnknownHostException e1) {
             try {
-                System.out.println("The IP Address for this host was not found. Please give enter:");
+                System.out.print("The IP Address for this host was not found. Please enter IP: ");
                 InetAddress ip = Inet4Address.getByName(reader.nextLine());
                 return ip.getHostAddress();
             } catch (UnknownHostException e2) {
@@ -70,20 +72,20 @@ public class Main {
 
     private static int getPort(Scanner reader) {
         while(true) {
-            System.out.println("Bitte gebe den Port ein:");
+            System.out.print("Please enter the port: ");
             try {
                 int num = reader.nextInt();
                 if (num > 1024) {
                     return num;
                 } else {
-                    System.out.println("Bitte größer als 1024");
+                    System.out.println("Port needs to be greater than 1024.");
                 }
             } catch (InputMismatchException e){
                 reader.next();
-                System.out.println("Das war keine Zahl");
+                System.out.println("The Port needs to be a number.");
             } catch (Exception e){
                 reader.next();
-                System.out.println("Ups, da ist etwas schief gelaufen");
+                System.out.println("Oh no, something went wrong.");
             }
         }
 
