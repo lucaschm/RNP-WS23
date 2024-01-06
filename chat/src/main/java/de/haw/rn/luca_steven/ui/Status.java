@@ -1,7 +1,6 @@
 package de.haw.rn.luca_steven.ui;
 
 import java.net.SocketAddress;
-import java.nio.ByteBuffer;
 import java.util.Set;
 
 import de.haw.rn.luca_steven.Logger;
@@ -68,26 +67,9 @@ public class Status {
         Logger.logBasics("Got connection from: " + remoteAddress);
     }
 
-    public static void validChecksum() {
-        //Logger.logFile("Message has valid checksum.");
-    }
-
     public static void lostConnection() {
         Logger.log("Lost connection with someone.");
         Logger.logBasics("Lost connection with someone.");
-    }
-
-    public static void bufferCreated(ByteBuffer buffer, String string, int length, long checksum) {
-        //Logger.logFile("Buffer created: ");
-        //bufferInfo(buffer, string, length, checksum);
-    }
-
-    private static void bufferInfo(ByteBuffer buffer, String string, int length, long checksum) {
-        Logger.logBasics("String:\n" + string);
-        Logger.logBasics("length:\n" + length);
-        Logger.logBasics("checksum:\n" + checksum);
-        Logger.logBasics("buffer capacity:\n" + buffer.capacity());
-        Logger.logBasics("buffer position:\n" + buffer.position());
     }
 
     public static void connectionFinised(SocketAddress remoteAddress) {
@@ -102,6 +84,32 @@ public class Status {
 
     public static void unexpectedError(String message) {
         Logger.log(message);
+    }
+
+/////// BUFFER /////////
+
+    public static void bufferCreated(String string, int length, long checksum, boolean isValid) {
+        String bufferInfo = bufferInfo(string, length, checksum, isValid);
+        Logger.logBufferOut("Buffer created:\n" + bufferInfo);
+    }
+
+    public static void bufferConsumed(String string, int length, long checksum, boolean isValid) {
+        String bufferInfo = bufferInfo(string, length, checksum, isValid);
+        Logger.logBufferIn("Buffer consumed:\n" + bufferInfo);
+    }
+
+    private static String bufferInfo(String string, int length, long checksum, boolean isValid) {
+        String info = 
+        "Length: " + length + "\n" +
+        "Checksum: " + checksum + "\n" +
+        "checksumIsValid: " + isValid + "\n" +
+        "String:\n```json\n" + string + "\n```\n";
+
+        return info;
+    }
+
+    public static void invalidChecksum() {
+        Logger.logBasics("There was a message with an incorrect Checksum.");
     }
 
 ////// ROUTING /////////
@@ -124,7 +132,10 @@ public class Status {
     }
 
     public static void routingMessageReceived(RoutingMessage rm) {
-        Logger.logRouting("Routing message received from " + rm.getFullOriginAddress(), true);
+        String info = "Routing message received from " + rm.getFullOriginAddress();
+        Set<RoutingEntry> routingTable = rm.getSetOfRoutingEntries();
+        Logger.logRouting(info, true);
+        Logger.logRoutingInfoIn(info + " Table:\n\n" + tableToString(routingTable) + "\n", true);
     }
 
     public static void forwardMessage() {
@@ -188,7 +199,7 @@ public class Status {
         Logger.logBasics("Chat message received from " + receivedMsg.getOriginIP() + ":" + receivedMsg.getDestinationIDPort() + ": " + receivedMsg.getContent());
     }
 
-    public static void participantListprinted(String outputString) {
+    public static void participantListPrinted(String outputString) {
         Logger.logBasics("\n" + outputString);
     }
 }

@@ -21,7 +21,9 @@
 	- [ ] auf der Konsole wird noch der Stacktrace ausgegeben. Hier reicht es kurz das Timeout zu erwähnen
 - [ ] beim Verbindungsaufbau mit einem nicht existierenden User kann sich nicht verbunden werden. Da gibt es auch ein Timeout. Allerdings landet der nicht existierende User in der Routing Tabelle (ist zumindest in der list Ausgabe)
 - [ ] wenn man sich doppelt mit dem selben Teilnehmer verbindet wird scheinbar ein zweiter Socket und key angelegt. Die Routing Tabelle hat trotzdem nur einen Eintrag für diesen Teilnehmer. Es muss also nur noch verhindert werden, dass zwei Sockets für die selbe Verbindung gespeichert werden.
+- [ ] Wenn man sich versucht mit einem nicht existierenden Teilnehmer zu verbinden wird trotzdem ein Routingeintrag erstellt.
 ## nice to have
+- [ ] Die Tabelle sollte nur aktualisiert werden, wenn der Nachbar eine neue abgeänderte Routingnachricht geschickt hat.
 - [ ] einheitliche Fehlerbehandlung (Logger oder Exceptions, oder was?)
 	- [ ] das Programm muss alle Arten von Fehlern fangen und dem User den Grund ausgeben. Darf aber nicht abstürzen. Die Fehlermeldungen mit Stacktrace müssen in eine Logdatei geschrieben werden.
 - [ ] gute Logfiles schreiben
