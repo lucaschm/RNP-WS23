@@ -12,8 +12,8 @@ import de.haw.rn.luca_steven.data_classes.routing_table.RoutingEntry;
 
 public class Status {
 
-    public static void controllerSpeed(long timediff, int iterations) {
-        Logger.logFile("The Controller needed " + timediff + " milliseconds for " + iterations + " superloop iterations.");
+    public static void controllerSpeed(long timediff, long superloopIterations) {
+        Logger.logFile("The Controller needed " + timediff + " milliseconds for " + superloopIterations + " superloop iterations.");
     }
 
     public static void serverStarted(String ip, int port) {

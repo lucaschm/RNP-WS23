@@ -9,10 +9,10 @@ import de.haw.rn.luca_steven.ui.UserCommand;
 import de.haw.rn.luca_steven.ui.Status;
 
 public class Controller {
-    private static final int ITERATION_LIMIT = 1_000_00;
+    private static final long ITERATION_LIMIT = 10_000_000;
     private String ip;
     private int port;
-    private int superloopIterations;
+    private long superloopIterations;
     private long startTime;
     private long finishTime;
 
