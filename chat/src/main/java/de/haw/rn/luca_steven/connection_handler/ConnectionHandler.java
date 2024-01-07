@@ -268,10 +268,14 @@ public class ConnectionHandler implements IConnectionHandler{
             String string = cb.toString();
 
             // Nachricht wird nur wahrgenommen, wenn die Checksumme richtig ist
-            if (isValidChecksum(crc32, string)) {
-                Status.validChecksum();
+            boolean isValidChecksum = isValidChecksum(crc32, string);
+            Status.bufferConsumed(string, messageLength, crc32, isValidChecksum);
+            if (isValidChecksum) {
                 receiveMessageQueue.addLast(string);
                 Status.addStringToReceiveQueue(string, receiveMessageQueue.size());
+            }
+            else {
+                Status.invalidChecksum();
             }
         } catch (IOException e) {
             String errorMessage = e.getMessage();
@@ -366,7 +370,7 @@ public class ConnectionHandler implements IConnectionHandler{
         buffer.put(8, jsonString);
 
         
-        Status.bufferCreated(buffer, string, length, checksum);
+        Status.bufferCreated(string, length, checksum, isValidChecksum(checksum, string));
         return buffer;
     }
 
