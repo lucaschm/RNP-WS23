@@ -84,6 +84,9 @@ public class RoutingTableSetImpl implements IRoutingTable {
                 }
             set.addAll(routingEntries);
         }
+        // TODO: die Routing Tabell ändert sich nicht nur, wenn 
+        // sich die Größe der Routing Tabelle ändert. Es könnte 
+        // ja auch sein, dass sich nur ein Routing Eintrag minimal ändert.
         if (setSize != set.size()) {
             Status.routingTableChanged(this);      
         }   
