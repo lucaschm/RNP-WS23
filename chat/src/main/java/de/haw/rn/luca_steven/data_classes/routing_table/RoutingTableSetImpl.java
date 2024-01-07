@@ -127,11 +127,11 @@ public class RoutingTableSetImpl implements IRoutingTable {
         set = new HashSet<RoutingEntry>(findShortestWayMap.values());
     }
 
-    public Set<String> getAllButSelfEntry() {
-        Set<String> result = new HashSet<String>();
+    public Set<RoutingEntry> getAllButSelfEntry() {
+        Set<RoutingEntry> result = new HashSet<RoutingEntry>();
         for (RoutingEntry entry : set) {
             if (entry.getHops() > 0) {
-                result.add(entry.getDestination() + " [" + entry.getHops() + "]");
+                result.add(entry);
             }
         }
         return result;
@@ -159,5 +159,11 @@ public class RoutingTableSetImpl implements IRoutingTable {
                 Status.removeRoutingEntry(entry);
             }
         }
+    }
+
+    @Override
+    public void delete(Set<RoutingEntry> lostConnections) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'delete'");
     }
 }      
