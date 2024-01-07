@@ -13,7 +13,7 @@ import de.haw.rn.luca_steven.data_classes.routing_table.RoutingEntry;
 public class Status {
 
     public static void controllerSpeed(long timediff, int iterations) {
-        Logger.logFile("The Controller needed " + timediff + " milliseconds for " + iterations + " superloop iterations.");
+        //Logger.logFile("The Controller needed " + timediff + " milliseconds for " + iterations + " superloop iterations.");
     }
 
     public static void serverStarted(String ip, int port) {
@@ -124,7 +124,7 @@ public class Status {
     }
 
     public static void routingMessageReceived(RoutingMessage rm) {
-        Logger.logRouting("Routing message received from " + rm.getFullOriginAddress(), true);
+        //Logger.logRouting("Routing message received from " + rm.getFullOriginAddress(), true);
     }
 
     public static void forwardMessage() {

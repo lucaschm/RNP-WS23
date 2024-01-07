@@ -10,7 +10,7 @@ import de.haw.rn.luca_steven.data_classes.Message;
 import de.haw.rn.luca_steven.data_classes.RoutingMessage;
 import de.haw.rn.luca_steven.data_classes.routing_table.IRoutingTable;
 import de.haw.rn.luca_steven.data_classes.routing_table.RoutingEntry;
-import de.haw.rn.luca_steven.data_classes.routing_table.RoutingEntrySet;
+import de.haw.rn.luca_steven.data_classes.routing_table.RoutingTableMapImpl;
 import de.haw.rn.luca_steven.ui.Status;
 
 public class Router {
@@ -29,19 +29,20 @@ public class Router {
     public Router(IConnectionHandler connectionHandler, String ipPort) {
         this.connections = connectionHandler;
         this.parser = new JsonParser();
-        this.table = new RoutingEntrySet();
+        this.table = new RoutingTableMapImpl();
         this.localIPPort = ipPort;
         table.addEntry(new RoutingEntry(
             localIPPort, 
             INIT_HOP_COUNT,
             localIPPort,
-            ""
+            ipPort
         ));
-        Status.routingTableChanged(table);
         timestamp = System.currentTimeMillis();
     }
 
     public ChatMessage process() throws MessageNotSendException {
+        Set<RoutingEntry> lostConnections = connections.ckeckConnections(table.getAllButSelfEntry());
+        table.delete(lostConnections);
         ChatMessage result = processMessage();
         if (connections.hasError()) {
             throw new MessageNotSendException(connections.getError());
@@ -72,7 +73,6 @@ public class Router {
             RoutingMessage rm = (RoutingMessage) message;
             Status.routingMessageReceived(rm);
             table.mergeWith(rm.getSetOfRoutingEntries(), rm.getFullOriginAddress());
-            Status.routingTableChanged(table);
             return null;
         } else {
             ChatMessage cm = (ChatMessage) message;
@@ -138,7 +138,6 @@ public class Router {
             remoteIPPort,
             localIPPort
         ));
-        Status.routingTableChanged(table);
     }
 
     public void send(ChatMessage message) throws MessageNotSendException{
@@ -154,10 +153,9 @@ public class Router {
     public void disconnect(String IP, int port) {
         connections.disconnect(IP, port);
         table.deleteAllFor(IP + ":" + port);
-        Status.routingTableChanged(table);
     }
 
-    public Set<String> getParticipantsSet() {
-        return table.getAllUniqueDestinations();
+    public Set<RoutingEntry> getParticipantsSet() {
+        return table.getAllButSelfEntry();
     }
 }

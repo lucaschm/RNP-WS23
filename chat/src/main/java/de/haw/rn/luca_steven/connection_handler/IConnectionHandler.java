@@ -1,6 +1,9 @@
 package de.haw.rn.luca_steven.connection_handler;
 
 import java.util.Map;
+import java.util.Set;
+
+import de.haw.rn.luca_steven.data_classes.routing_table.RoutingEntry;
 
 
 public interface IConnectionHandler {
@@ -48,4 +51,6 @@ public interface IConnectionHandler {
     public boolean hasError();
 
     public String getError();
+
+    public Set<RoutingEntry> ckeckConnections(Set<RoutingEntry> neighbours);
 }

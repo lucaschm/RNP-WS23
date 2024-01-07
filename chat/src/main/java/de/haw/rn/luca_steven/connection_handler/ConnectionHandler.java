@@ -3,6 +3,7 @@ package de.haw.rn.luca_steven.connection_handler;
 import de.haw.rn.luca_steven.CRC32Checksum;
 import de.haw.rn.luca_steven.Logger;
 import de.haw.rn.luca_steven.data_classes.MessagePack;
+import de.haw.rn.luca_steven.data_classes.routing_table.RoutingEntry;
 import de.haw.rn.luca_steven.ui.Status;
 
 import java.io.IOException;
@@ -15,6 +16,7 @@ import java.nio.channels.*;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Map;
@@ -127,19 +129,22 @@ public class ConnectionHandler implements IConnectionHandler{
 
     @Override
     public boolean disconnect(String ipAddress, int port) {
-        Set<SelectionKey> selectedKeys = selector.selectedKeys();
+        Set<SelectionKey> selectedKeys = selector.keys();
         Iterator<SelectionKey> iter = selectedKeys.iterator();
         while (iter.hasNext()) {
             SelectionKey key = iter.next();
             try{
-                SocketChannel client = (SocketChannel) key.channel();
-                InetSocketAddress inetSocketAddress = (InetSocketAddress) client.getRemoteAddress();
-                String remoteIP = inetSocketAddress.getAddress().getHostAddress();
-                int remotePort = inetSocketAddress.getPort();
-                if (remoteIP.equals(ipAddress) && remotePort == port) {
-                    client.close();
-                    Status.clientClose(remoteIP + ":" + remotePort);
-                    key.cancel();
+                SelectableChannel channel = key.channel();
+                if(!(channel instanceof ServerSocketChannel)) {
+                    SocketChannel client = (SocketChannel) channel;
+                    InetSocketAddress inetSocketAddress = (InetSocketAddress) client.getRemoteAddress();
+                    String remoteIP = inetSocketAddress.getAddress().getHostAddress();
+                    int remotePort = inetSocketAddress.getPort();
+                    if (remoteIP.equals(ipAddress) && remotePort == port) {
+                        client.close();
+                        Status.clientClose(remoteIP + ":" + remotePort);
+                        key.cancel();
+                    }
                 }
 
             } catch (IOException e) {
@@ -274,9 +279,7 @@ public class ConnectionHandler implements IConnectionHandler{
                 Status.lostConnection();
                 try {
                     client.close();
-                    Status.clientClose(client.getRemoteAddress().toString());
                 } catch (IOException e1) {
-                    e1.printStackTrace();
                 }
                 key.cancel();
             }
@@ -322,7 +325,7 @@ public class ConnectionHandler implements IConnectionHandler{
                 Status.lostConnection();
                 try {
                     client.close();
-                    Status.clientClose(client.getRemoteAddress().toString());
+                    Status.clientClose(client.getRemoteAddress().toString()); //passiert öfter, unbedingt gute fehlermeldung
                 } catch (IOException e1) {
                     e1.printStackTrace();
                 }
@@ -393,6 +396,34 @@ public class ConnectionHandler implements IConnectionHandler{
         else {
             return true;
         }
+    }
+
+    public Set<RoutingEntry> ckeckConnections(Set<RoutingEntry> entries) {
+        // To check if connections got lost we first collect all healthy connections
+        // and then ask for every entry if the corrosponding connection is in this collection
+        Set<SelectionKey> keys = selector.keys();
+        Set<String> connectedAdresses = new HashSet<String>();
+        for (SelectionKey key : keys) {
+            if(key.isValid()) {
+                SelectableChannel channel = key.channel();
+                if(!(channel instanceof ServerSocketChannel)) {
+                    SocketChannel client = (SocketChannel) channel;
+                    try {
+                        connectedAdresses.add(client.getRemoteAddress().toString());
+                    } catch(IOException e) {
+                        Logger.log(e.getMessage());
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }
+        Set<RoutingEntry> lostConnections = new HashSet<RoutingEntry>();
+        for (RoutingEntry entry : entries) {
+            if (!connectedAdresses.contains("/" + entry.getNextHop())) {
+                lostConnections.add(entry);
+            }
+        }
+        return lostConnections;
     }
 
     @Override
