@@ -19,6 +19,7 @@ public class RoutingTableMapImpl implements IRoutingTable {
     public void mergeWith(Set<RoutingEntry> routingEntries, String origin){
         //put routingEntries in map for easy handling
         Map<String, RoutingEntry> newEntries = new HashMap<String, RoutingEntry>();
+        boolean tableHasChanged = false;
         for (RoutingEntry entry : routingEntries) {
             newEntries.put(entry.getDestination(), entry);
         }
@@ -31,11 +32,14 @@ public class RoutingTableMapImpl implements IRoutingTable {
             if (hasSameOrigin && !newEntries.containsKey(key)) {
                 iter.remove(); 
                 Status.removeRoutingEntry(entry);
-                Status.routingTableChanged(this);     
+                tableHasChanged = true;     
             }
         }
         for (RoutingEntry entry : newEntries.values()) {
             this.addEntry(entry);
+        }
+        if (tableHasChanged) {
+            Status.routingTableChanged(this);
         }
     }
 
@@ -100,21 +104,27 @@ public class RoutingTableMapImpl implements IRoutingTable {
 
     public void deleteAllFor(String targetNextHop){
         Iterator<String> i = map.keySet().iterator();
+        boolean tableHasChanged = false;
         while (i.hasNext()) {
             RoutingEntry entry = map.get(i.next());
             String nextHop = entry.getNextHop();
             if (nextHop.equals(targetNextHop)) {
                 i.remove();
                 Status.removeRoutingEntry(entry);
-                Status.routingTableChanged(this);  
+                tableHasChanged = true;  
             }
+        }
+        if (tableHasChanged) {
+            Status.routingTableChanged(this);
         }
     }
 
     public void delete(Set<RoutingEntry> lostConnections){
-        for (RoutingEntry entry : lostConnections) {
-            map.remove(entry.getDestination());
-            Status.removeRoutingEntry(entry);
+        if (lostConnections.size() > 0) {
+            for (RoutingEntry entry : lostConnections) {
+                map.remove(entry.getDestination());
+                Status.removeRoutingEntry(entry);
+            }
             Status.routingTableChanged(this);
         }
     }
