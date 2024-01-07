@@ -1,17 +1,18 @@
 # TODOS
 
 - [ ] Alle TODOs im Quelltext auflösen
-- [ ] Wenn ein Chatteilnehmer abrupt stirbt, muss der gestorbene Chatteilnehmer aus der Routing Tabelle entfernt werden.
+- [X] Wenn ein Chatteilnehmer abrupt stirbt, muss der gestorbene Chatteilnehmer aus der Routing Tabelle entfernt werden.
 - [ ] Das Programm muss kompatibel mit allen anderen Programmen sein
 - [ ] Das Programm muss im Labor laufen können
 - [ ] Count to Infinity Problem muss vernünftig behoben sein
-- [ ] Disconnect muss zuverlässig funktionieren auch bei doppelten verbindungen
+- [X] Disconnect muss zuverlässig funktionieren auch bei doppelten verbindungen
 - [X] Ein Verbindungsabbruch muss behandelt werden
 - [ ] Wenn eine Verbindug aufgebaut wurde, muss sofort eine Routing Tabelle gesendet werden
 - [X] Checksummen beim empfangen überprüfen
 - [ ] ttl impl
-- [ ] merge with muss mitbekommen ob jemand eine verbindung verloren hat
+- [X] merge with muss mitbekommen ob jemand eine verbindung verloren hat
 - [ ] lehne doppelte verbindungen ab
+- [ ] time triggerd mit sleep arbeiten
 
 ## Bugs
 
