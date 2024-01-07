@@ -6,6 +6,7 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import de.haw.rn.luca_steven.data_classes.ChatMessage;
+import de.haw.rn.luca_steven.data_classes.routing_table.RoutingEntry;
 
 //TODO: ganz viele Fehler abfangen
 public class UI {
@@ -129,11 +130,11 @@ public class UI {
     }
      
     // teilnehmer Liste ausgeben
-    public void printParticipantList(Set<String> set) {
+    public void printParticipantList(Set<RoutingEntry> set) {
 
         String outputString = "";
-        for (String participant : set) {
-            outputString += participant + "\n";
+        for (RoutingEntry participant : set) {
+            outputString += participant.getDestination() + " [" + participant.getHops() + "]\n";
         }
         System.out.println(outputString);
         Status.participantListprinted(outputString);

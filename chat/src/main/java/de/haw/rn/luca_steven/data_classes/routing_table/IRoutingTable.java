@@ -8,16 +8,18 @@ public interface IRoutingTable {
 
     public void mergeWith(Set<RoutingEntry> routingEntries, String origin);
 
-    public Set<RoutingEntry> getEntriesWithout(String originIP);
+    public Set<RoutingEntry> getEntriesWithout(String origin);
 
     public Set<RoutingEntry> getEntries();
 
     public void addEntry(RoutingEntry entry);
 
-    public Set<String> getAllUniqueDestinations();
+    public Set<RoutingEntry> getAllButSelfEntry();
 
     public Set<RoutingEntry> getNeighbours();
 
-    public void deleteAllFor(String ipPort);
+    public void deleteAllFor(String targetNextHop);
+
+    public void delete(Set<RoutingEntry> lostConnections);
      
 }

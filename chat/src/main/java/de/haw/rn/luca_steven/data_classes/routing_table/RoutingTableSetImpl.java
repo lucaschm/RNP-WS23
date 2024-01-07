@@ -9,11 +9,11 @@ import java.util.Set;
 import de.haw.rn.luca_steven.Config;
 import de.haw.rn.luca_steven.ui.Status;
 
-public class RoutingEntrySet implements IRoutingTable {
+public class RoutingTableSetImpl implements IRoutingTable {
     
     Set<RoutingEntry> set;
 
-    public RoutingEntrySet() {
+    public RoutingTableSetImpl() {
         set = new HashSet<RoutingEntry>();
     }
     
@@ -52,6 +52,7 @@ public class RoutingEntrySet implements IRoutingTable {
                 throw new IllegalArgumentException("Entry: " + entry + " did not have the same origin as the message, which has origin: " + origin);
             }
         }
+        int setSize = set.size();
 
         if(Config.onlyStoreBestRoutingEntry){
             //get only the best entry
@@ -83,6 +84,9 @@ public class RoutingEntrySet implements IRoutingTable {
                 }
             set.addAll(routingEntries);
         }
+        if (setSize != set.size()) {
+            Status.routingTableChanged(this);      
+        }   
 
         return;
     }
@@ -127,7 +131,7 @@ public class RoutingEntrySet implements IRoutingTable {
         set = new HashSet<RoutingEntry>(findShortestWayMap.values());
     }
 
-    public Set<String> getAllUniqueDestinations() {
+    public Set<String> getAllButSelfEntry() {
         Set<String> result = new HashSet<String>();
         for (RoutingEntry entry : set) {
             if (entry.getHops() > 0) {
@@ -142,9 +146,6 @@ public class RoutingEntrySet implements IRoutingTable {
         Set<RoutingEntry> resultSet = new HashSet<RoutingEntry>();
 
         for (RoutingEntry entry : set) {
-            // if (entry.getDestinationIDPort() == 1111 && entry.getHops() == 1) {
-            //     Logger.log("hier, 1111 hat hops 1" + entry);
-            // }
             if (entry.getHops() == 1) {
                 resultSet.add(entry);
             }

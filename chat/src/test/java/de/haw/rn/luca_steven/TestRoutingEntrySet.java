@@ -8,12 +8,12 @@ import java.util.Set;
 import org.junit.Before;
 import org.junit.Test;
 
-import de.haw.rn.luca_steven.data_classes.routing_table.RoutingEntrySet;
+import de.haw.rn.luca_steven.data_classes.routing_table.RoutingTableSetImpl;
 import de.haw.rn.luca_steven.data_classes.routing_table.RoutingEntry;
 
 public class TestRoutingEntrySet {
 
-    RoutingEntrySet entries;
+    RoutingTableSetImpl entries;
 
     RoutingEntry entry1;
     RoutingEntry entry2;
@@ -25,7 +25,7 @@ public class TestRoutingEntrySet {
 
     @Before
     public void setUp() throws Exception {
-        entries = new RoutingEntrySet();
+        entries = new RoutingTableSetImpl();
 
         entry1 = new RoutingEntry("100.2.2.2", 2, "1.1.1.1", "127.0.0.1"); 
 
