@@ -12,7 +12,7 @@
 - [ ] ttl impl
 - [X] merge with muss mitbekommen ob jemand eine verbindung verloren hat
 - [ ] lehne doppelte verbindungen ab
-- [ ] time triggerd mit sleep arbeiten
+- [X] time triggerd mit sleep arbeiten
 
 ## Bugs
 
