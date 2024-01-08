@@ -13,6 +13,7 @@
 - [X] merge with muss mitbekommen ob jemand eine verbindung verloren hat
 - [ ] lehne doppelte verbindungen ab
 - [X] time triggerd mit sleep arbeiten
+- [ ] exit implementieren
 
 ## Bugs
 
@@ -88,6 +89,48 @@ list
 
 ```
 exit
+```
+
+## neues UI Konzept (noch nicht implementiert)
+> Beispiel mit Adresse 192.168.0.2:1111
+- für jeden Befehl gibt es mehrere Möglichkeiten ihn aufzurufen
+### connect
+```
+connect 192.168.0.2 1111
+connect 192.168.0.2:1111
+c 192.168.0.2 1111
+c 192.168.0.2:1111
+```
+
+### send
+```
+send 192.168.0.2 1111 "hey du"
+send 192.168.0.2 1111 hey du
+send 192.168.0.2:1111 "hey du"
+send 192.168.0.2:1111 hey du
+s 192.168.0.2 1111 "hey du"
+s 192.168.0.2 1111 hey du
+s 192.168.0.2:1111 "hey du"
+s 192.168.0.2:1111 hey du
+```
+
+### disconnect
+```
+disconnect 192.168.0.2 1111
+disconnect 192.168.0.2:1111
+d 192.168.0.2 1111
+d 192.168.0.2:1111
+```
+
+### list
+```
+list
+l
+```
+### exit
+```
+exit
+e
 ```
 
 # lokale Architektur
