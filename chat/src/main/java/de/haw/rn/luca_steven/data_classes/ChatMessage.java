@@ -47,6 +47,10 @@ public class ChatMessage extends Message {
         return ttl;
     }
 
+    public void decrementTtl() {
+        ttl--;
+    }
+
     public String getContent() {
         return content;
     }
