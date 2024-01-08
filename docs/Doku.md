@@ -21,12 +21,10 @@
   - [X] 11:58: Server kann auch keine Nachricht an Client schicken
 - [X] kein Feedback beim `disconnect` (keine Bestätigung)
 - [ ] Es können Verbindungen mehrfach mit den selben Teilnehmern aufgebaut werden. Es muss bemerkt werden, wenn eine Verbindung redundant ist. Diese sollte dann automatisch wieder geschlossen werden.
-- [ ] Bug um 11:51: 1111 hat mehrfach verbindung mit 2222 aufgebaut. list bei 2222 ist leer. 2222 macht disconnect mit 2222 (sich selbst). 2222 steht jetzt in der list von 2222. Ganz komisches Verhalten...
-  - [ ] dieser Listeneintrag mit sich selbst geht auch nicht mehr weg, wenn sich 1111 disconnected
-- [ ] 11:55: 1111 steht nicht in der list von 2222. 2222 kann sich nicht von 1111 disconnecten. 1111 ist aber mit 2222 verbunden.
-- [ ] Beim Verbindungsversuch mit einem nicht existierenden Client muss das behandelt werden, ohne dass das Programm abstürzt
-  - [ ] auf der Konsole wird noch der Stacktrace ausgegeben. Hier reicht es kurz das Timeout zu erwähnen
-- [ ] beim Verbindungsaufbau mit einem nicht existierenden User kann sich nicht verbunden werden. Da gibt es auch ein Timeout. Allerdings landet der nicht existierende User in der Routing Tabelle (ist zumindest in der list Ausgabe)
+- [ ] Client kann sich mit sich selbst disconnecten. In diesem Fall wird der Routing-Eintrag für sich selbst aus der Routing-Tabelle entfernt - das ist nicht gut. Disconnect mit sich selbst sollte von der Routing-Tabelle verhindert werden.
+- [X] Beim Verbindungsversuch mit einem nicht existierenden Client muss das behandelt werden, ohne dass das Programm abstürzt
+  - [X] auf der Konsole wird noch der Stacktrace ausgegeben. Hier reicht es kurz das Timeout zu erwähnen
+- [X] beim Verbindungsaufbau mit einem nicht existierenden User kann sich nicht verbunden werden. Da gibt es auch ein Timeout. Allerdings landet der nicht existierende User in der Routing Tabelle (ist zumindest in der list Ausgabe)
 - [ ] ui geht bei input "disconnect 192.168.50.34 4444list" kaputt
 - [ ] send an nicht vorhandenen port gibt nullpointer exception im router
 - [ ] wenn man sich doppelt mit dem selben Teilnehmer verbindet wird scheinbar ein zweiter Socket und key angelegt. Die Routing Tabelle hat trotzdem nur einen Eintrag für diesen Teilnehmer. Es muss also nur noch verhindert werden, dass zwei Sockets für die selbe Verbindung gespeichert werden.
