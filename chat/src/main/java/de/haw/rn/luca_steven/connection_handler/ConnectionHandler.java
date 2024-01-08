@@ -425,6 +425,7 @@ public class ConnectionHandler implements IConnectionHandler{
         for (RoutingEntry entry : entries) {
             if (!connectedAdresses.contains("/" + entry.getNextHop())) {
                 lostConnections.add(entry);
+                Status.clientClose(entry.getDestination());
             }
         }
         return lostConnections;

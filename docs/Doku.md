@@ -16,11 +16,11 @@
 
 ## Bugs
 
-- [ ] Connection mit sich selbst
-- [ ] Wenn sich ein Client mit einem Server verbindet hat der Client den Server in seiner `list` der Verbindungen. Der Server hat den Client nicht in seiner `list`. Der Server sollte den Client ebenfalls in seiner `list` haben
-  - [ ] 11:58: Server kann auch keine Nachricht an Client schicken
-- [ ] kein Feedback beim `disconnect` (keine Bestätigung)
-- [ ] Man kann sich mehrfach mit dem selben Node verbinden. Doppeltes connecten sollte verhindert werden (allready connected to ...)
+- [X] Connection mit sich selbst
+- [X] Wenn sich ein Client mit einem Server verbindet hat der Client den Server in seiner `list` der Verbindungen. Der Server hat den Client nicht in seiner `list`. Der Server sollte den Client ebenfalls in seiner `list` haben
+  - [X] 11:58: Server kann auch keine Nachricht an Client schicken
+- [X] kein Feedback beim `disconnect` (keine Bestätigung)
+- [ ] Es können Verbindungen mehrfach mit den selben Teilnehmern aufgebaut werden. Es muss bemerkt werden, wenn eine Verbindung redundant ist. Diese sollte dann automatisch wieder geschlossen werden.
 - [ ] Bug um 11:51: 1111 hat mehrfach verbindung mit 2222 aufgebaut. list bei 2222 ist leer. 2222 macht disconnect mit 2222 (sich selbst). 2222 steht jetzt in der list von 2222. Ganz komisches Verhalten...
   - [ ] dieser Listeneintrag mit sich selbst geht auch nicht mehr weg, wenn sich 1111 disconnected
 - [ ] 11:55: 1111 steht nicht in der list von 2222. 2222 kann sich nicht von 1111 disconnecten. 1111 ist aber mit 2222 verbunden.
