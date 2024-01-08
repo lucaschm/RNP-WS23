@@ -9,7 +9,8 @@ import de.haw.rn.luca_steven.ui.UserCommand;
 import de.haw.rn.luca_steven.ui.Status;
 
 public class Controller {
-    private static final long ITERATION_LIMIT = 10_000_000;
+    private static final long ITERATION_LIMIT = 1_000_000;
+    private static final int SLEEP_TIME = 10;
     private String ip;
     private int port;
     private long superloopIterations;
@@ -33,6 +34,14 @@ public class Controller {
         startTime = System.currentTimeMillis();
         while(true) {
             monitorLoopSpeed();
+
+            // sleep for less cpu load and calmer fans
+            try {
+                Thread.sleep(SLEEP_TIME);
+            } catch (InterruptedException e) {
+                Logger.logBasics("Program got no sleep");
+            }
+
             connectionHandler.listen();
             ChatMessage receivedMsg = null;
             try {
