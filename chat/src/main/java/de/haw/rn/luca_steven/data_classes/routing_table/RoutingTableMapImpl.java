@@ -30,7 +30,7 @@ public class RoutingTableMapImpl implements IRoutingTable {
             RoutingEntry entry = map.get(key);
             boolean hasSameOrigin = entry.getOrigin().equals(origin);
             if (hasSameOrigin && !newEntries.containsKey(key)) {
-                iter.remove(); 
+                this.remove(entry);
                 Status.removeRoutingEntry(entry);
                 tableHasChanged = true;     
             }
@@ -84,7 +84,7 @@ public class RoutingTableMapImpl implements IRoutingTable {
     public Set<RoutingEntry> getAllButSelfEntry(){
         Set<RoutingEntry> result = new HashSet<RoutingEntry>();
         for (RoutingEntry entry : map.values()) {
-            if (entry.getHops() != 0) {
+            if (!isSelfEntry(entry)) {
                 result.add(entry);
             }
         }
@@ -109,7 +109,7 @@ public class RoutingTableMapImpl implements IRoutingTable {
             RoutingEntry entry = map.get(i.next());
             String nextHop = entry.getNextHop();
             if (nextHop.equals(targetNextHop)) {
-                i.remove();
+                this.remove(entry);
                 Status.removeRoutingEntry(entry);
                 tableHasChanged = true;  
             }
@@ -119,14 +119,31 @@ public class RoutingTableMapImpl implements IRoutingTable {
         }
     }
 
+    /**
+     * delets a set of entries
+     */
     public void delete(Set<RoutingEntry> lostConnections){
         if (lostConnections.size() > 0) {
             for (RoutingEntry entry : lostConnections) {
-                map.remove(entry.getDestination());
+                this.remove(entry);
                 Status.removeRoutingEntry(entry);
             }
             Status.routingTableChanged(this);
         }
+    }
+
+    /**
+     * only use this method for removing from the map!
+     * This will not delete the self entry
+     */
+    private void remove(RoutingEntry entry) {
+        if (!this.isSelfEntry(entry)) {
+            map.remove(entry.getDestination());
+        }
+    }
+
+    private boolean isSelfEntry(RoutingEntry entry) {
+        return entry.getHops() == 0;
     }
      
 }
