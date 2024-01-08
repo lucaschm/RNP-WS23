@@ -9,7 +9,7 @@
 - [X] Ein Verbindungsabbruch muss behandelt werden
 - [ ] Wenn eine Verbindug aufgebaut wurde, muss sofort eine Routing Tabelle gesendet werden
 - [X] Checksummen beim empfangen überprüfen
-- [ ] ttl impl
+- [X] ttl impl
 - [X] merge with muss mitbekommen ob jemand eine verbindung verloren hat
 - [ ] lehne doppelte verbindungen ab
 - [X] time triggerd mit sleep arbeiten

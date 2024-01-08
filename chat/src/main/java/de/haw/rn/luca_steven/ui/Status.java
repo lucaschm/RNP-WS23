@@ -86,6 +86,11 @@ public class Status {
         Logger.log(message);
     }
 
+    public static void messageWithExpiredTTL() {
+        Logger.log("Received message with expired TTL");
+        Logger.logBasics("Received message with expired TTL");
+    }
+
 /////// BUFFER /////////
 
     public static void bufferCreated(String string, int length, long checksum, boolean isValid) {
