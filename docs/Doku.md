@@ -7,7 +7,7 @@
 - [ ] Count to Infinity Problem muss vernünftig behoben sein
 - [X] Disconnect muss zuverlässig funktionieren auch bei doppelten verbindungen
 - [X] Ein Verbindungsabbruch muss behandelt werden
-- [ ] Wenn eine Verbindug aufgebaut wurde, muss sofort eine Routing Tabelle gesendet werden
+- [X] Wenn eine Verbindug aufgebaut wurde, muss sofort eine Routing Tabelle gesendet werden
 - [X] Checksummen beim empfangen überprüfen
 - [X] ttl impl
 - [X] merge with muss mitbekommen ob jemand eine verbindung verloren hat

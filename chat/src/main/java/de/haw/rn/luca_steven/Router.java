@@ -152,6 +152,9 @@ public class Router {
             remoteIPPort,
             localIPPort
         ));
+        // TODO: maybe a sleep is needed, so the 
+        // neighbor can react
+        shareRoutingInformation();
     }
 
     public void send(ChatMessage message) throws MessageNotSendException{
