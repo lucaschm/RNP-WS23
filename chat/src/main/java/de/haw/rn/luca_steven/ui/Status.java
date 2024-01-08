@@ -115,7 +115,7 @@ public class Status {
 ////// ROUTING /////////
 
     public static void routerProcess(long timedif) {
-        //Logger.logDistanceVectoring("timedif calculated: " + timedif, true);
+        //Logger.logRoutingInfoOut("timedif calculated: " + timedif, true);
     }
 
     public static void shareRoutingInformation(long timestamp) {
