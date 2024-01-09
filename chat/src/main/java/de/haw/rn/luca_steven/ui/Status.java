@@ -94,6 +94,11 @@ public class Status {
         Logger.log("Disconnect Error");
     }
 
+    public static void messageWithExpiredTTL() {
+        Logger.log("Received message with expired TTL");
+        Logger.logBasics("Received message with expired TTL");
+    }
+
 /////// BUFFER /////////
 
     public static void bufferCreated(String string, int length, long checksum, boolean isValid) {
@@ -123,7 +128,7 @@ public class Status {
 ////// ROUTING /////////
 
     public static void routerProcess(long timedif) {
-        //Logger.logDistanceVectoring("timedif calculated: " + timedif, true);
+        //Logger.logRoutingInfoOut("timedif calculated: " + timedif, true);
     }
 
     public static void shareRoutingInformation(long timestamp) {

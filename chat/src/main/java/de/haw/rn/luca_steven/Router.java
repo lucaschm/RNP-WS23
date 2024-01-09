@@ -88,13 +88,27 @@ public class Router {
         } else {
             ChatMessage cm = (ChatMessage) message;
             if (cm.isForMe(localIPPort)) {
-                return cm;
+                return checkTTL(cm);
             } else {
                 Status.forwardMessage();
-                send(cm);
+                cm = checkTTL(cm);
+                if (cm != null) {
+                    cm.decrementTtl();
+                    send(cm);
+                }
                 return null;
             }
         }      
+    }
+
+    private ChatMessage checkTTL(ChatMessage cm) {
+        if (cm.getTtl() <= 0) {
+            Status.messageWithExpiredTTL();
+            return null;
+        }
+        else {
+            return cm;
+        }
     }
 
     public void shareRoutingInformation() {
@@ -153,6 +167,9 @@ public class Router {
             connections.disconnect(IP, port, false);
             Status.doubleConnection(IP, port);
         }
+        // TODO: maybe a sleep is needed, so the 
+        // neighbor can react
+        shareRoutingInformation();
         
     }
 
