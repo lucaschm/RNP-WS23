@@ -128,5 +128,11 @@ public class RoutingTableMapImpl implements IRoutingTable {
             Status.routingTableChanged(this);
         }
     }
+
+    @Override
+    public boolean isNeighbor(String ipPort) {
+        RoutingEntry entry = map.get(ipPort);
+        return entry.getHops() == 1;
+    }
      
 }

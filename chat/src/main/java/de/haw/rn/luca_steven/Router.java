@@ -168,8 +168,18 @@ public class Router {
     }
 
     public void disconnect(String IP, int port) {
-        connections.disconnect(IP, port);
-        table.deleteAllFor(IP + ":" + port);
+        String ipPort = IP + ":" + port;
+
+        // wenn es ein Nachbar ist, sollte vom Next Hop disconnected werden
+        if (table.isNeighbor(ipPort)) {
+            ipPort = table.findNextHop(ipPort);
+        }
+        String[] split = ipPort.split(":");
+        String newIP = split[0];
+        String newport = split[1];
+
+        connections.disconnect(newIP, Integer.parseInt(newport));
+        table.deleteAllFor(ipPort);
     }
 
     public Set<RoutingEntry> getParticipantsSet() {
