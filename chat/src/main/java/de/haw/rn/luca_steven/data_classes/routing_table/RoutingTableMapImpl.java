@@ -152,5 +152,16 @@ public class RoutingTableMapImpl implements IRoutingTable {
     private boolean isSelfEntry(RoutingEntry entry) {
         return entry.getHops() == 0;
     }
+
+    @Override
+    public boolean isNeighbor(String ipPort) {
+        if (map.containsKey(ipPort)) {
+            RoutingEntry entry = map.get(ipPort);
+            return entry.getHops() == 1;
+        }
+        else {
+            return false;
+        }
+    }
      
 }
