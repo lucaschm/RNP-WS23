@@ -194,7 +194,7 @@ public class Router {
         String newIP = split[0];
         String newport = split[1];
 
-        connections.disconnect(newIP, Integer.parseInt(newport));
+        connections.disconnect(newIP, Integer.parseInt(newport), true);
         table.deleteAllFor(ipPort);
     }
 
