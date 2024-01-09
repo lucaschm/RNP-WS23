@@ -144,7 +144,9 @@ public class ConnectionHandler implements IConnectionHandler{
                         client.close();
                         Status.clientClose(remoteIP + ":" + remotePort);
                         key.cancel();
-                        return;
+                        if (!all) {
+                            return;
+                        }
                     }
                 }
 
