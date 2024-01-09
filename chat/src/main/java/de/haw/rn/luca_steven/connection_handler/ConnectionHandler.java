@@ -128,7 +128,7 @@ public class ConnectionHandler implements IConnectionHandler{
     }
 
     @Override
-    public boolean disconnect(String ipAddress, int port) {
+    public void disconnect(String ipAddress, int port, boolean all) {
         Set<SelectionKey> selectedKeys = selector.keys();
         Iterator<SelectionKey> iter = selectedKeys.iterator();
         while (iter.hasNext()) {
@@ -144,14 +144,16 @@ public class ConnectionHandler implements IConnectionHandler{
                         client.close();
                         Status.clientClose(remoteIP + ":" + remotePort);
                         key.cancel();
+                        if (!all) {
+                            return;
+                        }
                     }
                 }
 
             } catch (IOException e) {
-                return false;
+                Status.failedTodisconnect();
             }
         }
-        return true;
     }
     
     /**

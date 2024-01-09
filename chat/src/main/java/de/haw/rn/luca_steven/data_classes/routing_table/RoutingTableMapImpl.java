@@ -6,6 +6,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
+import de.haw.rn.luca_steven.connection_handler.exceptions.DoubleConnectionException;
 import de.haw.rn.luca_steven.ui.Status;
 
 public class RoutingTableMapImpl implements IRoutingTable {
@@ -16,7 +17,7 @@ public class RoutingTableMapImpl implements IRoutingTable {
         return map.get(destination).getNextHop();
     }
 
-    public void mergeWith(Set<RoutingEntry> routingEntries, String origin){
+    public void mergeWith(Set<RoutingEntry> routingEntries, String origin) throws DoubleConnectionException {
         //put routingEntries in map for easy handling
         Map<String, RoutingEntry> newEntries = new HashMap<String, RoutingEntry>();
         boolean tableHasChanged = false;
@@ -30,7 +31,7 @@ public class RoutingTableMapImpl implements IRoutingTable {
             RoutingEntry entry = map.get(key);
             boolean hasSameOrigin = entry.getOrigin().equals(origin);
             if (hasSameOrigin && !newEntries.containsKey(key)) {
-                iter.remove(); 
+                this.remove(entry);
                 Status.removeRoutingEntry(entry);
                 tableHasChanged = true;     
             }
@@ -58,17 +59,23 @@ public class RoutingTableMapImpl implements IRoutingTable {
         return new HashSet<RoutingEntry>(map.values());
     }
 
-    public void addEntry(RoutingEntry newEntry) {
+    public void addEntry(RoutingEntry newEntry) throws DoubleConnectionException {
         //put new Entry in map if same origin has new hop information or if it has less hops then other orinins entry
         String destination = newEntry.getDestination();
         String newOrigin = newEntry.getOrigin();
             if (map.containsKey(destination)) {
                 RoutingEntry existingEntry = map.get(destination);
+                //check for double connection
+                if (newEntry.getHops() == 1) {
+                    throw new DoubleConnectionException(existingEntry.getNextHop());
+                }
                 if (newOrigin.equals(existingEntry.getOrigin())) {
-                    if (!newEntry.equals(map.put(destination, newEntry))) {
+                    //check if Hops got better or worse
+                    if (newEntry.getHops() != existingEntry.getHops()) {
                         Status.addRoutingEntry(newEntry);
                         Status.routingTableChanged(this); 
                     } 
+                    //check for 
                 } else if (newEntry.getHops() < existingEntry.getHops()) {
                     map.put(destination, newEntry);
                     Status.addRoutingEntry(newEntry);
@@ -84,7 +91,7 @@ public class RoutingTableMapImpl implements IRoutingTable {
     public Set<RoutingEntry> getAllButSelfEntry(){
         Set<RoutingEntry> result = new HashSet<RoutingEntry>();
         for (RoutingEntry entry : map.values()) {
-            if (entry.getHops() != 0) {
+            if (!isSelfEntry(entry)) {
                 result.add(entry);
             }
         }
@@ -109,7 +116,7 @@ public class RoutingTableMapImpl implements IRoutingTable {
             RoutingEntry entry = map.get(i.next());
             String nextHop = entry.getNextHop();
             if (nextHop.equals(targetNextHop)) {
-                i.remove();
+                this.remove(entry);
                 Status.removeRoutingEntry(entry);
                 tableHasChanged = true;  
             }
@@ -119,14 +126,31 @@ public class RoutingTableMapImpl implements IRoutingTable {
         }
     }
 
+    /**
+     * delets a set of entries
+     */
     public void delete(Set<RoutingEntry> lostConnections){
         if (lostConnections.size() > 0) {
             for (RoutingEntry entry : lostConnections) {
-                map.remove(entry.getDestination());
+                this.remove(entry);
                 Status.removeRoutingEntry(entry);
             }
             Status.routingTableChanged(this);
         }
+    }
+
+    /**
+     * only use this method for removing from the map!
+     * This will not delete the self entry
+     */
+    private void remove(RoutingEntry entry) {
+        if (!this.isSelfEntry(entry)) {
+            map.remove(entry.getDestination());
+        }
+    }
+
+    private boolean isSelfEntry(RoutingEntry entry) {
+        return entry.getHops() == 0;
     }
 
     @Override

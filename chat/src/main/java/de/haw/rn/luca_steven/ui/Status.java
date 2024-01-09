@@ -86,6 +86,14 @@ public class Status {
         Logger.log(message);
     }
 
+    public static void doubleConnection(String iP, int port) {
+        Logger.log("Eine doppelte Verbindung zu " + iP + "/" + port + " wurde getrennt");
+    }
+    
+    public static void failedTodisconnect() {
+        Logger.log("Disconnect Error");
+    }
+
     public static void messageWithExpiredTTL() {
         Logger.log("Received message with expired TTL");
         Logger.logBasics("Received message with expired TTL");
@@ -207,4 +215,7 @@ public class Status {
     public static void participantListPrinted(String outputString) {
         Logger.logBasics("\n" + outputString);
     }
+
+
+    
 }
