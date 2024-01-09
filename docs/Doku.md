@@ -22,7 +22,7 @@
   - [X] 11:58: Server kann auch keine Nachricht an Client schicken
 - [X] kein Feedback beim `disconnect` (keine Bestätigung)
 - [ ] Es können Verbindungen mehrfach mit den selben Teilnehmern aufgebaut werden. Es muss bemerkt werden, wenn eine Verbindung redundant ist. Diese sollte dann automatisch wieder geschlossen werden.
-- [ ] Client kann sich mit sich selbst disconnecten. In diesem Fall wird der Routing-Eintrag für sich selbst aus der Routing-Tabelle entfernt - das ist nicht gut. Disconnect mit sich selbst sollte von der Routing-Tabelle verhindert werden.
+- [X] Client kann sich mit sich selbst disconnecten. In diesem Fall wird der Routing-Eintrag für sich selbst aus der Routing-Tabelle entfernt - das ist nicht gut. Disconnect mit sich selbst sollte von der Routing-Tabelle verhindert werden.
 - [X] Beim Verbindungsversuch mit einem nicht existierenden Client muss das behandelt werden, ohne dass das Programm abstürzt
   - [X] auf der Konsole wird noch der Stacktrace ausgegeben. Hier reicht es kurz das Timeout zu erwähnen
 - [X] beim Verbindungsaufbau mit einem nicht existierenden User kann sich nicht verbunden werden. Da gibt es auch ein Timeout. Allerdings landet der nicht existierende User in der Routing Tabelle (ist zumindest in der list Ausgabe)
