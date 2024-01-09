@@ -86,6 +86,14 @@ public class Status {
         Logger.log(message);
     }
 
+    public static void doubleConnection(String iP, int port) {
+        Logger.log("Eine doppelte Verbindung zu " + iP + "/" + port + " wurde getrennt");
+    }
+    
+    public static void failedTodisconnect() {
+        Logger.log("Disconnect Error");
+    }
+
 /////// BUFFER /////////
 
     public static void bufferCreated(String string, int length, long checksum, boolean isValid) {
@@ -202,4 +210,7 @@ public class Status {
     public static void participantListPrinted(String outputString) {
         Logger.logBasics("\n" + outputString);
     }
+
+
+    
 }
