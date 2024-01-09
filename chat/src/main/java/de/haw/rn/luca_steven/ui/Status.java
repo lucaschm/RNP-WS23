@@ -82,6 +82,12 @@ public class Status {
         Logger.logBasics("Stupid user just tried to connect with himself. But no worries I prevented him from doing this.");
     }
 
+    public static void selfDisconnect() {
+        Logger.log("You can't disconnect with yourself!");
+        Logger.logBasics("User tried to disconnect with himself. This operation was prevented.");
+    }
+
+
     public static void unexpectedError(String message) {
         Logger.log(message);
     }

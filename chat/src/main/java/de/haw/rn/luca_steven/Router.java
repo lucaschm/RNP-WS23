@@ -186,6 +186,13 @@ public class Router {
     public void disconnect(String IP, int port) {
         String ipPort = IP + ":" + port;
 
+        // Überprüfen, ob versucht wird mit sich selbst zu disconnecten
+        if (localIPPort.equals(ipPort)) {
+            //das muss verhindert werden
+            Status.selfDisconnect();
+            return;
+        }
+
         // wenn es ein Nachbar ist, sollte vom Next Hop disconnected werden
         if (table.isNeighbor(ipPort)) {
             ipPort = table.findNextHop(ipPort);
