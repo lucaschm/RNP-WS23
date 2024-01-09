@@ -4,6 +4,7 @@ import java.util.Map;
 import java.util.Set;
 
 import de.haw.rn.luca_steven.connection_handler.IConnectionHandler;
+import de.haw.rn.luca_steven.connection_handler.exceptions.DoubleConnectionException;
 import de.haw.rn.luca_steven.connection_handler.exceptions.MessageNotSendException;
 import de.haw.rn.luca_steven.data_classes.ChatMessage;
 import de.haw.rn.luca_steven.data_classes.Message;
@@ -31,12 +32,17 @@ public class Router {
         this.parser = new JsonParser();
         this.table = new RoutingTableMapImpl();
         this.localIPPort = ipPort;
-        table.addEntry(new RoutingEntry(
-            localIPPort, 
-            INIT_HOP_COUNT,
-            localIPPort,
-            ipPort
-        ));
+        try {
+            table.addEntry(new RoutingEntry(
+                localIPPort, 
+                INIT_HOP_COUNT,
+                localIPPort,
+                ipPort  
+            ));          
+        } catch (DoubleConnectionException e) {
+            // well at this point it cant be a double connection
+        }
+        
         timestamp = System.currentTimeMillis();
     }
 
@@ -72,7 +78,12 @@ public class Router {
         if (!message.isChatMessage()) {
             RoutingMessage rm = (RoutingMessage) message;
             Status.routingMessageReceived(rm);
-            table.mergeWith(rm.getSetOfRoutingEntries(), rm.getFullOriginAddress());
+            try {
+                table.mergeWith(rm.getSetOfRoutingEntries(), rm.getFullOriginAddress());
+            } catch (DoubleConnectionException e) {
+                // cant double connect here either, because there was no connection made
+            }
+            
             return null;
         } else {
             ChatMessage cm = (ChatMessage) message;
@@ -145,16 +156,18 @@ public class Router {
             return;
         }
         connections.connect(IP, port);
-        
-        table.addEntry(new RoutingEntry(
+        try {
+            table.addEntry(new RoutingEntry(
             remoteIPPort, 
             NEW_CONNECTION_HOP_COUNT,
             remoteIPPort,
             localIPPort
         ));
-        // TODO: maybe a sleep is needed, so the 
-        // neighbor can react
-        shareRoutingInformation();
+        } catch (DoubleConnectionException e) {
+            connections.disconnect(IP, port, false);
+            Status.doubleConnection(IP, port);
+        }
+        
     }
 
     public void send(ChatMessage message) throws MessageNotSendException{

@@ -6,6 +6,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
+import de.haw.rn.luca_steven.connection_handler.exceptions.DoubleConnectionException;
 import de.haw.rn.luca_steven.ui.Status;
 
 public class RoutingTableMapImpl implements IRoutingTable {
@@ -16,7 +17,7 @@ public class RoutingTableMapImpl implements IRoutingTable {
         return map.get(destination).getNextHop();
     }
 
-    public void mergeWith(Set<RoutingEntry> routingEntries, String origin){
+    public void mergeWith(Set<RoutingEntry> routingEntries, String origin) throws DoubleConnectionException {
         //put routingEntries in map for easy handling
         Map<String, RoutingEntry> newEntries = new HashMap<String, RoutingEntry>();
         boolean tableHasChanged = false;
@@ -58,17 +59,23 @@ public class RoutingTableMapImpl implements IRoutingTable {
         return new HashSet<RoutingEntry>(map.values());
     }
 
-    public void addEntry(RoutingEntry newEntry) {
+    public void addEntry(RoutingEntry newEntry) throws DoubleConnectionException {
         //put new Entry in map if same origin has new hop information or if it has less hops then other orinins entry
         String destination = newEntry.getDestination();
         String newOrigin = newEntry.getOrigin();
             if (map.containsKey(destination)) {
                 RoutingEntry existingEntry = map.get(destination);
+                //check for double connection
+                if (newEntry.getHops() == 1) {
+                    throw new DoubleConnectionException(existingEntry.getNextHop());
+                }
                 if (newOrigin.equals(existingEntry.getOrigin())) {
-                    if (!newEntry.equals(map.put(destination, newEntry))) {
+                    //check if Hops got better or worse
+                    if (newEntry.getHops() != existingEntry.getHops()) {
                         Status.addRoutingEntry(newEntry);
                         Status.routingTableChanged(this); 
                     } 
+                    //check for 
                 } else if (newEntry.getHops() < existingEntry.getHops()) {
                     map.put(destination, newEntry);
                     Status.addRoutingEntry(newEntry);
