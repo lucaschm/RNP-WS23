@@ -21,5 +21,7 @@ public interface IRoutingTable {
     public void deleteAllFor(String targetNextHop);
 
     public void delete(Set<RoutingEntry> lostConnections);
+
+    public boolean isNeighbor(String ipPort);
      
 }
