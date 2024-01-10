@@ -49,7 +49,7 @@ public class RoutingTableMapImpl implements IRoutingTable {
     public Set<RoutingEntry> getEntriesWithout(String origin){
         Set<RoutingEntry> result = new HashSet<RoutingEntry>();
         for (RoutingEntry entry : map.values()) {
-            if (!origin.equals(entry.getOrigin())) {
+            if (!origin.equals(entry.getNextHop())) {
                 result.add(entry);
             }
         }
