@@ -21,6 +21,7 @@ public class Logger {
     private static final String inRoutInfo = "logs" + File.separator + Main.sessionName + File.separator + "incomingRoutingInformation.md";
     private static final String outBuffer = "logs" + File.separator + Main.sessionName + File.separator + "outgoingBuffer.md";
     private static final String inBuffer = "logs" + File.separator + Main.sessionName + File.separator + "incomingBuffer.md";
+    private static final String errorStacktrace = "logs" + File.separator + Main.sessionName + File.separator + "errorStacktrace.md";
 
     static boolean userUninformedAboutMissingFiles = true;
 
@@ -79,6 +80,10 @@ public class Logger {
     
     public static void logBufferIn(String string) {
         logFile(inBuffer, string, true);
+    }
+
+    public static void logErrorStacktrace(String string) {
+        logFile(errorStacktrace, "\n" + string, true);
     }
 
     private static String timestamp() {

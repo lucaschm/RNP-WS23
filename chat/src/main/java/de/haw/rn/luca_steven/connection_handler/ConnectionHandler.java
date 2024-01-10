@@ -78,8 +78,8 @@ public class ConnectionHandler implements IConnectionHandler{
                     errorMessage = "Error: " + msg + " could not be send.";
             }
         } catch (IOException e) {
-            Logger.log(e.getMessage());
-            e.printStackTrace();;
+            Logger.logErrorStacktrace(e.getStackTrace().toString());
+            Status.unexpectedError(e.getMessage());
         }
         catch (CancelledKeyException e) {
             // its okay
@@ -123,7 +123,8 @@ public class ConnectionHandler implements IConnectionHandler{
                 Status.waitForConnection(ipAddress, port);
             }
         } catch (Exception e) {
-            Logger.log(e.getMessage());
+            Status.unexpectedError(e.getMessage());
+            Logger.logErrorStacktrace(e.getStackTrace().toString());
         }
     }
 
@@ -187,7 +188,8 @@ public class ConnectionHandler implements IConnectionHandler{
                 }
 
             } catch (IOException e) {
-                e.printStackTrace();
+                Status.unexpectedError(e.getMessage());
+                Logger.logErrorStacktrace(e.getStackTrace().toString());
             }
         }
         return result;
@@ -214,8 +216,8 @@ public class ConnectionHandler implements IConnectionHandler{
 
             //Logger.log("Server gestartet auf Port " + idPort);
         } catch (Exception e) {
-            e.printStackTrace();
-            Logger.log(e.getMessage());
+            Status.unexpectedError(e.getMessage());
+            Logger.logErrorStacktrace(e.getStackTrace().toString());
         }
     }
 
@@ -290,7 +292,8 @@ public class ConnectionHandler implements IConnectionHandler{
                 key.cancel();
             }
             else {
-                e.printStackTrace();
+                Status.unexpectedError(e.getMessage());
+                Logger.logErrorStacktrace(e.getStackTrace().toString());
             }
         }
         
@@ -338,7 +341,8 @@ public class ConnectionHandler implements IConnectionHandler{
                 key.cancel();
             } 
             else {
-                e.printStackTrace();
+                Status.unexpectedError(e.getMessage());
+                Logger.logErrorStacktrace(e.getStackTrace().toString());
             }
         }
     }
@@ -355,8 +359,8 @@ public class ConnectionHandler implements IConnectionHandler{
         } catch (ConnectException e) {
                 Status.failedToConnect(e.getMessage());  
         } catch (IOException e) {
-            Logger.log("Error in continiueConnect:");
-            e.printStackTrace();
+            Status.unexpectedError(e.getMessage());
+            Logger.logErrorStacktrace(e.getStackTrace().toString());
         } 
     }
 
@@ -394,7 +398,8 @@ public class ConnectionHandler implements IConnectionHandler{
             try {
                 client.close();
             } catch (IOException e) {
-                e.printStackTrace();
+                Status.unexpectedError(e.getMessage());
+                Logger.logErrorStacktrace(e.getStackTrace().toString());
             }
             key.cancel();
             return false;
@@ -417,8 +422,8 @@ public class ConnectionHandler implements IConnectionHandler{
                     try {
                         connectedAdresses.add(client.getRemoteAddress().toString());
                     } catch(IOException e) {
-                        Logger.log(e.getMessage());
-                        e.printStackTrace();
+                        Status.unexpectedError(e.getMessage());
+                        Logger.logErrorStacktrace(e.getStackTrace().toString());
                     }
                 }
             }
