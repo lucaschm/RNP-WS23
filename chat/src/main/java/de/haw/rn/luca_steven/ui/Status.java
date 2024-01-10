@@ -174,6 +174,8 @@ public class Status {
 
     public static void forwardMessage() {
         Logger.logRouting("Received chat message for someone else. This message will be forwarded.", true);
+        Logger.logBasics("Received chat message for someone else. This message will be forwarded.");
+        Logger.log("Received chat message for someone else. This message will be forwarded.");
     }
 
     public static void addRoutingEntry(RoutingEntry newEntry) {
