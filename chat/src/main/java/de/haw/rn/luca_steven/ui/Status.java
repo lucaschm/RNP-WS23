@@ -100,6 +100,21 @@ public class Status {
         Logger.log("Disconnect Error");
     }
 
+    public static void messageWithExpiredTTL() {
+        Logger.log("Received message with expired TTL");
+        Logger.logBasics("Received message with expired TTL");
+    }
+
+    public static void wrongJsonKeys() {
+        Logger.logBasics("Tried to extract information from a json-string, but the keys are wrong!");
+        Logger.log("Tried to extract information from a json-string, but the keys are wrong!");
+    }
+
+    public static void wrongJsonValues() {
+        Logger.logBasics("Tried to extract information from a json-string, but the value types are wrong!");
+        Logger.log("Tried to extract information from a json-string, but the value types are wrong!");
+    }
+
 /////// BUFFER /////////
 
     public static void bufferCreated(String string, int length, long checksum, boolean isValid) {

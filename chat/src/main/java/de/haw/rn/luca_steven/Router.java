@@ -74,6 +74,11 @@ public class Router {
         } else {
             return null;
         }
+
+        // Wenn der JsonParser den String nicht lesen kann, kann die Nachricht null sein
+        if (message == null) {
+            return null;
+        }
         
         if (!message.isChatMessage()) {
             RoutingMessage rm = (RoutingMessage) message;

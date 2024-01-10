@@ -9,6 +9,7 @@ import de.haw.rn.luca_steven.data_classes.ChatMessage;
 import de.haw.rn.luca_steven.data_classes.Message;
 import de.haw.rn.luca_steven.data_classes.RoutingMessage;
 import de.haw.rn.luca_steven.data_classes.routing_table.RoutingEntry;
+import de.haw.rn.luca_steven.ui.Status;
 
 //bekommt Infos rein (z.b. IP-Adresse)
 //Infos werden verpackt in ein Json Objekt
@@ -86,45 +87,112 @@ public class JsonParser {
         // read contents from json
         Message result = null;
 
-        if (json.getString(MESSAGE_TYPE).equals(CHAT_MESSAGE)) 
+        if (hasValidChatJsonKeys(json)) 
         {
             result = extractChatMessage(json);
         } 
-        else if (json.getString(MESSAGE_TYPE).equals(ROUTING_MESSAGE)) 
+        else if (hasValidRoutingJsonKeys(json)) 
         {
             result = extractRoutingMessage(json);
         } 
         else 
         {
-            throw new IllegalArgumentException("The " + MESSAGE_TYPE + " of the json is neither " + CHAT_MESSAGE + " nor " + ROUTING_MESSAGE + "!");
+            Status.wrongJsonKeys();
         }
         return result;
     }
 
     private ChatMessage extractChatMessage(JsonObject json) {
-        String destinationIp = json.getString(DESTINATION_IP);
-        int destinationPort = Integer.parseInt(json.getString(DESTINATION_ID_PORT));
-        String sourceIp = json.getString(ORIGIN_IP);
-        int sourcePort = Integer.parseInt(json.getString(ORIGIN_ID_PORT));
-        int ttl = Integer.parseInt(json.getString(TTL));
-        String content = json.getString(CONTENT);
+        ChatMessage result = null;
         
-        return new ChatMessage(
+        try {
+            String destinationIp = json.getString(DESTINATION_IP);
+            int destinationPort = Integer.parseInt(json.getString(DESTINATION_ID_PORT));
+            String sourceIp = json.getString(ORIGIN_IP);
+            int sourcePort = Integer.parseInt(json.getString(ORIGIN_ID_PORT));
+            int ttl = Integer.parseInt(json.getString(TTL));
+            String content = json.getString(CONTENT);
+
+            result = new ChatMessage(
                 destinationIp,
                 destinationPort,
                 sourceIp,
                 sourcePort,
                 ttl,
                 content);
+        } 
+        catch (Exception e) {
+            Status.wrongJsonValues();
+        }
+            
+        return result;
     }
 
     private RoutingMessage extractRoutingMessage(JsonObject json) {
-        String ip = json.getString(IP);
-        int sourcePort = Integer.parseInt(json.getString(SOURCE_PORT));
-        int idPort = Integer.parseInt(json.getString(ID_PORT));
-        JsonArray table = json.getJsonArray(TABLE);
+        RoutingMessage result = null;
 
-        return new RoutingMessage(ip, sourcePort, idPort, table);
+        try {
+            String ip = json.getString(IP);
+            int sourcePort = Integer.parseInt(json.getString(SOURCE_PORT));
+            int idPort = Integer.parseInt(json.getString(ID_PORT));
+            JsonArray table = json.getJsonArray(TABLE);
+
+            result = new RoutingMessage(ip, sourcePort, idPort, table);
+        } catch (Exception e) {
+            Status.wrongJsonValues();
+        }
+
+        return result;
+    }
+
+    private boolean hasValidChatJsonKeys(JsonObject json) {
+        boolean result = true;
+
+        //Prüfen ob nötige Felder vorhanden sind
+        result &= json.containsKey(MESSAGE_TYPE);
+        result &= json.containsKey(ORIGIN_IP);
+        result &= json.containsKey(ORIGIN_ID_PORT);
+        result &= json.containsKey(DESTINATION_IP);
+        result &= json.containsKey(DESTINATION_ID_PORT);
+        result &= json.containsKey(TTL);
+        result &= json.containsKey(CONTENT);
+
+        //Prüfen ob für das Feld MESSAGE_TYPE der richtige Wert gesetzt ist
+        if (result) {
+            result &= json.getString(MESSAGE_TYPE).equals(CHAT_MESSAGE);
+        }
+
+        return result;
+    }
+
+    private boolean hasValidRoutingJsonKeys(JsonObject json) {
+        boolean result = true;
+
+        //Prüfen ob nötige Felder vorhanden sind
+        result &= json.containsKey(MESSAGE_TYPE);
+        result &= json.containsKey(IP);
+        result &= json.containsKey(SOURCE_PORT);
+        result &= json.containsKey(ID_PORT);
+        result &= json.containsKey(TABLE);
+
+        //Prüfen ob für das Feld MESSAGE_TYPE der richtige Wert gesetzt ist
+        if (result) {
+            result &= json.getString(MESSAGE_TYPE).equals(ROUTING_MESSAGE);
+        }
+
+        if (result) {
+            JsonArray tableArray = json.getJsonArray(TABLE);
+            for (JsonValue tableEntry : tableArray) {
+                JsonObject jsonObject = tableEntry.asJsonObject();
+
+                //Prüfen ob nötige Felder vorhanden sind
+                result &= jsonObject.containsKey(IP);
+                result &= jsonObject.containsKey(ID_PORT);
+                result &= jsonObject.containsKey(HOPS);
+            }
+        }
+
+        return result;
     }
 
 }
