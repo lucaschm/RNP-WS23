@@ -14,9 +14,12 @@
 - [ ] lehne doppelte verbindungen ab
 - [X] time triggerd mit sleep arbeiten
 - [ ] exit implementieren
+- [ ] validieren, ob ein json-string im richtigen Format ist
 
 ## Bugs
 
+- [ ] Wenn jemand einen falschen json-string sendet kommt bei uns eine Nullpointerexception. (Wenn zum Beispiel in einer Json Nachricht ein erwarteter String nicht vorhanden ist)
+- [ ] Wenn man eine nachricht sendet, ohne dass man mit dieser Person verbunden ist, gibt es eine Nullpointerexception
 - [X] Connection mit sich selbst
 - [X] Wenn sich ein Client mit einem Server verbindet hat der Client den Server in seiner `list` der Verbindungen. Der Server hat den Client nicht in seiner `list`. Der Server sollte den Client ebenfalls in seiner `list` haben
   - [X] 11:58: Server kann auch keine Nachricht an Client schicken
