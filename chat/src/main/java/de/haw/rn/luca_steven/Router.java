@@ -132,11 +132,10 @@ public class Router {
 
         // für alle Nachbarn
         for (RoutingEntry entry : neighbours) {
-            String oneNeighbour = entry.getDestination();
             String nextHop = entry.getNextHop();
             
             // hole angepasste RoutingTabelle
-            Set<RoutingEntry> splitHorizonTable = table.getEntriesWithout(oneNeighbour);
+            Set<RoutingEntry> splitHorizonTable = table.getEntriesWithout(entry);
 
             // formatiere aus der Tabelle ein Json
             String sourcePort = connectionMap.get(nextHop);
