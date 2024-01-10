@@ -31,7 +31,9 @@ public class RoutingTableMapImpl implements IRoutingTable {
             RoutingEntry entry = map.get(key);
             boolean hasSameOrigin = entry.getOrigin().equals(origin);
             if (hasSameOrigin && !newEntries.containsKey(key)) {
-                this.remove(entry);
+                if (!this.isSelfEntry(entry)) {
+                    iter.remove();
+                }
                 Status.removeRoutingEntry(entry);
                 tableHasChanged = true;     
             }
@@ -116,7 +118,9 @@ public class RoutingTableMapImpl implements IRoutingTable {
             RoutingEntry entry = map.get(i.next());
             String nextHop = entry.getNextHop();
             if (nextHop.equals(targetNextHop)) {
-                this.remove(entry);
+                if (!this.isSelfEntry(entry)) {
+                    i.remove();
+                }
                 Status.removeRoutingEntry(entry);
                 tableHasChanged = true;  
             }
