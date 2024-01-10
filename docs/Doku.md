@@ -15,6 +15,7 @@
 - [X] time triggerd mit sleep arbeiten
 - [ ] exit implementieren
 - [X] validieren, ob ein json-string im richtigen Format ist
+- [ ] irgendetwas stimmt mit key.isValid() nicht. Weil Felix wird immer automatisch disconnected
 
 ## Bugs
 
