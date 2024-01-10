@@ -45,8 +45,8 @@ public class Status {
         Logger.logBasics("Wait for connection with: " + ipAddress + ":" + port);
     }
 
-    public static void clientClose(String remoteAdress) {
-        Logger.log("Disconnected with " + remoteAdress);
+    public static void clientClose(String remoteAdress, String reason) {
+        Logger.log("Disconnected with " + remoteAdress + ". Reason: " + reason);
         Logger.logBasics("Disconnected with " + remoteAdress);
     }
 

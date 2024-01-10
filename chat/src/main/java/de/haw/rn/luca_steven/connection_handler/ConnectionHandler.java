@@ -143,7 +143,7 @@ public class ConnectionHandler implements IConnectionHandler{
                     int remotePort = inetSocketAddress.getPort();
                     if (remoteIP.equals(ipAddress) && remotePort == port) {
                         client.close();
-                        Status.clientClose(remoteIP + ":" + remotePort);
+                        Status.clientClose(remoteIP + ":" + remotePort, "Because disconnect method was called");
                         key.cancel();
                         if (!all) {
                             return;
@@ -334,7 +334,7 @@ public class ConnectionHandler implements IConnectionHandler{
                 Status.lostConnection();
                 try {
                     client.close();
-                    Status.clientClose(client.getRemoteAddress().toString()); //passiert öfter, unbedingt gute fehlermeldung
+                    Status.clientClose(client.getRemoteAddress().toString(), "Because write message got an error:" + e.getMessage()); //passiert öfter, unbedingt gute fehlermeldung
                 } catch (IOException e1) {
                     e1.printStackTrace();
                 }
@@ -432,7 +432,7 @@ public class ConnectionHandler implements IConnectionHandler{
         for (RoutingEntry entry : entries) {
             if (!connectedAdresses.contains("/" + entry.getNextHop())) {
                 lostConnections.add(entry);
-                Status.clientClose(entry.getDestination());
+                Status.clientClose(entry.getDestination(), "Because there is no Connection for entry: " + entry);
             }
         }
         return lostConnections;
