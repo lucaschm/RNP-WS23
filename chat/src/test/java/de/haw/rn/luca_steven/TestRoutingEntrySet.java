@@ -27,16 +27,16 @@ public class TestRoutingEntrySet {
     public void setUp() throws Exception {
         entries = new RoutingTableSetImpl();
 
-        entry1 = new RoutingEntry("100.2.2.2", 2, "1.1.1.1", "127.0.0.1"); 
+        entry1 = new RoutingEntry("100.2.2.2", 2, "1.1.1.1", "127.0.0.1", -1); 
 
-        entry2 = new RoutingEntry("100.1.1.1", 2, "1.2.2.2", "127.0.0.1"); 
-        entry3 = new RoutingEntry("100.1.1.1", 3, "1.3.3.3", "127.0.0.1"); 
-        entry4 = new RoutingEntry("100.1.1.1", 4, "1.4.4.4", "127.0.0.1");
+        entry2 = new RoutingEntry("100.1.1.1", 2, "1.2.2.2", "127.0.0.1", -1); 
+        entry3 = new RoutingEntry("100.1.1.1", 3, "1.3.3.3", "127.0.0.1", -1); 
+        entry4 = new RoutingEntry("100.1.1.1", 4, "1.4.4.4", "127.0.0.1", -1);
 
-        entry5 = new RoutingEntry("200.1.1.1", 5, "2.5.5.5", "2.0.0.0");
-        entry6 = new RoutingEntry("200.1.1.1", 6, "2.6.6.6", "2.0.0.0");
+        entry5 = new RoutingEntry("200.1.1.1", 5, "2.5.5.5", "2.0.0.0", -1);
+        entry6 = new RoutingEntry("200.1.1.1", 6, "2.6.6.6", "2.0.0.0", -1);
 
-        entry7 = new RoutingEntry("200.1.1.1", 6, "2.7.7.7", "2.0.0.0");
+        entry7 = new RoutingEntry("200.1.1.1", 6, "2.7.7.7", "2.0.0.0", -1);
     }
 
     @Test

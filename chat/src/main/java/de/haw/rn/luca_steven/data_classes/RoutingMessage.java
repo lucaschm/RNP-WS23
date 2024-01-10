@@ -19,16 +19,19 @@ public class RoutingMessage extends Message {
     private int originSourcePort;
     private int originIDPort;
     private JsonArray table;
+    private int localPort;
 
     public RoutingMessage(String ip,
                        int sourcePort,
                        int idPort,
-                       JsonArray table) {
+                       JsonArray table,
+                       int localPort) {
         super(false);
         this.originIP = ip;
         this.originSourcePort = sourcePort;
         this.originIDPort = idPort;
         this.table = table;
+        this.localPort = localPort;
     }
 
     public String getOriginIP() {
@@ -71,7 +74,7 @@ public class RoutingMessage extends Message {
             String nextHop = originIP + ":" + originSourcePort;
             String origin = originIP + ":" + originIDPort;
 
-            set.add(new RoutingEntry(destination, hops, nextHop, origin));
+            set.add(new RoutingEntry(destination, hops, nextHop, origin, this.localPort));
         }
         return set;
     }

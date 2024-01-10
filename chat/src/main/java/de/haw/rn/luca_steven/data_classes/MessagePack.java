@@ -4,12 +4,21 @@ public class MessagePack {
     String ip;
     int port;
     String message;
+    int localPort;
 
 
     public MessagePack(String ip, int port, String message) {
         this.ip = ip;
         this.port = port;
-            this.message = message;
+        this.message = message;
+        this.localPort = -1;
+    }
+
+    public MessagePack(String message, int localPort) {
+        this.ip = "";
+        this.port = -1;
+        this.message = message;
+        this.localPort = localPort;
     }
 
     public String getIPPort() {
@@ -38,6 +47,10 @@ public class MessagePack {
 
     public void setMessage(String message) {
         this.message = message;
+    }
+
+    public int getLocalPort() {
+        return this.localPort;
     }
 }
     

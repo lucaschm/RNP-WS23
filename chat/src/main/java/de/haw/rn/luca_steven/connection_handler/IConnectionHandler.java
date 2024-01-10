@@ -3,6 +3,7 @@ package de.haw.rn.luca_steven.connection_handler;
 import java.util.Map;
 import java.util.Set;
 
+import de.haw.rn.luca_steven.data_classes.MessagePack;
 import de.haw.rn.luca_steven.data_classes.routing_table.RoutingEntry;
 
 
@@ -11,7 +12,7 @@ public interface IConnectionHandler {
      * Aus der Queue wird die nächste Nachricht entnommen
      * @return
      */
-    public String nextString();
+    public MessagePack nextString();
 
     /**
      * true if another message is ready to be received
@@ -22,7 +23,7 @@ public interface IConnectionHandler {
     /**
      * Verbindung mit anderem Client aufbauen
      */
-    public void connect(String ipAddress, int port);
+    public int connect(String ipAddress, int port);
 
     /**
      * Verbindung mit anderem Client abbauen

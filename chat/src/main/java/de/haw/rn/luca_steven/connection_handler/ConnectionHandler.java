@@ -28,7 +28,7 @@ public class ConnectionHandler implements IConnectionHandler{
     private final String ip;
     private final int idPort;
     private final LinkedList<MessagePack> sendMessageQueue;
-    private final LinkedList<String> receiveMessageQueue;
+    private final LinkedList<MessagePack> receiveMessageQueue;
     private Selector selector;
     private ServerSocketChannel serverSocketChannel;
     private String errorMessage;
@@ -37,7 +37,7 @@ public class ConnectionHandler implements IConnectionHandler{
         this.ip = ip;
         this.idPort = idPort;
         this.sendMessageQueue = new LinkedList<MessagePack>();
-        this.receiveMessageQueue = new LinkedList<String>();
+        this.receiveMessageQueue = new LinkedList<MessagePack>();
         errorMessage = "";
         setup();
     }
@@ -87,7 +87,7 @@ public class ConnectionHandler implements IConnectionHandler{
     }
 
     @Override
-    public String nextString() {
+    public MessagePack nextString() {
         return receiveMessageQueue.removeFirst();
     }
 
@@ -106,7 +106,7 @@ public class ConnectionHandler implements IConnectionHandler{
     }
 
     @Override
-    public void connect(String ipAddress, int port) {
+    public int connect(String ipAddress, int port) {
         try {
             SocketChannel client = SocketChannel.open();
             client.configureBlocking(false);
@@ -114,16 +114,19 @@ public class ConnectionHandler implements IConnectionHandler{
             socketAddr = new InetSocketAddress(ipAddress, port);
             Status.clientConnect(ipAddress, port);
             boolean success = client.connect(socketAddr);
-            
             if (success) {
                 client.register(selector, SelectionKey.OP_READ | SelectionKey.OP_WRITE);
                 Status.connectionSuccess(ipAddress, port);
+                InetSocketAddress localInetSocketAddress = (InetSocketAddress) client.getLocalAddress();
+                return localInetSocketAddress.getPort();
             } else {
                 client.register(selector, SelectionKey.OP_CONNECT);
                 Status.waitForConnection(ipAddress, port);
+                return RoutingEntry.PORT_INFORMATION_MISSING;
             }
         } catch (Exception e) {
-            Logger.log(e.getMessage());
+            Status.failedToConnect(e.getMessage());
+            return -1;
         }
     }
 
@@ -273,7 +276,8 @@ public class ConnectionHandler implements IConnectionHandler{
             boolean isValidChecksum = isValidChecksum(crc32, string);
             Status.bufferConsumed(string, messageLength, crc32, isValidChecksum);
             if (isValidChecksum) {
-                receiveMessageQueue.addLast(string);
+                InetSocketAddress localAddress = (InetSocketAddress) client.getLocalAddress();
+                receiveMessageQueue.addLast(new MessagePack(string, localAddress.getPort()));
                 Status.addStringToReceiveQueue(string, receiveMessageQueue.size());
             }
             else {
@@ -408,14 +412,14 @@ public class ConnectionHandler implements IConnectionHandler{
         // To check if connections got lost we first collect all healthy connections
         // and then ask for every entry if the corrosponding connection is in this collection
         Set<SelectionKey> keys = selector.keys();
-        Set<String> connectedAdresses = new HashSet<String>();
+        Map<String, SocketChannel> connectedAdresses = new HashMap<String, SocketChannel>();
         for (SelectionKey key : keys) {
             if(key.isValid()) {
                 SelectableChannel channel = key.channel();
                 if(!(channel instanceof ServerSocketChannel)) {
                     SocketChannel client = (SocketChannel) channel;
                     try {
-                        connectedAdresses.add(client.getRemoteAddress().toString());
+                        connectedAdresses.put(client.getRemoteAddress().toString(), client);
                     } catch(IOException e) {
                         Logger.log(e.getMessage());
                         e.printStackTrace();
@@ -425,9 +429,18 @@ public class ConnectionHandler implements IConnectionHandler{
         }
         Set<RoutingEntry> lostConnections = new HashSet<RoutingEntry>();
         for (RoutingEntry entry : entries) {
-            if (!connectedAdresses.contains("/" + entry.getNextHop())) {
+            //check if entry still has a healthy connection
+            if (!connectedAdresses.containsKey("/" + entry.getNextHop())) {
                 lostConnections.add(entry);
                 Status.clientClose(entry.getDestination());
+            }
+            // add local port if it is not set (happens bc the routing entry is created before the connection is finished)
+            if (entry.getLocalPort() == RoutingEntry.PORT_INFORMATION_MISSING) {
+                try {
+                    SocketChannel client = connectedAdresses.get(entry.getNextHop());
+                    InetSocketAddress localInetSocketAddress = (InetSocketAddress) client.getLocalAddress();
+                    entry.setLocalPort(localInetSocketAddress.getPort());
+                } catch (Exception e) {}
             }
         }
         return lostConnections;

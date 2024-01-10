@@ -78,7 +78,7 @@ public class JsonParser {
         return json.toString();
     }
 
-    public Message convertJsonStringToMessage(String messageString) throws IllegalArgumentException {
+    public Message convertJsonStringToMessage(String messageString, int localPort) throws IllegalArgumentException {
         // String to JSONObject
         JsonReader jsonReader = Json.createReader(new StringReader(messageString));
         JsonObject json = jsonReader.readObject();
@@ -92,7 +92,7 @@ public class JsonParser {
         } 
         else if (json.getString(MESSAGE_TYPE).equals(ROUTING_MESSAGE)) 
         {
-            result = extractRoutingMessage(json);
+            result = extractRoutingMessage(json, localPort);
         } 
         else 
         {
@@ -118,13 +118,13 @@ public class JsonParser {
                 content);
     }
 
-    private RoutingMessage extractRoutingMessage(JsonObject json) {
+    private RoutingMessage extractRoutingMessage(JsonObject json, int localPort) {
         String ip = json.getString(IP);
         int sourcePort = Integer.parseInt(json.getString(SOURCE_PORT));
         int idPort = Integer.parseInt(json.getString(ID_PORT));
         JsonArray table = json.getJsonArray(TABLE);
 
-        return new RoutingMessage(ip, sourcePort, idPort, table);
+        return new RoutingMessage(ip, sourcePort, idPort, table, localPort);
     }
 
 }

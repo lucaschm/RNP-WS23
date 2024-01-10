@@ -8,6 +8,7 @@ import de.haw.rn.luca_steven.connection_handler.exceptions.DoubleConnectionExcep
 import de.haw.rn.luca_steven.connection_handler.exceptions.MessageNotSendException;
 import de.haw.rn.luca_steven.data_classes.ChatMessage;
 import de.haw.rn.luca_steven.data_classes.Message;
+import de.haw.rn.luca_steven.data_classes.MessagePack;
 import de.haw.rn.luca_steven.data_classes.RoutingMessage;
 import de.haw.rn.luca_steven.data_classes.routing_table.IRoutingTable;
 import de.haw.rn.luca_steven.data_classes.routing_table.RoutingEntry;
@@ -37,7 +38,8 @@ public class Router {
                 localIPPort, 
                 INIT_HOP_COUNT,
                 localIPPort,
-                ipPort  
+                ipPort,
+                -1 
             ));          
         } catch (DoubleConnectionException e) {
             // well at this point it cant be a double connection
@@ -69,8 +71,8 @@ public class Router {
     public ChatMessage processMessage() throws MessageNotSendException {
         Message message;
         if (connections.hasNext()) {
-            String s = connections.nextString();
-            message = parser.convertJsonStringToMessage(s);
+            MessagePack pck = connections.nextString();
+            message = parser.convertJsonStringToMessage(pck.getMessage(), pck.getLocalPort());
         } else {
             return null;
         }
@@ -81,7 +83,8 @@ public class Router {
             try {
                 table.mergeWith(rm.getSetOfRoutingEntries(), rm.getFullOriginAddress());
             } catch (DoubleConnectionException e) {
-                // cant double connect here either, because there was no connection made
+                connections.disconnect(e.getIP(), e.getPort(), false);
+                Status.doubleConnection(e.getIP(), e.getPort());
             }
             
             return null;
@@ -155,17 +158,21 @@ public class Router {
             Status.selfConnection();
             return;
         }
-        connections.connect(IP, port);
+        int localPort = connections.connect(IP, port);
+        if (localPort == -1) {
+            return;
+        }
         try {
             table.addEntry(new RoutingEntry(
             remoteIPPort, 
             NEW_CONNECTION_HOP_COUNT,
             remoteIPPort,
-            localIPPort
+            localIPPort,
+            localPort
         ));
         } catch (DoubleConnectionException e) {
-            connections.disconnect(IP, port, false);
-            Status.doubleConnection(IP, port);
+            connections.disconnect(e.getIP(), e.getPort(), false);
+            Status.doubleConnection(e.getIP(), e.getPort());
         }
         // TODO: maybe a sleep is needed, so the 
         // neighbor can react
@@ -184,7 +191,7 @@ public class Router {
     }
 
     public void disconnect(String IP, int port) {
-        connections.disconnect(IP, port);
+        connections.disconnect(IP, port, true);
         table.deleteAllFor(IP + ":" + port);
     }
 

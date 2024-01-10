@@ -63,24 +63,28 @@ public class RoutingTableMapImpl implements IRoutingTable {
         //put new Entry in map if same origin has new hop information or if it has less hops then other orinins entry
         String destination = newEntry.getDestination();
         String newOrigin = newEntry.getOrigin();
+        int newLocalPort = newEntry.getLocalPort();
             if (map.containsKey(destination)) {
                 RoutingEntry existingEntry = map.get(destination);
-                //check for double connection
-                if (newEntry.getHops() == 1) {
-                    throw new DoubleConnectionException(existingEntry.getNextHop());
-                }
                 if (newOrigin.equals(existingEntry.getOrigin())) {
-                    //check if Hops got better or worse
+                    //check for double connection
+                    boolean differentlocalPort = newLocalPort != existingEntry.getLocalPort();
+                    boolean differentRemotePort = !newEntry.getNextHop().equals(existingEntry.getNextHop());
+                    if (differentlocalPort || differentRemotePort && (newLocalPort != RoutingEntry.PORT_INFORMATION_MISSING)) {
+                        throw new DoubleConnectionException(newEntry.getNextHop());
+                    }
+                    //check if Hops got update (better or worse)
                     if (newEntry.getHops() != existingEntry.getHops()) {
                         Status.addRoutingEntry(newEntry);
                         Status.routingTableChanged(this); 
                     } 
-                    //check for 
+                    //check if it is a better route then currently saved
                 } else if (newEntry.getHops() < existingEntry.getHops()) {
                     map.put(destination, newEntry);
                     Status.addRoutingEntry(newEntry);
                     Status.routingTableChanged(this);  
                 }
+                // if destination is not saved
             } else {
                 map.put(destination, newEntry);
                 Status.addRoutingEntry(newEntry);

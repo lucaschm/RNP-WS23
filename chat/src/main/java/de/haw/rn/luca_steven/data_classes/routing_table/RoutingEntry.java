@@ -14,12 +14,17 @@ public class RoutingEntry {
     private int hops;
     private String nextHop;
     private String origin;
+    private int localPort;
+
+    public static final int PORT_INFORMATION_MISSING = -2;
+
     
-    public RoutingEntry(String destination, int hops, String nextHop, String origin) {
+    public RoutingEntry(String destination, int hops, String nextHop, String origin, int localPort) {
         this.destination = destination;
         this.hops = hops;
         this.nextHop = nextHop;
         this.origin = origin;
+        this.localPort = localPort;
     }
 
     /**
@@ -95,6 +100,14 @@ public class RoutingEntry {
     public void setOrigin(String origin) {
         this.origin = Objects.requireNonNull(origin, "Origin cannot be null");
     }
+
+    public int getLocalPort() {
+        return this.localPort;
+    }
+
+    public void setLocalPort(int port) {
+        this.localPort = port;
+    }
     
 
     @Override
@@ -117,6 +130,8 @@ public class RoutingEntry {
     public int hashCode() {
         return hops;
     }
+
+    
 }
 
 
