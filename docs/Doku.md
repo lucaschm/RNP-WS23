@@ -26,7 +26,7 @@
 - [X] Beim Verbindungsversuch mit einem nicht existierenden Client muss das behandelt werden, ohne dass das Programm abstürzt
   - [X] auf der Konsole wird noch der Stacktrace ausgegeben. Hier reicht es kurz das Timeout zu erwähnen
 - [X] beim Verbindungsaufbau mit einem nicht existierenden User kann sich nicht verbunden werden. Da gibt es auch ein Timeout. Allerdings landet der nicht existierende User in der Routing Tabelle (ist zumindest in der list Ausgabe)
-- [ ] ui geht bei input "disconnect 192.168.50.34 4444list" kaputt
+- [X] ui geht bei input "disconnect 192.168.50.34 4444list" kaputt
 - [ ] send an nicht vorhandenen port gibt nullpointer exception im router
 - [ ] wenn man sich doppelt mit dem selben Teilnehmer verbindet wird scheinbar ein zweiter Socket und key angelegt. Die Routing Tabelle hat trotzdem nur einen Eintrag für diesen Teilnehmer. Es muss also nur noch verhindert werden, dass zwei Sockets für die selbe Verbindung gespeichert werden.
 - [ ] Wenn man sich versucht mit einem nicht existierenden Teilnehmer zu verbinden wird trotzdem ein Routingeintrag erstellt.
@@ -49,7 +49,7 @@
   private static final String IP = "ip";
   private static final String ID_PORT = "id_port";
   ```
-- [ ] eine Validierungsmethode für Userinputs (mit regex :P)
+- [X] eine Validierungsmethode für Userinputs (mit regex :P)
 - [ ] Alerts wenn routing tabellen zu groß werden. oder allgemein allerts bei interessanten sachen
 - [ ] feedback wenn eine Nachricht gesendet wurde
 - [ ] check ob port schon benutzt wird beim start
@@ -70,28 +70,6 @@ public static String localIPAdress = null;
 ```
 
 # das UI unserer Chatanwendung
-
-```
-connect <IP> <Port>
-```
-
-```
-send <IP> <Port> ???message???
-```
-
-```
-disconnect <IP> <Port>
-```
-
-```
-list
-```
-
-```
-exit
-```
-
-## neues UI Konzept (noch nicht implementiert)
 > Beispiel mit Adresse 192.168.0.2:1111
 - für jeden Befehl gibt es mehrere Möglichkeiten ihn aufzurufen
 ### connect
@@ -104,13 +82,9 @@ c 192.168.0.2:1111
 
 ### send
 ```
-send 192.168.0.2 1111 "hey du"
 send 192.168.0.2 1111 hey du
-send 192.168.0.2:1111 "hey du"
 send 192.168.0.2:1111 hey du
-s 192.168.0.2 1111 "hey du"
 s 192.168.0.2 1111 hey du
-s 192.168.0.2:1111 "hey du"
 s 192.168.0.2:1111 hey du
 ```
 
