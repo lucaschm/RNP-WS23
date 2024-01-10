@@ -126,6 +126,11 @@ public class Status {
         Logger.logBasics("There was a message with an incorrect Checksum.");
     }
 
+    public static void unknownCommand() {
+        Logger.log("The Syntax of this command is wrong. Read the fucking manual!");
+        Logger.logBasics("The Syntax of this command is wrong. Read the fucking manual!");
+    }
+
 ////// ROUTING /////////
 
     public static void routerProcess(long timedif) {
