@@ -46,10 +46,10 @@ public class RoutingTableMapImpl implements IRoutingTable {
         }
     }
 
-    public Set<RoutingEntry> getEntriesWithout(String origin){
+    public Set<RoutingEntry> getEntriesWithout(RoutingEntry target){
         Set<RoutingEntry> result = new HashSet<RoutingEntry>();
         for (RoutingEntry entry : map.values()) {
-            if (!origin.equals(entry.getNextHop())) {
+            if (!target.getNextHop().equals(entry.getNextHop())) {
                 result.add(entry);
             }
         }

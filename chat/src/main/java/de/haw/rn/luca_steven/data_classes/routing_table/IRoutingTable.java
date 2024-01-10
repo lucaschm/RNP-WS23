@@ -10,7 +10,7 @@ public interface IRoutingTable {
 
     public void mergeWith(Set<RoutingEntry> routingEntries, String origin) throws DoubleConnectionException;
 
-    public Set<RoutingEntry> getEntriesWithout(String origin);
+    public Set<RoutingEntry> getEntriesWithout(RoutingEntry entry);
 
     public Set<RoutingEntry> getEntries();
 
