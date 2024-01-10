@@ -246,7 +246,8 @@ public class ConnectionHandler implements IConnectionHandler{
         
         
             if (readBytes == -1) {
-            client.close();
+                client.close();
+                Status.clientClose("?", "Unable to read buffer from client.");
                 return;
             }
 
@@ -265,6 +266,7 @@ public class ConnectionHandler implements IConnectionHandler{
             
             if (readBytes == -1) {
                 client.close();
+                Status.clientClose("?", "Unable to read buffer from client. But we were able to read just a few lines before. That is weird.");
                 return;
             }
             messageBuffer.position(0);
@@ -287,6 +289,7 @@ public class ConnectionHandler implements IConnectionHandler{
                 Status.lostConnection();
                 try {
                     client.close();
+                    Status.clientClose("?", "closing while in catch block");
                 } catch (IOException e1) {
                 }
                 key.cancel();
@@ -397,6 +400,7 @@ public class ConnectionHandler implements IConnectionHandler{
         if (!client.isConnected()) {
             try {
                 client.close();
+                Status.clientClose("?", "Client not healthy (the other side probably terminated abruptly)");
             } catch (IOException e) {
                 Status.unexpectedError(e.getMessage());
                 Logger.logErrorStacktrace(e.getStackTrace().toString());
