@@ -87,7 +87,7 @@ public class UI {
             inputParts = inputParts[1].split(COLON);
             String ip = inputParts[0];
             int port = Integer.parseInt(inputParts[1]);
-            result = new UserCommand(Command.CONNECT, ip, port, null);
+            result = new UserCommand(Command.DISCONNECT, ip, port, null);
         }
         else if (matches(inputString, sendWithBlank)) {
             String[] inputParts = inputString.split(BLANK);
