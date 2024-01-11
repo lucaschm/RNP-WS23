@@ -13,5 +13,5 @@ public class Config {
     public static boolean onlyStoreBestRoutingEntry = true;
 
     //time beetween sharing routing tabel in ms
-    public static int routingShareInterval = 200;
+    public static int routingShareInterval = 100;
 }
