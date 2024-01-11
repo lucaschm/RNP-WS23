@@ -221,6 +221,21 @@ public class ConnectionHandler implements IConnectionHandler{
         }
     }
 
+    public void teardown() {
+        try {
+            selector.close();
+        } catch (IOException e) {
+            Status.unexpectedError("selector unable to close");
+            Logger.logErrorStacktrace(e.getStackTrace().toString());
+        }
+        try {
+            serverSocketChannel.close();
+        } catch (IOException e) {
+            Status.unexpectedError("serverSocketChannel unable to close");
+            Logger.logErrorStacktrace(e.getStackTrace().toString());
+        }
+    }
+
     private void register(Selector selector, ServerSocketChannel serverSocketChannel) throws IOException {
         SocketChannel client = serverSocketChannel.accept();
         Status.acceptConnection(client.getRemoteAddress().toString());

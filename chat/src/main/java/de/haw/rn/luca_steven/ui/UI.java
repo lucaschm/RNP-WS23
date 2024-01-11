@@ -7,6 +7,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import de.haw.rn.luca_steven.Logger;
 import de.haw.rn.luca_steven.data_classes.ChatMessage;
 import de.haw.rn.luca_steven.data_classes.routing_table.RoutingEntry;
 
@@ -14,6 +15,7 @@ public class UI {
 
     private BlockingQueue<String> userInputQueue;
     private BlockingQueue<String> userOutputQueue;
+    Thread consoleThread;
 
     //REGEX PARTS
     private static final String IP_ADDRESS = "(\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3})";
@@ -33,7 +35,7 @@ public class UI {
         this.userOutputQueue = new LinkedBlockingQueue<String>();
         Scanner scanner = new Scanner(System.in);
 
-        Thread consoleThread = new Thread(new Console(userInputQueue, userOutputQueue, scanner, System.out));
+        consoleThread = new Thread(new Console(userInputQueue, userOutputQueue, scanner, System.out));
         consoleThread.start();
     }
 
@@ -158,6 +160,16 @@ public class UI {
     // Fehler ausgeben
     public void printError(String errorMessage) {
         System.out.println("Error: [" + errorMessage + "]");
+    }
+
+    public void teardown() {
+        try {
+            Console.close();
+            consoleThread.join(10);
+        } catch (InterruptedException e) {
+            Status.unexpectedError("Unable to close console thread.");
+            Logger.logErrorStacktrace(e.getStackTrace().toString());
+        }
     }
     
     

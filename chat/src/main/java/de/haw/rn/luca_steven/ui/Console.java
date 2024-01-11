@@ -61,4 +61,8 @@ public class Console implements Runnable {
         }
         scanner.close();
     }
+
+    public static void close() {
+        isRunning = false;
+    }
 }
