@@ -146,6 +146,11 @@ public class Status {
         Logger.logBasics("The Syntax of this command is wrong. Read the fucking manual!");
     }
 
+    public static void programClosed() {
+        Logger.log("Program closed. Press Enter.");
+        Logger.logBasics("Program closed");
+    }
+
 ////// ROUTING /////////
 
     public static void routerProcess(long timedif) {
@@ -208,6 +213,10 @@ public class Status {
             tableString += "| " + destination + " | " + hops + "    | " + nextHop + " | " + origin + " |\n";
         }
         return tableString;
+    }
+
+    public static void disconnectAll() {
+        Logger.logBasics("disconnectAll");
     }
 
 /////////// USER COMMANDS //////////

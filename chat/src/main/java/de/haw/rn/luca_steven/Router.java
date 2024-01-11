@@ -206,6 +206,16 @@ public class Router {
         table.deleteAllFor(ipPort);
     }
 
+    public void disconnectAll() {
+        Status.disconnectAll();
+        Set<RoutingEntry> allEntries = table.getAllButSelfEntry();
+        for (RoutingEntry entry : allEntries) {
+            String ip = entry.getDestinationIP();
+            int port = entry.getDestinationIDPort();
+            disconnect(ip, port);
+        }
+    }
+
     public Set<RoutingEntry> getParticipantsSet() {
         return table.getAllButSelfEntry();
     }

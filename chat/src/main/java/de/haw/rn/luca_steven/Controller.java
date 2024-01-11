@@ -16,6 +16,7 @@ public class Controller {
     private long superloopIterations;
     private long startTime;
     private long finishTime;
+    private boolean runProgram;
 
     public Controller(String ip, int port) {
         this.ip = ip;
@@ -24,7 +25,7 @@ public class Controller {
     }
 
     public void run() {
-        
+        runProgram = true;
         ConnectionHandler connectionHandler = new ConnectionHandler(ip, port);
         String ipPort = ip + ":" + port;
         Router router = new Router(connectionHandler, ipPort);
@@ -32,7 +33,7 @@ public class Controller {
         Status.serverStarted(ip, port);
         
         startTime = System.currentTimeMillis();
-        while(true) {
+        while(runProgram) {
             monitorLoopSpeed();
 
             // sleep for less cpu load and calmer fans
@@ -76,7 +77,10 @@ public class Controller {
                     break;
                     case EXIT:
                         Status.commandExit();
-                    
+                        router.disconnectAll();
+                        connectionHandler.teardown();
+                        ui.teardown();
+                        runProgram = false;
                     break;
                     default:
                     break;
@@ -87,6 +91,7 @@ public class Controller {
                 Status.messageNotSent();
             }
         }
+        Status.programClosed();
     }
 
     private void monitorLoopSpeed() {
