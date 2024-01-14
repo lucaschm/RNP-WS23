@@ -8,13 +8,13 @@ public interface IRoutingTable {
 
     public String findNextHop(String destination);
 
-    public void mergeWith(Set<RoutingEntry> routingEntries, String origin) throws DoubleConnectionException;
+    public void mergeWith(Set<RoutingEntry> routingEntries, String origin);
 
     public Set<RoutingEntry> getEntriesWithout(RoutingEntry entry);
 
     public Set<RoutingEntry> getEntries();
 
-    public void addEntry(RoutingEntry entry) throws DoubleConnectionException;
+    public void addEntry(RoutingEntry entry);
 
     public Set<RoutingEntry> getAllButSelfEntry();
 

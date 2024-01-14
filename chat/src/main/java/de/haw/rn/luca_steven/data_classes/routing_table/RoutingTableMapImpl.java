@@ -14,10 +14,10 @@ public class RoutingTableMapImpl implements IRoutingTable {
     Map<String, RoutingEntry> map = new HashMap<String, RoutingEntry>();
 
     public String findNextHop(String destination){
-        return map.get(destination).getNextHop();
+        return map.get(destination).getNextHop(); //TODO try catch block
     }
 
-    public void mergeWith(Set<RoutingEntry> routingEntries, String origin) throws DoubleConnectionException {
+    public void mergeWith(Set<RoutingEntry> routingEntries, String origin) {
         //put routingEntries in map for easy handling
         Map<String, RoutingEntry> newEntries = new HashMap<String, RoutingEntry>();
         boolean tableHasChanged = false;
@@ -61,16 +61,12 @@ public class RoutingTableMapImpl implements IRoutingTable {
         return new HashSet<RoutingEntry>(map.values());
     }
 
-    public void addEntry(RoutingEntry newEntry) throws DoubleConnectionException {
+    public void addEntry(RoutingEntry newEntry) {
         //put new Entry in map if same origin has new hop information or if it has less hops then other orinins entry
         String destination = newEntry.getDestination();
         String newOrigin = newEntry.getOrigin();
             if (map.containsKey(destination)) {
                 RoutingEntry existingEntry = map.get(destination);
-                //check for double connection
-                if (newEntry.getHops() == 1) {
-                    throw new DoubleConnectionException(existingEntry.getNextHop());
-                }
                 if (newOrigin.equals(existingEntry.getOrigin())) {
                     //check if Hops got better or worse
                     if (newEntry.getHops() != existingEntry.getHops()) {

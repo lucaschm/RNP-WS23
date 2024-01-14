@@ -1,6 +1,5 @@
 package de.haw.rn.luca_steven;
 
-
 import de.haw.rn.luca_steven.connection_handler.ConnectionHandler;
 import de.haw.rn.luca_steven.connection_handler.exceptions.MessageNotSendException;
 import de.haw.rn.luca_steven.data_classes.ChatMessage;
@@ -41,8 +40,8 @@ public class Controller {
                 Thread.sleep(SLEEP_TIME);
             } catch (InterruptedException e) {
                 Logger.logBasics("Program got no sleep");
-            }
-
+            }      
+            
             connectionHandler.listen();
             ChatMessage receivedMsg = null;
             try {

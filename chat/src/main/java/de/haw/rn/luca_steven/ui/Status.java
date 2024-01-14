@@ -17,7 +17,7 @@ public class Status {
 
     public static void serverStarted(String ip, int port) {
         String ipPort = ip + ":" + port;
-        Logger.log("Server started as " + ipPort);
+        Logger.log("Server started as " + "\u001B[32m" + ipPort + "\u001B[0m");
         Logger.logBasics("Server started as " + ipPort);
     }
 
