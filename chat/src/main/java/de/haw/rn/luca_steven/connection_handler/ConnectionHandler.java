@@ -1,18 +1,17 @@
 package de.haw.rn.luca_steven.connection_handler;
 
-import de.haw.rn.luca_steven.CRC32Checksum;
-import de.haw.rn.luca_steven.Logger;
-import de.haw.rn.luca_steven.data_classes.MessagePack;
-import de.haw.rn.luca_steven.data_classes.routing_table.RoutingEntry;
-import de.haw.rn.luca_steven.ui.Status;
-
 import java.io.IOException;
 import java.net.ConnectException;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
-import java.nio.channels.*;
+import java.nio.channels.CancelledKeyException;
+import java.nio.channels.SelectableChannel;
+import java.nio.channels.SelectionKey;
+import java.nio.channels.Selector;
+import java.nio.channels.ServerSocketChannel;
+import java.nio.channels.SocketChannel;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
@@ -21,6 +20,12 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Set;
+
+import de.haw.rn.luca_steven.CRC32Checksum;
+import de.haw.rn.luca_steven.Logger;
+import de.haw.rn.luca_steven.data_classes.MessagePack;
+import de.haw.rn.luca_steven.data_classes.routing_table.RoutingEntry;
+import de.haw.rn.luca_steven.ui.Status;
 
 public class ConnectionHandler implements IConnectionHandler{
 
@@ -78,7 +83,7 @@ public class ConnectionHandler implements IConnectionHandler{
                     errorMessage = "Error: " + msg + " could not be send.";
             }
         } catch (IOException e) {
-            Logger.logErrorStacktrace(e.getStackTrace().toString());
+            Logger.logErrorStacktrace(e);
             Status.unexpectedError(e.getMessage());
         }
         catch (CancelledKeyException e) {
@@ -124,7 +129,7 @@ public class ConnectionHandler implements IConnectionHandler{
             }
         } catch (Exception e) {
             Status.unexpectedError(e.getMessage());
-            Logger.logErrorStacktrace(e.getStackTrace().toString());
+            Logger.logErrorStacktrace(e);
         }
     }
 
@@ -189,7 +194,7 @@ public class ConnectionHandler implements IConnectionHandler{
 
             } catch (IOException e) {
                 Status.unexpectedError(e.getMessage());
-                Logger.logErrorStacktrace(e.getStackTrace().toString());
+                Logger.logErrorStacktrace(e);
             }
         }
         return result;
@@ -217,7 +222,7 @@ public class ConnectionHandler implements IConnectionHandler{
             //Logger.log("Server gestartet auf Port " + idPort);
         } catch (Exception e) {
             Status.unexpectedError(e.getMessage());
-            Logger.logErrorStacktrace(e.getStackTrace().toString());
+            Logger.logErrorStacktrace(e);
         }
     }
 
@@ -226,21 +231,24 @@ public class ConnectionHandler implements IConnectionHandler{
             selector.close();
         } catch (IOException e) {
             Status.unexpectedError("selector unable to close");
-            Logger.logErrorStacktrace(e.getStackTrace().toString());
+            Logger.logErrorStacktrace(e);
         }
         try {
             serverSocketChannel.close();
         } catch (IOException e) {
             Status.unexpectedError("serverSocketChannel unable to close");
-            Logger.logErrorStacktrace(e.getStackTrace().toString());
+            Logger.logErrorStacktrace(e);
         }
     }
 
     private void register(Selector selector, ServerSocketChannel serverSocketChannel) throws IOException {
         SocketChannel client = serverSocketChannel.accept();
-        Status.acceptConnection(client.getRemoteAddress().toString());
+        String address = client.getRemoteAddress().toString();
+        Status.acceptConnection(address);
         client.configureBlocking(false);
-        client.register(selector, SelectionKey.OP_READ|SelectionKey.OP_WRITE);
+        SelectionKey key = client.register(selector, SelectionKey.OP_READ|SelectionKey.OP_WRITE);
+        key.attach(address);
+
     }
 
     private void readMessage(SelectionKey key) {
@@ -255,14 +263,13 @@ public class ConnectionHandler implements IConnectionHandler{
         if (!clientHealthy(client, key)) {
             return;
         }
-        int readBytes;
+
         try {
-            readBytes = client.read(headerBuffer);
-        
-        
+            int readBytes = client.read(headerBuffer);
             if (readBytes == -1) {
                 client.close();
-                Status.clientClose("?", "Unable to read buffer from client.");
+                String remoteAddress = (String) key.attachment();
+                Status.clientClose(remoteAddress, "Unable to read head buffer from client.");
                 return;
             }
 
@@ -277,11 +284,10 @@ public class ConnectionHandler implements IConnectionHandler{
             // eigentliche Nachricht auslesen
             ByteBuffer messageBuffer = ByteBuffer.allocate(messageLength);
             readBytes = client.read(messageBuffer);
-
-            
             if (readBytes == -1) {
                 client.close();
-                Status.clientClose("?", "Unable to read buffer from client. But we were able to read just a few lines before. That is weird.");
+                String remoteAddress = (String) key.attachment();
+                Status.clientClose(remoteAddress, "Unable to read buffer from client. But we were able to read head buffer before. That is weird.");
                 return;
             }
             messageBuffer.position(0);
@@ -300,18 +306,21 @@ public class ConnectionHandler implements IConnectionHandler{
             }
         } catch (IOException e) {
             String errorMessage = e.getMessage();
-            if (errorMessage.equals("Connection reset by peer") || errorMessage.equals("Connection reset")) {
+            if (errorMessage.equals("Connection reset by peer") || 
+                errorMessage.equals("Connection reset") || 
+                errorMessage.equals("Eine bestehende Verbindung wurde softwaregesteuert\r\ndurch den Hostcomputer abgebrochen")
+            ) {
                 Status.lostConnection();
                 try {
                     client.close();
+                    key.cancel();
                     Status.clientClose("?", "closing while in catch block");
                 } catch (IOException e1) {
                 }
-                key.cancel();
             }
             else {
                 Status.unexpectedError(e.getMessage());
-                Logger.logErrorStacktrace(e.getStackTrace().toString());
+                Logger.logErrorStacktrace(e);
             }
         }
         
@@ -352,15 +361,15 @@ public class ConnectionHandler implements IConnectionHandler{
                 Status.lostConnection();
                 try {
                     client.close();
+                    key.cancel();
                     Status.clientClose(client.getRemoteAddress().toString(), "Because write message got an error:" + e.getMessage()); //passiert öfter, unbedingt gute fehlermeldung
                 } catch (IOException e1) {
-                    e1.printStackTrace();
+                    Logger.logErrorStacktrace(e1);
                 }
-                key.cancel();
             } 
             else {
                 Status.unexpectedError(e.getMessage());
-                Logger.logErrorStacktrace(e.getStackTrace().toString());
+                Logger.logErrorStacktrace(e);
             }
         }
     }
@@ -378,7 +387,7 @@ public class ConnectionHandler implements IConnectionHandler{
                 Status.failedToConnect(e.getMessage());  
         } catch (IOException e) {
             Status.unexpectedError(e.getMessage());
-            Logger.logErrorStacktrace(e.getStackTrace().toString());
+            Logger.logErrorStacktrace(e);
         } 
     }
 
@@ -418,7 +427,7 @@ public class ConnectionHandler implements IConnectionHandler{
                 Status.clientClose("?", "Client not healthy (the other side probably terminated abruptly)");
             } catch (IOException e) {
                 Status.unexpectedError(e.getMessage());
-                Logger.logErrorStacktrace(e.getStackTrace().toString());
+                Logger.logErrorStacktrace(e);
             }
             key.cancel();
             return false;
@@ -442,7 +451,7 @@ public class ConnectionHandler implements IConnectionHandler{
                         connectedAdresses.add(client.getRemoteAddress().toString());
                     } catch(IOException e) {
                         Status.unexpectedError(e.getMessage());
-                        Logger.logErrorStacktrace(e.getStackTrace().toString());
+                        Logger.logErrorStacktrace(e);
                     }
                 }
             }

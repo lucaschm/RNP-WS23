@@ -4,6 +4,8 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
@@ -26,7 +28,7 @@ public class Logger {
     static boolean userUninformedAboutMissingFiles = true;
 
     public static void log(String logMessage) {
-        System.out.println(logMessage);
+        System.out.println("\033[0;37m" + logMessage + "\u001B[0m");
     }
 
     public static void error(String errorMessage) {
@@ -82,8 +84,11 @@ public class Logger {
         logFile(inBuffer, string, true);
     }
 
-    public static void logErrorStacktrace(String string) {
-        logFile(errorStacktrace, "\n" + string, true);
+    public static void logErrorStacktrace(Exception e) {
+        StringWriter sw = new StringWriter();
+        PrintWriter pw = new PrintWriter(sw);
+        e.printStackTrace(pw);
+        logFile(errorStacktrace, sw.toString(), true);
     }
 
     private static String timestamp() {

@@ -142,7 +142,7 @@ public class UI {
         try {
             userOutputQueue.put(outputString);
         } catch (InterruptedException e) {
-            e.printStackTrace();
+            Logger.logErrorStacktrace(e);
         }
     }
      
@@ -168,7 +168,7 @@ public class UI {
             consoleThread.join(10);
         } catch (InterruptedException e) {
             Status.unexpectedError("Unable to close console thread.");
-            Logger.logErrorStacktrace(e.getStackTrace().toString());
+            Logger.logErrorStacktrace(e);
         }
     }
     
